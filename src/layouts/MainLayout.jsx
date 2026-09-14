@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './MainLayout.css';
 
 const NAV_ITEMS = [
@@ -7,6 +8,14 @@ const NAV_ITEMS = [
 ];
 
 function MainLayout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate('/login', { replace: true });
+  }
+
   return (
     <div className="layout">
       <aside className="layout__sidebar">
@@ -25,6 +34,9 @@ function MainLayout() {
             </NavLink>
           ))}
         </nav>
+        <button type="button" className="layout__logout" onClick={handleLogout}>
+          Cerrar sesión
+        </button>
       </aside>
 
       <div className="layout__main">
