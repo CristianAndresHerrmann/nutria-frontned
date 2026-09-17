@@ -13,6 +13,23 @@
   padding: 1.5rem 1rem;
 }
 
+.layout__logout {
+  margin-top: auto;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  background: transparent;
+  color: #d1d5db;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.layout__logout:hover {
+  background: #374151;
+  color: #ffffff;
+}
+
 .layout__brand {
   font-size: 1.25rem;
   font-weight: 700;
