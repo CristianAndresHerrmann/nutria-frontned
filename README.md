@@ -1,6 +1,11 @@
 # nutria-frontend
 
-Frontend de **NutrIA**, implementado en React + Vite. Provee la interfaz para que el nutricionista gestione pacientes, consultas, catálogos y la generación asistida de planes alimentarios.
+Interfaz web de **NutrIA**, implementada en React + Vite. Es la aplicación que usa
+el nutricionista; consume la API de `nutria-backend` y no habla con ningún otro
+servicio.
+
+Qué pantallas existen y qué cambió en cada iteración se documenta en
+[`CHANGELOG.md`](CHANGELOG.md), no acá.
 
 ## Estructura de carpetas raíz del proyecto
 
@@ -17,10 +22,14 @@ Esta disposición es necesaria porque el `docker-compose.yml` de `nutria-backend
 
 ## Estructura interna del repositorio
 
-- `src/layouts/` — layout general de la aplicación (`aside` de navegación + `header`).
-- `src/pages/` — pantallas de la aplicación (Inicio, Pacientes, ...).
-- `src/App.jsx` — definición de rutas con React Router.
-- `public/` — archivos estáticos.
+- `src/pages/` — una carpeta o archivo por pantalla.
+- `src/layouts/` — layouts compartidos entre pantallas.
+- `src/components/` — componentes reutilizables.
+- `src/api/` — cliente HTTP único contra el backend (no se usa `fetch` suelto en los componentes).
+- `src/context/` — estado global (sesión).
+- `src/utils/`, `src/assets/` — helpers y estáticos importados por el bundler.
+- `src/App.jsx` — definición de rutas con React Router; `src/main.jsx` — punto de entrada.
+- `public/` — archivos estáticos servidos tal cual.
 - `Dockerfile` — imagen de este servicio, usada por el `docker-compose.yml` de `nutria-backend`.
 
 ## Variables de entorno
@@ -30,6 +39,17 @@ Copiar `.env.example` a `.env` (no se versiona) antes de ejecutar:
 ```bash
 cp .env.example .env
 ```
+
+`VITE_API_URL` apunta al backend; el valor por defecto sirve para el stack de Docker Compose.
+
+## Scripts disponibles
+
+| Script | Comando | Descripción |
+|--------|---------|-------------|
+| `npm run dev` | `vite` | Servidor de desarrollo con HMR en `http://localhost:5173`. |
+| `npm run build` | `vite build` | Build de producción en `dist/`. |
+| `npm run preview` | `vite preview` | Sirve el build de `dist/` para revisarlo. |
+| `npm run lint` | `oxlint` | Linter del repo. |
 
 ## Cómo ejecutar
 
@@ -42,11 +62,12 @@ La aplicación queda disponible en `http://localhost:5173`.
 
 Para levantar el stack completo con Docker (frontend + backend + ia + postgres + proxy) con un solo comando, ver la sección "Cómo ejecutar todo el stack con Docker Compose" en el README de `nutria-backend`. En ese modo la aplicación se accede como `http://local.nutria.com` (virtual host servido por Traefik), no por puerto ni por `localhost`.
 
-## Tecnologías previstas
+## Stack
 
 - React
 - Vite
 - React Router
+- oxlint
 
 ## Repositorios relacionados
 
