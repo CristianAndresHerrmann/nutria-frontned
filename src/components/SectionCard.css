@@ -1,0 +1,47 @@
+.section-card {
+  background: #ffffff;
+  border: 1px solid #d5e1db;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(20, 65, 58, 0.03);
+}
+
+.section-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid #d5e1db;
+}
+
+.section-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #f0fdfa;
+}
+
+.section-card__icon img {
+  width: 18px;
+  height: 18px;
+}
+
+.section-card__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #12221c;
+}
+
+.section-card__subtitle {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: #586f66;
+}
+
+.section-card__content {
+  padding: 20px;
+}

@@ -1,0 +1,140 @@
+.home__status {
+  font-size: 14px;
+  color: #586f66;
+}
+
+.home__status--error {
+  color: #b3261e;
+}
+
+.home__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.home__title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #12221c;
+}
+
+.home__subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #586f66;
+}
+
+.home__stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 24px;
+  border: 1px solid #d5e1db;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(20, 65, 58, 0.03);
+  margin-bottom: 20px;
+  max-width: 320px;
+}
+
+.home__stat-label {
+  font-size: 13px;
+  color: #586f66;
+}
+
+.home__stat-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.home__stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #006e4e;
+}
+
+.home__link {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #006e4e;
+  cursor: pointer;
+}
+
+.home__link:hover {
+  text-decoration: underline;
+}
+
+.home__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.home__list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.home__patient-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.home__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #cbfbf1;
+  color: #005f5a;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.home__patient-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.home__patient-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #12221c;
+}
+
+.home__patient-cell:hover .home__patient-name {
+  color: #006e4e;
+}
+
+.home__patient-goal {
+  font-size: 12.5px;
+  color: #586f66;
+}
+
+.home__patient-date {
+  font-size: 13px;
+  color: #586f66;
+  white-space: nowrap;
+}

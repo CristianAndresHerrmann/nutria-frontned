@@ -1,5 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { clearToken, getToken, isTokenExpired, setToken as persistToken } from '../api/client';
+import {
+  clearNutritionist,
+  clearToken,
+  getNutritionist,
+  getToken,
+  isTokenExpired,
+  setNutritionist as persistNutritionist,
+  setToken as persistToken,
+} from '../api/client';
 import { login as loginRequest } from '../api/auth';
 
 const AuthContext = createContext(null);
@@ -8,6 +16,7 @@ function getValidToken() {
   const stored = getToken();
   if (stored && isTokenExpired(stored)) {
     clearToken();
+    clearNutritionist();
     return null;
   }
   return stored;
@@ -19,10 +28,13 @@ const EXPIRY_CHECK_INTERVAL_MS = 30_000;
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(getValidToken);
+  const [nutritionist, setNutritionist] = useState(() => (getValidToken() ? getNutritionist() : null));
 
   useEffect(() => {
     function handleUnauthorized() {
+      clearNutritionist();
       setToken(null);
+      setNutritionist(null);
     }
 
     window.addEventListener('nutria:unauthorized', handleUnauthorized);
@@ -35,7 +47,9 @@ export function AuthProvider({ children }) {
     const interval = setInterval(() => {
       if (isTokenExpired(token)) {
         clearToken();
+        clearNutritionist();
         setToken(null);
+        setNutritionist(null);
       }
     }, EXPIRY_CHECK_INTERVAL_MS);
 
@@ -45,17 +59,22 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     const data = await loginRequest(email, password);
     persistToken(data.token);
+    persistNutritionist(data.nutritionist);
     setToken(data.token);
+    setNutritionist(data.nutritionist);
     return data;
   }, []);
 
   const logout = useCallback(() => {
     clearToken();
+    clearNutritionist();
     setToken(null);
+    setNutritionist(null);
   }, []);
 
   const value = {
     token,
+    nutritionist,
     isAuthenticated: Boolean(token),
     login,
     logout,
