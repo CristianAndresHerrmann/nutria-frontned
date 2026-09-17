@@ -1,5 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN_KEY = 'nutria_token';
+const NUTRITIONIST_KEY = 'nutria_nutritionist';
 
 export function getToken() {
   try {
@@ -20,6 +21,34 @@ export function setToken(token) {
 export function clearToken() {
   try {
     localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    // Ver comentario en setToken.
+  }
+}
+
+// { id, name, email } del login: se persiste junto al token para poder
+// mostrar el nombre del nutricionista en el layout sin pegarle a la API de
+// nuevo ni decodificarlo del JWT (que solo trae el id en `sub`).
+export function getNutritionist() {
+  try {
+    const raw = localStorage.getItem(NUTRITIONIST_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setNutritionist(nutritionist) {
+  try {
+    localStorage.setItem(NUTRITIONIST_KEY, JSON.stringify(nutritionist));
+  } catch {
+    // Ver comentario en setToken.
+  }
+}
+
+export function clearNutritionist() {
+  try {
+    localStorage.removeItem(NUTRITIONIST_KEY);
   } catch {
     // Ver comentario en setToken.
   }

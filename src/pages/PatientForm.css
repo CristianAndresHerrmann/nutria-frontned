@@ -1,0 +1,103 @@
+.patient-form__status {
+  font-size: 14px;
+  color: #586f66;
+}
+
+.patient-form {
+  max-width: 896px;
+}
+
+.patient-form__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #586f66;
+  cursor: pointer;
+}
+
+.patient-form__back:hover {
+  color: #12221c;
+}
+
+.patient-form__back img {
+  width: 16px;
+  height: 16px;
+}
+
+.patient-form__intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.patient-form__title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #12221c;
+}
+
+.patient-form__subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #586f66;
+}
+
+.patient-form__required-hint {
+  font-size: 12.5px;
+  color: #586f66;
+  white-space: nowrap;
+}
+
+.patient-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.patient-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+}
+
+@media (max-width: 640px) {
+  .patient-form__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.patient-form__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #12221c;
+}
+
+.patient-form__field-error {
+  font-size: 12.5px;
+  color: #b3261e;
+}
+
+.patient-form__general-error {
+  margin: 0;
+  font-size: 13px;
+  color: #b3261e;
+}
+
+.patient-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #d5e1db;
+}
