@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Patients from './pages/Patients';
 import PatientForm from './pages/PatientForm';
 import PatientDetail from './pages/PatientDetail';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="pacientes/nuevo" element={<PatientForm />} />
               <Route path="pacientes/:id" element={<PatientDetail />} />
               <Route path="pacientes/:id/editar" element={<PatientForm />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
         </Routes>

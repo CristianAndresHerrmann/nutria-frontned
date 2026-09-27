@@ -18,6 +18,16 @@ export function formatDateTime(isoString) {
   return new Date(isoString).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
 }
 
+// Fecha de hoy en UTC como AAAA-MM-DD, para el `max` del input de fecha de
+// nacimiento. Ayuda visual nomás: el backend es quien rechaza una fecha futura.
+export function todayInputValue() {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(now.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // Solo para mostrar/ocultar la sección de responsable mientras se completa el
 // formulario: es una ayuda visual, no la fuente de verdad. La validación real
 // (y el corte exacto de "menor de 18") la hace el backend en cada submit.

@@ -23,7 +23,7 @@ const HEADER_TITLES = [
 
 function headerTitleFor(pathname) {
   const match = HEADER_TITLES.find(({ pattern }) => matchPath({ path: pattern, end: true }, pathname));
-  return match ? match.title : 'NutrIA';
+  return match ? match.title : 'Página no encontrada';
 }
 
 function initialsOf(name) {

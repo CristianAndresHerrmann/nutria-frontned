@@ -3,6 +3,11 @@
   color: #586f66;
 }
 
+.patient-form__status--error {
+  color: #b3261e;
+  margin-bottom: 16px;
+}
+
 .patient-form {
   max-width: 896px;
 }

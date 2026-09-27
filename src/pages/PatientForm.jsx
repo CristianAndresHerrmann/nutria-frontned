@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createPatient, getPatient, updatePatient } from '../api/patients';
-import { isMinorFromDateInput, toDateInputValue } from '../utils/date';
+import { isMinorFromDateInput, todayInputValue } from '../utils/date';
+import { formToPayload, patientToForm } from './patientFormMapping';
 import SectionCard from '../components/SectionCard';
 import FormField from '../components/FormField';
 import iconPerson from '../assets/icons/icon-person.svg';
@@ -27,42 +28,6 @@ const EMPTY_FORM = {
   incomplete: true,
 };
 
-function patientToForm(patient) {
-  return {
-    firstName: patient.firstName || '',
-    lastName: patient.lastName || '',
-    birthDate: toDateInputValue(patient.birthDate),
-    phone: patient.phone || '',
-    email: patient.email || '',
-    livesWith: patient.livesWith || '',
-    goal: patient.goal || '',
-    referenceWeight: patient.referenceWeight === null ? '' : String(patient.referenceWeight),
-    guardianName: patient.guardianName || '',
-    guardianRelationship: patient.guardianRelationship || '',
-    guardianContact: patient.guardianContact || '',
-    attendsAccompanied: Boolean(patient.attendsAccompanied),
-    incomplete: !patient.registrationComplete,
-  };
-}
-
-function formToPayload(form) {
-  return {
-    firstName: form.firstName,
-    lastName: form.lastName,
-    birthDate: form.birthDate,
-    phone: form.phone,
-    email: form.email,
-    livesWith: form.livesWith,
-    goal: form.goal,
-    referenceWeight: form.referenceWeight,
-    guardianName: form.guardianName,
-    guardianRelationship: form.guardianRelationship,
-    guardianContact: form.guardianContact,
-    attendsAccompanied: form.attendsAccompanied,
-    registrationComplete: !form.incomplete,
-  };
-}
-
 function PatientForm() {
   const { id } = useParams();
   const isEditMode = Boolean(id);
@@ -71,6 +36,7 @@ function PatientForm() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadError, setLoadError] = useState('');
   const [formError, setFormError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -84,7 +50,7 @@ function PatientForm() {
         if (!cancelled) setForm(patientToForm(patient));
       })
       .catch((err) => {
-        if (!cancelled) setFormError(err.message);
+        if (!cancelled) setLoadError(err.message);
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
@@ -121,6 +87,21 @@ function PatientForm() {
 
   if (isLoading) {
     return <p className="patient-form__status">Cargando ficha...</p>;
+  }
+
+  // Sin la ficha no hay sobre qué editar: no se muestra el form ni la
+  // posibilidad de guardar, para no pisar datos con un objeto vacío.
+  if (loadError) {
+    return (
+      <div className="patient-form">
+        <p className="patient-form__status patient-form__status--error" role="alert">
+          {loadError}
+        </p>
+        <button type="button" className="btn btn--secondary" onClick={() => navigate('/pacientes')}>
+          Volver
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -172,6 +153,7 @@ function PatientForm() {
                 type="date"
                 className="field-input"
                 value={form.birthDate}
+                max={todayInputValue()}
                 onChange={(event) => updateField('birthDate', event.target.value)}
               />
             </FormField>
