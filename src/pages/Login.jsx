@@ -30,7 +30,7 @@ function BrandMark() {
 }
 
 function Login() {
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, sessionExpired, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -38,6 +38,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (isAuthenticated) {
@@ -48,6 +49,7 @@ function Login() {
   async function handleSubmit(event) {
     event.preventDefault();
     setError('');
+    setFieldErrors({});
     setIsSubmitting(true);
 
     try {
@@ -55,7 +57,11 @@ function Login() {
       const redirectTo = location.state?.from?.pathname || '/';
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setError(err.message);
+      // Un error de validación va debajo de cada input; el mensaje general queda
+      // para lo que no es de un campo (credenciales inválidas, sin conexión).
+      const fields = err.fields || {};
+      setFieldErrors(fields);
+      if (Object.keys(fields).length === 0) setError(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -77,6 +83,12 @@ function Login() {
         <h1 className="login__title">Iniciar sesión</h1>
         <p className="login__subtitle">Gestioná la información de tus pacientes de forma simple y segura.</p>
 
+        {sessionExpired && (
+          <p className="login__notice" role="status">
+            Tu sesión expiró. Volvé a iniciar sesión.
+          </p>
+        )}
+
         <form className="login__form" onSubmit={handleSubmit} noValidate>
           <label className="login__label" htmlFor="email">
             <span className="login__label-text">
@@ -90,8 +102,10 @@ function Login() {
               autoComplete="username"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              aria-invalid={Boolean(fieldErrors.email)}
               required
             />
+            {fieldErrors.email && <span className="login__field-error">{fieldErrors.email}</span>}
           </label>
 
           <label className="login__label" htmlFor="password">
@@ -107,6 +121,7 @@ function Login() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
+                aria-invalid={Boolean(fieldErrors.password)}
                 required
               />
               <button
@@ -119,6 +134,7 @@ function Login() {
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
             </div>
+            {fieldErrors.password && <span className="login__field-error">{fieldErrors.password}</span>}
           </label>
 
           {error && (
