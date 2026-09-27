@@ -29,12 +29,16 @@ const EXPIRY_CHECK_INTERVAL_MS = 30_000;
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(getValidToken);
   const [nutritionist, setNutritionist] = useState(() => (getValidToken() ? getNutritionist() : null));
+  // true cuando la sesión se cerró sola (token vencido o 401 del backend), no
+  // por un logout: el login lo usa para explicar por qué volvió a esa pantalla.
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   useEffect(() => {
     function handleUnauthorized() {
       clearNutritionist();
       setToken(null);
       setNutritionist(null);
+      setSessionExpired(true);
     }
 
     window.addEventListener('nutria:unauthorized', handleUnauthorized);
@@ -50,6 +54,7 @@ export function AuthProvider({ children }) {
         clearNutritionist();
         setToken(null);
         setNutritionist(null);
+        setSessionExpired(true);
       }
     }, EXPIRY_CHECK_INTERVAL_MS);
 
@@ -62,6 +67,7 @@ export function AuthProvider({ children }) {
     persistNutritionist(data.nutritionist);
     setToken(data.token);
     setNutritionist(data.nutritionist);
+    setSessionExpired(false);
     return data;
   }, []);
 
@@ -70,12 +76,14 @@ export function AuthProvider({ children }) {
     clearNutritionist();
     setToken(null);
     setNutritionist(null);
+    setSessionExpired(false);
   }, []);
 
   const value = {
     token,
     nutritionist,
     isAuthenticated: Boolean(token),
+    sessionExpired,
     login,
     logout,
   };

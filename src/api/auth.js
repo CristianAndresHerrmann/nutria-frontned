@@ -1,16 +1,5 @@
-import { apiFetch } from './client';
+import { apiRequest } from './client';
 
-export async function login(email, password) {
-  const response = await apiFetch('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-  });
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data.error || 'No se pudo iniciar sesión');
-  }
-
-  return data;
+export function login(email, password) {
+  return apiRequest('/auth/login', { method: 'POST', body: { email, password }, auth: false });
 }
