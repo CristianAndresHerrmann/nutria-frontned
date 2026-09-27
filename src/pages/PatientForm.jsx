@@ -4,13 +4,14 @@ import { createPatient, getPatient, updatePatient } from '../api/patients';
 import { isMinorFromDateInput, todayInputValue } from '../utils/date';
 import { formToPayload, patientToForm } from './patientFormMapping';
 import SectionCard from '../components/SectionCard';
-import FormField from '../components/FormField';
+import FormField, { inputClass } from '../components/FormField';
+import BackButton from '../components/BackButton';
+import Button from '../components/Button';
 import iconPerson from '../assets/icons/icon-person.svg';
 import iconTarget from '../assets/icons/icon-target.svg';
 import iconCheck from '../assets/icons/icon-check.svg';
-import iconArrowLeft from '../assets/icons/icon-arrow-left.svg';
-import '../components/buttons.css';
-import './PatientForm.css';
+
+const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2';
 
 const EMPTY_FORM = {
   firstName: '',
@@ -86,51 +87,48 @@ function PatientForm() {
   }
 
   if (isLoading) {
-    return <p className="patient-form__status">Cargando ficha...</p>;
+    return <p className="text-sm text-muted">Cargando ficha...</p>;
   }
 
   // Sin la ficha no hay sobre qué editar: no se muestra el form ni la
   // posibilidad de guardar, para no pisar datos con un objeto vacío.
   if (loadError) {
     return (
-      <div className="patient-form">
-        <p className="patient-form__status patient-form__status--error" role="alert">
+      <div className="max-w-4xl">
+        <p className="mb-4 text-sm text-danger" role="alert">
           {loadError}
         </p>
-        <button type="button" className="btn btn--secondary" onClick={() => navigate('/pacientes')}>
+        <Button variant="secondary" onClick={() => navigate('/pacientes')}>
           Volver
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="patient-form">
-      <button type="button" className="patient-form__back" onClick={() => navigate('/pacientes')}>
-        <img src={iconArrowLeft} alt="" />
-        Volver
-      </button>
+    <div className="max-w-4xl">
+      <BackButton onClick={() => navigate('/pacientes')}>Volver</BackButton>
 
-      <div className="patient-form__intro">
+      <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h1 className="patient-form__title">{isEditMode ? 'Editar paciente' : 'Nuevo paciente'}</h1>
-          <p className="patient-form__subtitle">
+          <h1 className="text-title font-bold text-ink">{isEditMode ? 'Editar paciente' : 'Nuevo paciente'}</h1>
+          <p className="mt-2 text-sm text-muted">
             {isEditMode ? 'Actualizá los datos de la ficha.' : 'Completá los datos básicos para crear una nueva ficha.'}
           </p>
         </div>
-        <span className="patient-form__required-hint">* Campo obligatorio</span>
+        <span className="text-note whitespace-nowrap text-muted">* Campo obligatorio</span>
       </div>
 
-      <form className="patient-form__form" onSubmit={handleSubmit} noValidate>
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
         <SectionCard
           icon={<img src={iconPerson} alt="" />}
           title="Información personal"
           subtitle="Datos básicos de identificación y contacto."
         >
-          <div className="patient-form__grid">
+          <div className={FORM_GRID}>
             <FormField label="Nombre" required error={fieldErrors.firstName}>
               <input
-                className="field-input"
+                className={inputClass}
                 placeholder="Ej. Camila"
                 value={form.firstName}
                 onChange={(event) => updateField('firstName', event.target.value)}
@@ -140,7 +138,7 @@ function PatientForm() {
 
             <FormField label="Apellido" required error={fieldErrors.lastName}>
               <input
-                className="field-input"
+                className={inputClass}
                 placeholder="Ej. Fernández"
                 value={form.lastName}
                 onChange={(event) => updateField('lastName', event.target.value)}
@@ -151,7 +149,7 @@ function PatientForm() {
             <FormField label="Fecha de nacimiento" error={fieldErrors.birthDate}>
               <input
                 type="date"
-                className="field-input"
+                className={inputClass}
                 value={form.birthDate}
                 max={todayInputValue()}
                 onChange={(event) => updateField('birthDate', event.target.value)}
@@ -160,7 +158,7 @@ function PatientForm() {
 
             <FormField label="Teléfono" error={fieldErrors.phone}>
               <input
-                className="field-input"
+                className={inputClass}
                 placeholder="+54 9 11..."
                 value={form.phone}
                 onChange={(event) => updateField('phone', event.target.value)}
@@ -170,7 +168,7 @@ function PatientForm() {
             <FormField label="Correo electrónico" error={fieldErrors.email}>
               <input
                 type="email"
-                className="field-input"
+                className={inputClass}
                 placeholder="paciente@email.com"
                 value={form.email}
                 onChange={(event) => updateField('email', event.target.value)}
@@ -179,7 +177,7 @@ function PatientForm() {
 
             <FormField label="¿Con quién vive?" error={fieldErrors.livesWith}>
               <input
-                className="field-input"
+                className={inputClass}
                 placeholder="Ej. Familia, pareja, sola/o"
                 value={form.livesWith}
                 onChange={(event) => updateField('livesWith', event.target.value)}
@@ -193,10 +191,10 @@ function PatientForm() {
           title="Objetivo"
           subtitle="Podés completar esta información ahora o más adelante."
         >
-          <div className="patient-form__grid">
+          <div className={FORM_GRID}>
             <FormField label="Objetivo principal" error={fieldErrors.goal}>
               <input
-                className="field-input"
+                className={inputClass}
                 placeholder="Ej. Mejorar hábitos"
                 value={form.goal}
                 onChange={(event) => updateField('goal', event.target.value)}
@@ -207,7 +205,7 @@ function PatientForm() {
               <input
                 type="number"
                 step="0.1"
-                className="field-input"
+                className={inputClass}
                 placeholder="Opcional"
                 value={form.referenceWeight}
                 onChange={(event) => updateField('referenceWeight', event.target.value)}
@@ -218,10 +216,10 @@ function PatientForm() {
 
         {isMinor && (
           <SectionCard title="Adulto responsable" subtitle="Obligatorio: el paciente es menor de edad.">
-            <div className="patient-form__grid">
+            <div className={FORM_GRID}>
               <FormField label="Nombre" required error={fieldErrors.guardianName}>
                 <input
-                  className="field-input"
+                  className={inputClass}
                   value={form.guardianName}
                   onChange={(event) => updateField('guardianName', event.target.value)}
                   required
@@ -230,7 +228,7 @@ function PatientForm() {
 
               <FormField label="Vínculo" required error={fieldErrors.guardianRelationship}>
                 <input
-                  className="field-input"
+                  className={inputClass}
                   value={form.guardianRelationship}
                   onChange={(event) => updateField('guardianRelationship', event.target.value)}
                   required
@@ -239,14 +237,14 @@ function PatientForm() {
 
               <FormField label="Contacto" required error={fieldErrors.guardianContact}>
                 <input
-                  className="field-input"
+                  className={inputClass}
                   value={form.guardianContact}
                   onChange={(event) => updateField('guardianContact', event.target.value)}
                   required
                 />
               </FormField>
 
-              <label className="patient-form__checkbox-label">
+              <label className="flex items-center gap-2 text-sm text-ink">
                 <input
                   type="checkbox"
                   checked={form.attendsAccompanied}
@@ -255,13 +253,13 @@ function PatientForm() {
                 <span>Asiste acompañado</span>
               </label>
               {fieldErrors.attendsAccompanied && (
-                <span className="patient-form__field-error">{fieldErrors.attendsAccompanied}</span>
+                <span className="text-note text-danger">{fieldErrors.attendsAccompanied}</span>
               )}
             </div>
           </SectionCard>
         )}
 
-        <label className="patient-form__checkbox-label">
+        <label className="flex items-center gap-2 text-sm text-ink">
           <input
             type="checkbox"
             checked={form.incomplete}
@@ -271,19 +269,19 @@ function PatientForm() {
         </label>
 
         {formError && (
-          <p className="patient-form__general-error" role="alert">
+          <p className="text-body-sm text-danger" role="alert">
             {formError}
           </p>
         )}
 
-        <div className="patient-form__actions">
-          <button type="button" className="btn btn--secondary" onClick={() => navigate('/pacientes')}>
+        <div className="flex justify-end gap-3 border-t border-line pt-3">
+          <Button variant="secondary" onClick={() => navigate('/pacientes')}>
             Cancelar
-          </button>
-          <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
             {!isSubmitting && <img src={iconCheck} alt="" />}
             {isSubmitting ? 'Guardando...' : 'Guardar paciente'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

@@ -11,7 +11,7 @@ import navSeguimiento from '../assets/icons/nav-seguimiento.svg';
 import logout1 from '../assets/icons/logout-1.svg';
 import logout2 from '../assets/icons/logout-2.svg';
 import logout3 from '../assets/icons/logout-3.svg';
-import './MainLayout.css';
+import Avatar from '../components/Avatar';
 
 const HEADER_TITLES = [
   { pattern: '/', title: 'Inicio' },
@@ -32,11 +32,27 @@ function initialsOf(name) {
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase();
 }
 
+const NAV_LINK = 'flex h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium [&>img]:size-4.5 [&>img]:shrink-0';
+
+function navLinkClass({ isActive }) {
+  return isActive ? `${NAV_LINK} bg-mint-50 text-primary` : `${NAV_LINK} text-muted hover:bg-surface`;
+}
+
+const SOON_LINK = 'flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted/50 [&>img]:size-4.5 [&>img]:shrink-0';
+
+function SoonBadge() {
+  return <span className="ml-auto whitespace-nowrap rounded-sm bg-neutral-soft px-1.5 py-0.5 text-[9px] font-semibold text-muted/50">Pronto</span>;
+}
+
+function NavHeading({ children }) {
+  return <p className="mb-2 px-3 text-2xs font-bold tracking-[1.4px] text-muted uppercase">{children}</p>;
+}
+
 // Ícono compuesto de varios fragmentos vectoriales exportados de Figma
 // (el diseño original los guarda como paths separados, no como un solo SVG).
 function PlanesAlimentariosIcon() {
   return (
-    <span className="layout__composite-icon">
+    <span className="relative block size-4.5 shrink-0">
       <img src={navPlanes1} alt="" style={{ position: 'absolute', inset: '8.8% 16.67%' }} />
       <img src={navPlanes2} alt="" style={{ position: 'absolute', inset: '8.8% 16.67% 66.48% 58.33%' }} />
       <img src={navPlanes3} alt="" style={{ position: 'absolute', inset: '37.64% 58.33% 62.36% 33.33%' }} />
@@ -48,7 +64,7 @@ function PlanesAlimentariosIcon() {
 
 function LogoutIcon() {
   return (
-    <span className="layout__composite-icon">
+    <span className="relative block size-4.5 shrink-0">
       <img src={logout1} alt="" style={{ position: 'absolute', inset: '29.17% 12.5% 29.17% 66.67%' }} />
       <img src={logout2} alt="" style={{ position: 'absolute', top: '50%', left: '37.5%', right: '12.5%', height: '1px' }} />
       <img src={logout3} alt="" style={{ position: 'absolute', inset: '12.5% 62.5% 12.5% 12.5%' }} />
@@ -69,69 +85,74 @@ function MainLayout() {
   const initials = initialsOf(nutritionist?.name);
 
   return (
-    <div className="layout">
-      <aside className="layout__sidebar">
-        <div className="layout__brand">
-          <span className="layout__brand-mark">
-            <img src={logoMark} alt="" />
+    <div className="flex min-h-screen bg-surface">
+      <aside className="flex w-64 shrink-0 flex-col border-r border-line bg-white px-4 py-6">
+        <div className="mb-6 flex items-center gap-2.5 px-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-primary">
+            <img src={logoMark} alt="" className="size-4.75" />
           </span>
-          <span className="layout__brand-name">
-            Nutr<span className="layout__brand-accent">IA</span>
+          <span className="text-xl font-semibold tracking-[-0.5px] text-ink">
+            Nutr<span className="text-primary">IA</span>
           </span>
         </div>
 
-        <p className="layout__nav-heading">Menú principal</p>
-        <nav className="layout__nav">
-          <NavLink to="/" end className={({ isActive }) => (isActive ? 'layout__nav-link layout__nav-link--active' : 'layout__nav-link')}>
+        <NavHeading>Menú principal</NavHeading>
+        <nav className="mb-6 flex flex-col gap-1">
+          <NavLink to="/" end className={navLinkClass}>
             <img src={navInicio} alt="" />
             Inicio
           </NavLink>
-          <NavLink to="/pacientes" className={({ isActive }) => (isActive ? 'layout__nav-link layout__nav-link--active' : 'layout__nav-link')}>
+          <NavLink to="/pacientes" className={navLinkClass}>
             <img src={navPacientes} alt="" />
             Pacientes
           </NavLink>
         </nav>
 
-        <p className="layout__nav-heading">Próximamente</p>
-        <div className="layout__nav">
-          <span className="layout__nav-link layout__nav-link--disabled">
+        <NavHeading>Próximamente</NavHeading>
+        <div className="mb-6 flex flex-col gap-1">
+          <span className={SOON_LINK}>
             <PlanesAlimentariosIcon />
             Planes alimentarios
-            <span className="layout__soon">Pronto</span>
+            <SoonBadge />
           </span>
-          <span className="layout__nav-link layout__nav-link--disabled">
+          <span className={SOON_LINK}>
             <img src={navSeguimiento} alt="" />
             Seguimiento
-            <span className="layout__soon">Pronto</span>
+            <SoonBadge />
           </span>
         </div>
 
-        <div className="layout__profile">
-          <span className="layout__avatar">{initials}</span>
-          <div className="layout__profile-info">
-            <span className="layout__profile-name">{nutritionist?.name || 'Nutricionista'}</span>
-            <span className="layout__profile-email">{nutritionist?.email || ''}</span>
+        <div className="mt-auto flex items-center gap-2.5 border-t border-line px-3 pt-4">
+          <Avatar>{initials}</Avatar>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate text-sm font-semibold text-ink">{nutritionist?.name || 'Nutricionista'}</span>
+            <span className="truncate text-caption text-muted">{nutritionist?.email || ''}</span>
           </div>
-          <button type="button" className="layout__logout" onClick={handleLogout} aria-label="Cerrar sesión">
+          <button
+            type="button"
+            className="flex size-6 shrink-0 items-center justify-center text-muted hover:text-ink"
+            onClick={handleLogout}
+            aria-label="Cerrar sesión"
+          >
             <LogoutIcon />
           </button>
         </div>
       </aside>
 
-      <div className="layout__main">
-        <header className="layout__header">
-          <span className="layout__header-title">{headerTitleFor(location.pathname)}</span>
-          <div className="layout__header-profile">
-            <span className="layout__divider" />
-            <span className="layout__avatar">{initials}</span>
-            <div className="layout__header-profile-text">
-              <span className="layout__header-profile-name">Lic. {nutritionist?.name || 'Nutricionista'}</span>
-              <span className="layout__header-profile-role">Nutricionista</span>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex h-18 shrink-0 items-center justify-between border-b border-line bg-surface/95 px-10 backdrop-blur-xs">
+          <span className="text-body-sm text-muted">{headerTitleFor(location.pathname)}</span>
+          <div className="flex items-center gap-3">
+            <span className="h-6 w-px bg-line" />
+            <Avatar>{initials}</Avatar>
+            <div className="flex flex-col">
+              <span className="text-caption font-semibold text-ink">Lic. {nutritionist?.name || 'Nutricionista'}</span>
+              <span className="text-[10.8px] text-muted">Nutricionista</span>
             </div>
           </div>
         </header>
 
-        <main className="layout__content">
+        <main className="flex-1 px-10 py-8">
           <Outlet />
         </main>
       </div>

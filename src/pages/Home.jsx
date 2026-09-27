@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { formatDateTime } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import SectionCard from '../components/SectionCard';
-import '../components/buttons.css';
-import './Home.css';
+import Avatar from '../components/Avatar';
+import Button from '../components/Button';
 
 function firstNameOf(fullName) {
   return fullName ? fullName.trim().split(/\s+/)[0] : '';
@@ -36,35 +36,33 @@ function Home() {
 
   if (error) {
     return (
-      <p className="home__status home__status--error" role="alert">
+      <p className="text-sm text-danger" role="alert">
         {error}
       </p>
     );
   }
 
   if (!patients) {
-    return <p className="home__status">Cargando...</p>;
+    return <p className="text-sm text-muted">Cargando...</p>;
   }
 
   const recentPatients = patients.slice(0, 3);
 
   return (
-    <div className="home">
-      <div className="home__header">
+    <div>
+      <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="home__title">Hola, {firstNameOf(nutritionist?.name) || 'Nutricionista'}</h1>
-          <p className="home__subtitle">Gestioná tus pacientes desde un único lugar.</p>
+          <h1 className="text-title font-bold text-ink">Hola, {firstNameOf(nutritionist?.name) || 'Nutricionista'}</h1>
+          <p className="mt-2 text-sm text-muted">Gestioná tus pacientes desde un único lugar.</p>
         </div>
-        <button type="button" className="btn btn--primary" onClick={() => navigate('/pacientes/nuevo')}>
-          + Nuevo paciente
-        </button>
+        <Button onClick={() => navigate('/pacientes/nuevo')}>+ Nuevo paciente</Button>
       </div>
 
-      <div className="home__stat-card">
-        <span className="home__stat-label">Total de pacientes</span>
-        <div className="home__stat-row">
-          <span className="home__stat-value">{patients.length}</span>
-          <button type="button" className="home__link" onClick={() => navigate('/pacientes')}>
+      <div className="mb-5 flex max-w-80 flex-col gap-2 rounded-2xl border border-line bg-white px-6 py-5 shadow-card">
+        <span className="text-body-sm text-muted">Total de pacientes</span>
+        <div className="flex items-baseline justify-between">
+          <span className="text-[32px] font-bold text-primary">{patients.length}</span>
+          <button type="button" className="text-body-sm font-semibold text-primary hover:underline" onClick={() => navigate('/pacientes')}>
             Ver todos →
           </button>
         </div>
@@ -72,21 +70,21 @@ function Home() {
 
       <SectionCard title="Pacientes recientes" subtitle="Últimas fichas actualizadas">
         {recentPatients.length === 0 ? (
-          <p className="home__status">Todavía no hay pacientes cargados.</p>
+          <p className="text-sm text-muted">Todavía no hay pacientes cargados.</p>
         ) : (
-          <ul className="home__list">
+          <ul className="flex flex-col gap-1">
             {recentPatients.map((patient) => (
-              <li key={patient.id} className="home__list-item">
-                <button type="button" className="home__patient-cell" onClick={() => navigate(`/pacientes/${patient.id}`)}>
-                  <span className="home__avatar">{initialsOf(patient)}</span>
-                  <span className="home__patient-info">
-                    <span className="home__patient-name">
+              <li key={patient.id} className="flex items-center justify-between py-2">
+                <button type="button" className="group inline-flex items-center gap-3" onClick={() => navigate(`/pacientes/${patient.id}`)}>
+                  <Avatar>{initialsOf(patient)}</Avatar>
+                  <span className="flex flex-col items-start">
+                    <span className="text-sm font-semibold text-ink group-hover:text-primary">
                       {patient.firstName} {patient.lastName}
                     </span>
-                    <span className="home__patient-goal">{patient.goal || 'Sin dato'}</span>
+                    <span className="text-note text-muted">{patient.goal || 'Sin dato'}</span>
                   </span>
                 </button>
-                <span className="home__patient-date">Actualizado {formatDateTime(patient.updatedAt)}</span>
+                <span className="text-body-sm whitespace-nowrap text-muted">Actualizado {formatDateTime(patient.updatedAt)}</span>
               </li>
             ))}
           </ul>

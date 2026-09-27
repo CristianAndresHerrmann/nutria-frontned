@@ -19,6 +19,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Changed
 
+- Estilos migrados a Tailwind CSS v4 (T13), con el plugin `@tailwindcss/vite`. Los tokens del Figma (colores, tamaños de texto y sombra de card) están en el `@theme` de `src/index.css`. Layout, login, inicio, pacientes, ficha, formulario y 404 usan utilidades en el JSX y mantienen la misma funcionalidad. Componentes nuevos para lo que se repetía: `Button`, `Avatar`, `BackButton`, e `inputClass` exportado desde `FormField`. Decisión en `docs/decisiones/framework-de-estilos-tailwind.md` (repo de tooling).
+- `color-scheme` fijo en `light`: la app no tiene diseño oscuro, y con `light dark` los inputs nativos salían oscuros si el sistema estaba en modo oscuro.
+- `index.html`: `lang="es"` y título "NutrIA".
 - Adaptado al formato de error del backend `{ error: { code, message, details? } }` (T7). Un `401` del login (credenciales inválidas) ya no se trata como sesión expirada.
 - `MainLayout` y `App.jsx` ajustados para reflejar el estado de sesión y proteger las rutas internas.
 

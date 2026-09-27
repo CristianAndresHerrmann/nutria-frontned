@@ -1,20 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import SectionCard from '../components/SectionCard';
-import '../components/buttons.css';
-import './NotFound.css';
+import Button from '../components/Button';
 
 function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="not-found">
+    <div className="flex justify-center pt-10">
       <SectionCard>
-        <div className="not-found__content">
-          <h1 className="not-found__title">No encontramos esta página</h1>
-          <p className="not-found__subtitle">Revisá la dirección o volvé al inicio.</p>
-          <button type="button" className="btn btn--primary" onClick={() => navigate('/')}>
-            Ir al inicio
-          </button>
+        <div className="flex flex-col items-center gap-3 px-4 py-6 text-center">
+          <h1 className="text-xl font-bold text-ink">No encontramos esta página</h1>
+          <p className="mb-2 text-sm text-muted">Revisá la dirección o volvé al inicio.</p>
+          <Button onClick={() => navigate('/')}>Ir al inicio</Button>
         </div>
       </SectionCard>
     </div>

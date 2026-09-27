@@ -5,17 +5,19 @@ import { formatDate } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import SectionCard from '../components/SectionCard';
 import Badge from '../components/Badge';
-import iconArrowLeft from '../assets/icons/icon-arrow-left.svg';
-import '../components/buttons.css';
-import './PatientDetail.css';
+import Avatar from '../components/Avatar';
+import BackButton from '../components/BackButton';
+import Button from '../components/Button';
 
 const TABS = ['Resumen', 'Información clínica', 'Hábitos y alimentación', 'Planes'];
 
+const FIELD_GRID = 'grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4';
+
 function Field({ label, value }) {
   return (
-    <div className="patient-detail__field">
-      <span className="patient-detail__field-label">{label}</span>
-      <span className="patient-detail__field-value">{value || 'Sin dato'}</span>
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-muted">{label}</span>
+      <span className="text-sm font-medium text-ink">{value || 'Sin dato'}</span>
     </div>
   );
 }
@@ -45,33 +47,30 @@ function PatientDetail() {
 
   if (error) {
     return (
-      <p className="patient-detail__status patient-detail__status--error" role="alert">
+      <p className="text-sm text-danger" role="alert">
         {error}
       </p>
     );
   }
 
   if (!patient) {
-    return <p className="patient-detail__status">Cargando ficha...</p>;
+    return <p className="text-sm text-muted">Cargando ficha...</p>;
   }
 
   const isMinor = patient.age !== null && patient.age < 18;
 
   return (
-    <div className="patient-detail">
-      <button type="button" className="patient-detail__back" onClick={() => navigate('/pacientes')}>
-        <img src={iconArrowLeft} alt="" />
-        Volver a pacientes
-      </button>
+    <div>
+      <BackButton onClick={() => navigate('/pacientes')}>Volver a pacientes</BackButton>
 
-      <div className="patient-detail__header">
-        <div className="patient-detail__identity">
-          <span className="patient-detail__avatar">{initialsOf(patient)}</span>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Avatar size="lg">{initialsOf(patient)}</Avatar>
           <div>
-            <h1 className="patient-detail__title">
+            <h1 className="text-2xl font-bold text-ink">
               {patient.firstName} {patient.lastName}
             </h1>
-            <p className="patient-detail__meta">
+            <p className="mt-1.5 flex items-center gap-2 text-sm text-muted">
               {patient.age === null ? 'Sin dato' : `${patient.age} años`}
               {patient.goal && (
                 <>
@@ -83,17 +82,19 @@ function PatientDetail() {
             </p>
           </div>
         </div>
-        <button type="button" className="btn btn--secondary" onClick={() => navigate(`/pacientes/${id}/editar`)}>
+        <Button variant="secondary" onClick={() => navigate(`/pacientes/${id}/editar`)}>
           Editar paciente
-        </button>
+        </Button>
       </div>
 
-      <nav className="patient-detail__tabs">
+      <nav className="mb-6 flex gap-1 border-b border-line">
         {TABS.map((tab) => (
           <button
             key={tab}
             type="button"
-            className={tab === activeTab ? 'patient-detail__tab patient-detail__tab--active' : 'patient-detail__tab'}
+            className={`border-b-2 px-4 py-2.5 text-sm font-medium ${
+              tab === activeTab ? 'border-primary text-primary' : 'border-transparent text-muted'
+            }`}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
@@ -102,9 +103,9 @@ function PatientDetail() {
       </nav>
 
       {activeTab === 'Resumen' ? (
-        <div className="patient-detail__content">
+        <div className="flex flex-col gap-5">
           <SectionCard title="Datos personales">
-            <div className="patient-detail__grid">
+            <div className={FIELD_GRID}>
               <Field label="Fecha de nacimiento" value={patient.birthDate ? formatDate(patient.birthDate) : null} />
               <Field label="Teléfono" value={patient.phone} />
               <Field label="Correo" value={patient.email} />
@@ -113,7 +114,7 @@ function PatientDetail() {
           </SectionCard>
 
           <SectionCard title="Objetivo" subtitle="El objetivo puede ajustarse durante el proceso.">
-            <div className="patient-detail__grid">
+            <div className={FIELD_GRID}>
               <Field label="Objetivo" value={patient.goal} />
               <Field label="Peso de referencia" value={patient.referenceWeight ? `${patient.referenceWeight} kg` : null} />
             </div>
@@ -121,7 +122,7 @@ function PatientDetail() {
 
           {isMinor && (
             <SectionCard title="Adulto responsable">
-              <div className="patient-detail__grid">
+              <div className={FIELD_GRID}>
                 <Field label="Nombre" value={patient.guardianName} />
                 <Field label="Vínculo" value={patient.guardianRelationship} />
                 <Field label="Contacto" value={patient.guardianContact} />
@@ -131,9 +132,9 @@ function PatientDetail() {
           )}
         </div>
       ) : (
-        <div className="patient-detail__content">
+        <div className="flex flex-col gap-5">
           <SectionCard>
-            <p className="patient-detail__soon">Pronto</p>
+            <p className="text-sm text-muted">Pronto</p>
           </SectionCard>
         </div>
       )}

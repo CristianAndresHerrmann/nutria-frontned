@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import './Login.css';
+import Button from '../components/Button';
+import { inputClass } from '../components/FormField';
 
 function EyeIcon() {
   return (
@@ -68,36 +69,36 @@ function Login() {
   }
 
   return (
-    <div className="login">
-      <div className="login__brand">
-        <span className="login__brand-mark">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-linear-to-r from-[#f3f8f6] to-surface px-4 py-8">
+      <div className="flex items-center gap-2.5">
+        <span className="flex size-9 items-center justify-center rounded-2xl bg-primary">
           <BrandMark />
         </span>
-        <span className="login__brand-name">
-          Nutr<span className="login__brand-accent">IA</span>
+        <span className="text-xl font-semibold tracking-[-0.5px] text-ink">
+          Nutr<span className="text-primary">IA</span>
         </span>
       </div>
 
-      <div className="login__card">
-        <p className="login__eyebrow">Espacio profesional</p>
-        <h1 className="login__title">Iniciar sesión</h1>
-        <p className="login__subtitle">Gestioná la información de tus pacientes de forma simple y segura.</p>
+      <div className="w-full max-w-[420px] rounded-2xl border border-line bg-white px-9 py-9 shadow-card">
+        <p className="mb-1.5 text-sm font-medium text-primary">Espacio profesional</p>
+        <h1 className="mb-3 text-2xl font-semibold tracking-[-0.6px] text-ink">Iniciar sesión</h1>
+        <p className="mb-7 text-sm leading-6 text-muted">Gestioná la información de tus pacientes de forma simple y segura.</p>
 
         {sessionExpired && (
-          <p className="login__notice" role="status">
+          <p className="-mt-3 mb-5 rounded-xl bg-notice-bg px-3.5 py-2.5 text-body-sm text-notice" role="status">
             Tu sesión expiró. Volvé a iniciar sesión.
           </p>
         )}
 
-        <form className="login__form" onSubmit={handleSubmit} noValidate>
-          <label className="login__label" htmlFor="email">
-            <span className="login__label-text">
-              Correo electrónico <span className="login__required">*</span>
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
+          <label className="flex flex-col gap-2 text-sm font-medium text-ink" htmlFor="email">
+            <span>
+              Correo electrónico <span className="text-primary">*</span>
             </span>
             <input
               id="email"
               type="email"
-              className="login__input"
+              className={inputClass}
               placeholder="tu@email.com"
               autoComplete="username"
               value={email}
@@ -105,18 +106,18 @@ function Login() {
               aria-invalid={Boolean(fieldErrors.email)}
               required
             />
-            {fieldErrors.email && <span className="login__field-error">{fieldErrors.email}</span>}
+            {fieldErrors.email && <span className="text-note font-normal text-danger">{fieldErrors.email}</span>}
           </label>
 
-          <label className="login__label" htmlFor="password">
-            <span className="login__label-text">
-              Contraseña <span className="login__required">*</span>
+          <label className="flex flex-col gap-2 text-sm font-medium text-ink" htmlFor="password">
+            <span>
+              Contraseña <span className="text-primary">*</span>
             </span>
-            <div className="login__input-group">
+            <div className="relative flex items-center">
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                className="login__input"
+                className={`${inputClass} pr-11`}
                 placeholder="Ingresá tu contraseña"
                 autoComplete="current-password"
                 value={password}
@@ -126,7 +127,7 @@ function Login() {
               />
               <button
                 type="button"
-                className="login__toggle-password"
+                className="absolute right-3 flex items-center justify-center text-muted hover:text-ink"
                 onClick={() => setShowPassword((value) => !value)}
                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 aria-pressed={showPassword}
@@ -134,22 +135,22 @@ function Login() {
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
             </div>
-            {fieldErrors.password && <span className="login__field-error">{fieldErrors.password}</span>}
+            {fieldErrors.password && <span className="text-note font-normal text-danger">{fieldErrors.password}</span>}
           </label>
 
           {error && (
-            <p className="login__error" role="alert">
+            <p className="-mt-2 text-body-sm text-danger" role="alert">
               {error}
             </p>
           )}
 
-          <button type="submit" className="login__submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Ingresando…' : 'Iniciar sesión'}
-          </button>
+          </Button>
         </form>
       </div>
 
-      <p className="login__footer">NutrIA acompaña tu práctica profesional.</p>
+      <p className="text-xs text-muted">NutrIA acompaña tu práctica profesional.</p>
     </div>
   );
 }

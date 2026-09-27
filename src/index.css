@@ -1,17 +1,56 @@
-:root {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: light dark;
+@import 'tailwindcss';
+
+/*
+ * Tokens del Figma. Todo color, tamaño de texto o sombra que use una pantalla sale
+ * de acá (bg-primary, text-muted, text-body-sm, shadow-card, ...). Si el Figma trae
+ * un valor que no está, se agrega como token en lugar de escribirlo suelto en el JSX.
+ * Radios y espaciados usan la escala por defecto de Tailwind, que coincide con el
+ * Figma (rounded-xl = 12px, rounded-2xl = 16px, múltiplos de 4px).
+ */
+@theme {
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --color-primary: #006e4e;
+  --color-primary-hover: #00593e;
+  --color-on-primary: #f9fdfb;
+  --color-ink: #12221c;
+  --color-muted: #586f66;
+  --color-line: #d5e1db;
+  --color-line-input: #c6d5ce;
+  --color-surface: #f5fcf9;
+  --color-mint-50: #f0fdfa;
+  --color-mint-100: #cbfbf1;
+  --color-mint-700: #005f5a;
+  --color-neutral-soft: #e9f3ee;
+  --color-warning-bg: #fdf1e6;
+  --color-warning: #a15c07;
+  --color-notice-bg: #fdf3e7;
+  --color-notice: #7a4a00;
+  --color-danger: #b3261e;
+
+  --text-2xs: 10px;
+  --text-caption: 11.8px;
+  --text-note: 12.5px;
+  --text-body-sm: 13.5px;
+  --text-title: 26px;
+
+  --shadow-card: 0 2px 8px rgb(20 65 58 / 0.03);
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  :root {
+    color-scheme: light;
+  }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-}
+  body {
+    @apply min-h-screen bg-surface text-ink;
+  }
 
-#root {
-  min-height: 100vh;
+  #root {
+    @apply min-h-screen;
+  }
+
+  button:not(:disabled) {
+    @apply cursor-pointer;
+  }
 }
