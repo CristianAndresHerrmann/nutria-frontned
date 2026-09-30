@@ -12,7 +12,7 @@ Qué pantallas existen y qué cambió en cada iteración se documenta en
 Este repositorio es uno de los tres repos que componen NutrIA (`nutria-frontend`, `nutria-backend`, `nutria-ia`) y debe clonarse como carpeta **hermana** de los otros dos, dentro de una misma carpeta raíz local:
 
 ```
-NutrIA/
+nutria/
 ├── nutria-backend/
 ├── nutria-frontend/  (este repositorio)
 └── nutria-ia/
@@ -50,6 +50,7 @@ cp .env.example .env
 | `npm run build` | `vite build` | Build de producción en `dist/`. |
 | `npm run preview` | `vite preview` | Sirve el build de `dist/` para revisarlo. |
 | `npm run lint` | `oxlint` | Linter del repo. |
+| `npm test` | `vitest run` | Corre los tests una vez. La verificación que cuenta es dentro del contenedor: `npm run test:frontend` desde la carpeta raíz `nutria/`. |
 
 ## Cómo ejecutar
 
@@ -67,6 +68,8 @@ Para levantar el stack completo con Docker (frontend + backend + ia + postgres +
 - React
 - Vite
 - React Router
+- Tailwind CSS v4
+- Vitest
 - oxlint
 
 ## Repositorios relacionados
