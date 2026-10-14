@@ -4,6 +4,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
+## [0.0.1] - 2026-09-30
+
+Incremento 1: tareas T1 a T8 y las de soporte (ver `docs/cierre-incremento-1.md` en el repo raíz).
+
 ### Added
 
 - Página "no encontrada" (`src/pages/NotFound.jsx`) para cualquier ruta que no matchea, dentro del layout con sesión (ruta comodín `*` en `App.jsx`); sin sesión, redirige al login como el resto de las rutas protegidas.
@@ -30,6 +34,6 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 - Datos del adulto responsable que quedaban tipeados en el formulario de paciente y se guardaban aunque la fecha de nacimiento hubiera pasado a ser de un adulto y la sección estuviera oculta. `formToPayload` (extraído a `src/pages/patientFormMapping.js`) ahora los manda vacíos en ese caso.
 - Si la ficha de un paciente no cargaba en el formulario de edición (por ejemplo, un id inválido en la URL), el formulario se mostraba vacío y "Guardar paciente" seguía habilitado, permitiendo guardar sobre datos vacíos. Ahora se muestra el error y un botón para volver, sin formulario.
 
-## Tags
+## Versiones
 
-Sin versiones publicadas todavía. Cuando cierre la iteración actual, sus cambios pasarán de "Unreleased" a una entrada `## [0.1] - AAAA-MM-DD` (siguiendo versionado semántico) en esta sección.
+Cada incremento cerrado es una versión. Al cerrar el incremento en curso, el contenido de "Unreleased" pasa a una entrada `## [X.Y.Z] - AAAA-MM-DD` nueva, arriba de la anterior, y "Unreleased" queda vacío para lo que siga. Las versiones siguen el versionado semántico.
