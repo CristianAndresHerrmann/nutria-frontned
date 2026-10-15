@@ -1,12 +1,16 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
+import CatalogLayout from './layouts/CatalogLayout';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Patients from './pages/Patients';
 import PatientForm from './pages/PatientForm';
 import PatientDetail from './pages/PatientDetail';
+import Foods from './pages/Foods';
+import FoodGroups from './pages/FoodGroups';
+import FoodForm from './pages/FoodForm';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -22,6 +26,13 @@ function App() {
               <Route path="pacientes/nuevo" element={<PatientForm />} />
               <Route path="pacientes/:id" element={<PatientDetail />} />
               <Route path="pacientes/:id/editar" element={<PatientForm />} />
+              <Route path="catalogos" element={<CatalogLayout />}>
+                <Route index element={<Navigate to="alimentos" replace />} />
+                <Route path="alimentos" element={<Foods />} />
+                <Route path="grupos" element={<FoodGroups />} />
+              </Route>
+              <Route path="catalogos/alimentos/nuevo" element={<FoodForm />} />
+              <Route path="catalogos/alimentos/:id/editar" element={<FoodForm />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

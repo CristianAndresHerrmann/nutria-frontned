@@ -4,6 +4,23 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
+### Added
+
+- Sección **Catálogos** en el menú principal (T15). El Figma no tiene estas pantallas, así que se armaron con los componentes y tokens existentes. Tiene dos pestañas, Alimentos y Grupos:
+  - **Alimentos** (`/catalogos/alimentos`):
+    - Buscador por nombre, que consulta al backend cuando se deja de tipear.
+    - Filtro por grupo, con las opciones indentadas según la jerarquía. Elegir un grupo incluye sus subgrupos.
+    - Opción para mostrar los dados de baja.
+    - Tabla con el grupo completo ("Carnes, pescados y huevos › Pescados"), las categorías y el estado. Los alimentos propios llevan la etiqueta "Propio".
+  - **Alta y edición de alimentos** (`/catalogos/alimentos/nuevo` y `/catalogos/alimentos/:id/editar`):
+    - Nombre, grupo y una o más categorías nutricionales con casillas.
+    - En la edición, la casilla "Vigente": desmarcarla da de baja el alimento sin borrarlo.
+    - Los errores del backend se muestran en su campo, con el borde en rojo (`aria-invalid`). Por ejemplo, un nombre repetido sin distinguir mayúsculas.
+    - Solo se pueden editar los alimentos propios. Los de otro nutricionista o de la base inicial no tienen el botón Editar, y si se entra por URL se muestra el aviso en lugar del formulario.
+  - **Grupos** (`/catalogos/grupos`): listado indentado de la jerarquía, de solo lectura.
+- Fuera del alcance de la interfaz en T15: pantallas de patologías y alta o edición de grupos. Existen solo en la API.
+- `src/api/catalogs.js`, `src/utils/foodGroupTree.js` (orden indentado y ruta de un grupo), `src/utils/foodCategories.js` (etiquetas en castellano) y `src/pages/foodFormMapping.js`, con sus tests.
+
 ## [0.0.1] - 2026-09-30
 
 Incremento 1: tareas T1 a T8 y las de soporte (ver `docs/cierre-incremento-1.md` en el repo raíz).
