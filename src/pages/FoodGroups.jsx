@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { listFoodGroups } from '../api/catalogs';
 import { flattenTree } from '../utils/foodGroupTree';
-import Badge from '../components/Badge';
 
 // Sangría por nivel de la jerarquía, en px. Es un valor calculado, así que va
 // como estilo y no como clase de Tailwind.
@@ -55,7 +54,6 @@ function FoodGroups() {
                 <span className={`text-sm text-ink ${group.depth === 0 ? 'font-semibold' : 'font-medium'}`}>{group.name}</span>
                 {group.description && <p className="mt-0.5 text-body-sm text-muted">{group.description}</p>}
               </div>
-              {group.editable && <Badge tone="mint">Propio</Badge>}
             </li>
           ))}
         </ul>

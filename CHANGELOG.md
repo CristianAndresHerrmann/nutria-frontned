@@ -11,7 +11,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
     - Buscador por nombre, que consulta al backend cuando se deja de tipear.
     - Filtro por grupo, con las opciones indentadas según la jerarquía. Elegir un grupo incluye sus subgrupos.
     - Opción para mostrar los dados de baja.
-    - Tabla con el grupo completo ("Carnes, pescados y huevos › Pescados"), las categorías y el estado. Los alimentos propios llevan la etiqueta "Propio".
+    - Tabla con el grupo completo ("Carnes, pescados y huevos › Pescados"), las categorías y el estado. Solo los alimentos propios tienen el botón Editar.
   - **Alta y edición de alimentos** (`/catalogos/alimentos/nuevo` y `/catalogos/alimentos/:id/editar`):
     - Nombre, grupo y una o más categorías nutricionales con casillas.
     - En la edición, la casilla "Vigente": desmarcarla da de baja el alimento sin borrarlo.

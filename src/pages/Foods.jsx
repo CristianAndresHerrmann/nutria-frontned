@@ -146,10 +146,7 @@ function Foods() {
             {foods.map((food) => (
               <tr key={food.id}>
                 <td className={TD}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-sm font-semibold text-ink">{food.name}</span>
-                    {food.editable && <Badge tone="mint">Propio</Badge>}
-                  </div>
+                  <span className="text-sm font-semibold text-ink">{food.name}</span>
                 </td>
                 <td className={`${TD} text-muted`}>{groupPath(groups, food.foodGroupId) || food.foodGroup?.name}</td>
                 <td className={TD}>
