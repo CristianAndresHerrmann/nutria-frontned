@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { formToPayload, patientToForm } from './patientFormMapping';
+import { EMPTY_FORM, formToPayload, patientToForm } from './patientFormMapping';
 
 function baseForm(overrides = {}) {
   return {
+    ...EMPTY_FORM,
     firstName: 'Tomás',
     lastName: 'Gómez',
     birthDate: '',
@@ -82,5 +83,61 @@ describe('patientToForm', () => {
     const form = patientToForm({ firstName: 'Ana', lastName: 'Diaz', birthDate: '1992-03-14T00:00:00.000Z' });
 
     expect(form.birthDate).toBe('1992-03-14');
+  });
+});
+
+describe('datos clínicos (T16)', () => {
+  it('un paciente sin datos clínicos da campos vacíos y sí/no en "sin dato"', () => {
+    const form = patientToForm({ firstName: 'Ana', lastName: 'Diaz', medicalHistory: null, cooks: null });
+
+    expect(form.medicalHistory).toBe('');
+    expect(form.workContext).toBe('');
+    expect(form.cooks).toBe('');
+    expect(form.likesCooking).toBe('');
+  });
+
+  it('carga los datos clínicos guardados en el formulario', () => {
+    const form = patientToForm({
+      firstName: 'Ana',
+      lastName: 'Diaz',
+      medication: 'Levotiroxina 50 mcg',
+      cooks: true,
+      likesCooking: false,
+    });
+
+    expect(form.medication).toBe('Levotiroxina 50 mcg');
+    expect(form.cooks).toBe('yes');
+    expect(form.likesCooking).toBe('no');
+  });
+
+  it('convierte los sí/no del formulario en true, false o null', () => {
+    expect(formToPayload(baseForm({ cooks: 'yes' })).cooks).toBe(true);
+    expect(formToPayload(baseForm({ cooks: 'no' })).cooks).toBe(false);
+    expect(formToPayload(baseForm({ cooks: '' })).cooks).toBeNull();
+  });
+
+  // El PUT reemplaza el objeto completo: si el formulario omitiera un campo
+  // clínico, el backend lo guardaría como null y se perdería lo ya cargado.
+  it('manda todos los campos clínicos, también los vacíos', () => {
+    const payload = formToPayload(baseForm({ smoking: 'No fuma' }));
+
+    expect(payload.smoking).toBe('No fuma');
+    expect(payload).toHaveProperty('medicalHistory', '');
+    expect(payload).toHaveProperty('likesCooking', null);
+  });
+
+  it('un paciente guardado vuelve igual tras pasar por el formulario', () => {
+    const saved = {
+      medicalHistory: 'Hipotiroidismo familiar',
+      medication: '',
+      smoking: 'No fuma',
+      intakePatterns: 'Picoteo por la tarde',
+      cooks: false,
+      likesCooking: true,
+    };
+
+    const payload = formToPayload(patientToForm({ firstName: 'Ana', lastName: 'Diaz', ...saved }));
+
+    expect(payload).toMatchObject(saved);
   });
 });

@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createPatient, getPatient, updatePatient } from '../api/patients';
 import { isMinorFromDateInput, todayInputValue } from '../utils/date';
-import { formToPayload, patientToForm } from './patientFormMapping';
+import { EMPTY_FORM, formToPayload, patientToForm } from './patientFormMapping';
+import { CLINICAL_SECTIONS } from './patientClinicalFields';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass } from '../components/FormField';
+import ClinicalFieldInput from '../components/ClinicalFieldInput';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 import iconPerson from '../assets/icons/icon-person.svg';
@@ -12,22 +14,6 @@ import iconTarget from '../assets/icons/icon-target.svg';
 import iconCheck from '../assets/icons/icon-check.svg';
 
 const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2';
-
-const EMPTY_FORM = {
-  firstName: '',
-  lastName: '',
-  birthDate: '',
-  phone: '',
-  email: '',
-  livesWith: '',
-  goal: '',
-  referenceWeight: '',
-  guardianName: '',
-  guardianRelationship: '',
-  guardianContact: '',
-  attendsAccompanied: false,
-  incomplete: true,
-};
 
 function PatientForm() {
   const { id } = useParams();
@@ -258,6 +244,22 @@ function PatientForm() {
             </div>
           </SectionCard>
         )}
+
+        {CLINICAL_SECTIONS.map((section) => (
+          <SectionCard key={section.title} title={section.title} subtitle={section.subtitle}>
+            <div className={FORM_GRID}>
+              {section.fields.map((field) => (
+                <ClinicalFieldInput
+                  key={field.name}
+                  field={field}
+                  value={form[field.name]}
+                  error={fieldErrors[field.name]}
+                  onChange={updateField}
+                />
+              ))}
+            </div>
+          </SectionCard>
+        ))}
 
         <label className="flex items-center gap-2 text-sm text-ink">
           <input
