@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import logoMark from '../assets/icons/logo-mark.svg';
 import navInicio from '../assets/icons/nav-inicio.svg';
 import navPacientes from '../assets/icons/nav-pacientes.svg';
+import navCatalogos from '../assets/icons/nav-catalogos.svg';
 import navPlanes1 from '../assets/icons/nav-planes-1.svg';
 import navPlanes2 from '../assets/icons/nav-planes-2.svg';
 import navPlanes3 from '../assets/icons/nav-planes-3.svg';
@@ -19,6 +20,10 @@ const HEADER_TITLES = [
   { pattern: '/pacientes/nuevo', title: 'Nuevo paciente' },
   { pattern: '/pacientes/:id/editar', title: 'Editar paciente' },
   { pattern: '/pacientes/:id', title: 'Ficha del paciente' },
+  { pattern: '/catalogos', title: 'Catálogos' },
+  { pattern: '/catalogos/alimentos', title: 'Alimentos' },
+  { pattern: '/catalogos/alimentos/nuevo', title: 'Nuevo alimento' },
+  { pattern: '/catalogos/grupos', title: 'Grupos de alimentos' },
 ];
 
 function headerTitleFor(pathname) {
@@ -105,6 +110,10 @@ function MainLayout() {
           <NavLink to="/pacientes" className={navLinkClass}>
             <img src={navPacientes} alt="" />
             Pacientes
+          </NavLink>
+          <NavLink to="/catalogos" className={navLinkClass}>
+            <img src={navCatalogos} alt="" />
+            Catálogos
           </NavLink>
         </nav>
 
