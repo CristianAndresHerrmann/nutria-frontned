@@ -18,6 +18,22 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
     - Los errores del backend se muestran en su campo, con el borde en rojo (`aria-invalid`). Por ejemplo, un nombre repetido sin distinguir mayúsculas.
   - **Grupos** (`/catalogos/grupos`): listado indentado de la jerarquía, de solo lectura.
 - No hay edición ni baja de alimentos, ni pantallas de patologías o de alta de grupos: son del rol administrador, que se implementa en una tarea aparte.
+- Datos clínicos y contextuales del paciente (T16). No había Figma para estas secciones, así que se armaron con `SectionCard`, `FormField` y los tokens existentes.
+  - **Formulario** (alta y edición), con cinco secciones nuevas, todas opcionales:
+    - Antecedentes: antecedentes, medicación y tratamiento psicológico o psiquiátrico.
+    - Hábitos y alimentación: actividad física, tabaco, alcohol, horarios de comida y de sueño, e ingesta fuera de las comidas.
+    - Contexto de cocina.
+    - Comidas fuera del hogar.
+    - Ocupación y trabajo.
+    - "¿Cocina?" y "¿Le gusta cocinar?" se eligen como Sin dato, Sí o No, para no confundir "no" con "no se sabe".
+    - Los errores del backend se muestran en su campo, con el borde en rojo.
+  - **Ficha:**
+    - Se habilitan las pestañas **Información clínica** (Antecedentes) y **Hábitos y alimentación** (las otras cuatro secciones). Los campos vacíos muestran "Sin dato". **Planes** sigue en "Pronto".
+    - Aviso visible arriba de las pestañas cuando el paciente no tiene patologías, alergias, intolerancias ni medicación registradas (RF-45, parte de la ficha). Lo calcula el backend (`missingClinicalData`) y no bloquea nada.
+  - **Archivos y tests:**
+    - `src/pages/patientClinicalFields.js` define campos, etiquetas y pestañas, y lo usan el formulario, la ficha y el mapeo.
+    - Componente nuevo `src/components/ClinicalFieldInput.jsx`; `FormField` exporta `textareaClass`.
+    - Tests del mapeo (ida y vuelta, Sí/No, se mandan todos los campos porque el `PUT` reemplaza el objeto completo) y de la configuración, que tiene que coincidir con los campos del backend.
 - `src/api/catalogs.js`, `src/utils/foodGroupTree.js` (orden indentado y ruta de un grupo), `src/utils/foodCategories.js` (etiquetas en castellano) y `src/pages/foodFormMapping.js`, con sus tests.
 
 ## [0.0.1] - 2026-09-30

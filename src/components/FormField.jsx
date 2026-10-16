@@ -1,7 +1,13 @@
 // Clases del input de texto de todos los formularios (login, paciente, buscador).
 // Quien lo usa puede sumar padding extra para un ícono (ej. `${inputClass} pl-10`).
-export const inputClass =
-  'h-10.5 w-full rounded-xl border border-line-input bg-surface px-3.5 text-sm text-ink placeholder:text-ink/50 focus:border-primary focus:ring-3 focus:ring-primary/12 focus:outline-none aria-invalid:border-danger';
+const fieldBaseClass =
+  'w-full rounded-xl border border-line-input bg-surface px-3.5 text-sm text-ink placeholder:text-ink/50 focus:border-primary focus:ring-3 focus:ring-primary/12 focus:outline-none aria-invalid:border-danger';
+
+export const inputClass = `h-10.5 ${fieldBaseClass}`;
+
+// Texto largo (antecedentes, medicación...): mismo estilo que el input, con
+// alto mínimo y redimensionable en vertical.
+export const textareaClass = `min-h-24 resize-y py-2.5 ${fieldBaseClass}`;
 
 function FormField({ label, required, error, children }) {
   return (
