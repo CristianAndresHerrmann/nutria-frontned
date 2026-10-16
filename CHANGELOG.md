@@ -8,17 +8,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 - Sección **Catálogos** en el menú principal (T15). El Figma no tiene estas pantallas, así que se armaron con los componentes y tokens existentes. Tiene dos pestañas, Alimentos y Grupos:
   - **Alimentos** (`/catalogos/alimentos`):
+    - Muestra los alimentos de la base común y los que cargó el nutricionista, que solo ve él.
     - Buscador por nombre, que consulta al backend cuando se deja de tipear.
     - Filtro por grupo, con las opciones indentadas según la jerarquía. Elegir un grupo incluye sus subgrupos.
-    - Opción para mostrar los dados de baja.
-    - Tabla con el grupo completo ("Carnes, pescados y huevos › Pescados"), las categorías y el estado. Solo los alimentos propios tienen el botón Editar.
-  - **Alta y edición de alimentos** (`/catalogos/alimentos/nuevo` y `/catalogos/alimentos/:id/editar`):
+    - Tabla con el grupo completo ("Carnes, pescados y huevos › Pescados") y las categorías.
+  - **Nuevo alimento** (`/catalogos/alimentos/nuevo`):
     - Nombre, grupo y una o más categorías nutricionales con casillas.
-    - En la edición, la casilla "Vigente": desmarcarla da de baja el alimento sin borrarlo.
+    - El alimento queda privado del nutricionista. La pantalla aclara que después no se puede modificar, y que una corrección se le pide al administrador del catálogo.
     - Los errores del backend se muestran en su campo, con el borde en rojo (`aria-invalid`). Por ejemplo, un nombre repetido sin distinguir mayúsculas.
-    - Solo se pueden editar los alimentos propios. Los de otro nutricionista o de la base inicial no tienen el botón Editar, y si se entra por URL se muestra el aviso en lugar del formulario.
   - **Grupos** (`/catalogos/grupos`): listado indentado de la jerarquía, de solo lectura.
-- Fuera del alcance de la interfaz en T15: pantallas de patologías y alta o edición de grupos. Existen solo en la API.
+- No hay edición ni baja de alimentos, ni pantallas de patologías o de alta de grupos: son del rol administrador, que se implementa en una tarea aparte.
 - `src/api/catalogs.js`, `src/utils/foodGroupTree.js` (orden indentado y ruta de un grupo), `src/utils/foodCategories.js` (etiquetas en castellano) y `src/pages/foodFormMapping.js`, con sus tests.
 
 ## [0.0.1] - 2026-09-30

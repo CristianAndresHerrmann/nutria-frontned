@@ -32,7 +32,6 @@ function App() {
                 <Route path="grupos" element={<FoodGroups />} />
               </Route>
               <Route path="catalogos/alimentos/nuevo" element={<FoodForm />} />
-              <Route path="catalogos/alimentos/:id/editar" element={<FoodForm />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

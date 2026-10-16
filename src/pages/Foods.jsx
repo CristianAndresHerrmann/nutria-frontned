@@ -19,6 +19,8 @@ function indent(depth) {
   return '    '.repeat(depth);
 }
 
+// Alimentos comunes más los propios del nutricionista. Solo lectura: el alta va
+// por su propia pantalla y no hay edición.
 function Foods() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
@@ -26,7 +28,6 @@ function Foods() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [groupId, setGroupId] = useState('');
-  const [includeInactive, setIncludeInactive] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -55,7 +56,7 @@ function Foods() {
   useEffect(() => {
     let cancelled = false;
 
-    listFoods({ search: debouncedSearch, groupId, includeInactive })
+    listFoods({ search: debouncedSearch, groupId })
       .then((data) => {
         if (!cancelled) {
           setFoods(data);
@@ -69,10 +70,10 @@ function Foods() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedSearch, groupId, includeInactive]);
+  }, [debouncedSearch, groupId]);
 
   const groupOptions = useMemo(() => flattenTree(groups), [groups]);
-  const hasFilters = Boolean(debouncedSearch.trim() || groupId || includeInactive);
+  const hasFilters = Boolean(debouncedSearch.trim() || groupId);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
@@ -107,11 +108,6 @@ function Foods() {
           ))}
         </select>
 
-        <label className="flex items-center gap-2 text-sm text-ink">
-          <input type="checkbox" checked={includeInactive} onChange={(event) => setIncludeInactive(event.target.checked)} />
-          <span>Mostrar dados de baja</span>
-        </label>
-
         <div className="ml-auto flex items-center gap-4">
           {foods && <span className="text-body-sm whitespace-nowrap text-muted">{foods.length} alimentos</span>}
           <Button onClick={() => navigate('/catalogos/alimentos/nuevo')}>+ Nuevo alimento</Button>
@@ -138,16 +134,12 @@ function Foods() {
               <th className={TH}>Alimento</th>
               <th className={TH}>Grupo</th>
               <th className={TH}>Categorías</th>
-              <th className={TH}>Estado</th>
-              <th className={TH} />
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
             {foods.map((food) => (
               <tr key={food.id}>
-                <td className={TD}>
-                  <span className="text-sm font-semibold text-ink">{food.name}</span>
-                </td>
+                <td className={`${TD} font-semibold text-ink`}>{food.name}</td>
                 <td className={`${TD} text-muted`}>{groupPath(groups, food.foodGroupId) || food.foodGroup?.name}</td>
                 <td className={TD}>
                   <div className="flex flex-wrap gap-1.5">
@@ -157,19 +149,6 @@ function Foods() {
                       </Badge>
                     ))}
                   </div>
-                </td>
-                <td className={TD}>{food.active ? 'Vigente' : <Badge tone="warning">Dado de baja</Badge>}</td>
-                <td className={`${TD} text-right`}>
-                  {food.editable && (
-                    <button
-                      type="button"
-                      className="rounded-lg px-3 py-1.5 text-sm font-semibold text-primary hover:bg-mint-50"
-                      onClick={() => navigate(`/catalogos/alimentos/${food.id}/editar`)}
-                      aria-label={`Editar ${food.name}`}
-                    >
-                      Editar
-                    </button>
-                  )}
                 </td>
               </tr>
             ))}

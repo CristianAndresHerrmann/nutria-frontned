@@ -14,7 +14,7 @@ function CatalogLayout() {
       <div className="mb-6">
         <h1 className="text-[28px] font-bold text-ink">Catálogos</h1>
         <p className="mt-2 text-sm text-muted">
-          Base de alimentos común a todos los nutricionistas. Cada uno edita solo lo que cargó.
+          Alimentos de la base común y los que cargaste vos, que solo ves vos.
         </p>
       </div>
 

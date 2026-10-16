@@ -1,42 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { foodToForm, formToPayload, toggleCategory } from './foodFormMapping';
+import { formToPayload, toggleCategory } from './foodFormMapping';
 import { foodsPath } from '../api/catalogs';
 
-const form = { name: 'Caballa', foodGroupId: 'pescados', categories: ['healthy_fat', 'protein'], active: false };
-
 describe('formToPayload', () => {
-  it('el alta no manda active: el alimento nace vigente', () => {
-    expect(formToPayload(form, { isEditMode: false })).toEqual({
-      name: 'Caballa',
-      foodGroupId: 'pescados',
-      categories: ['protein', 'healthy_fat'],
-    });
+  it('manda nombre, grupo y categorías, en el orden del formulario y no en el que se marcaron', () => {
+    const payload = formToPayload({ name: 'Caballa', foodGroupId: 'pescados', categories: ['healthy_fat', 'protein'] });
+
+    expect(payload).toEqual({ name: 'Caballa', foodGroupId: 'pescados', categories: ['protein', 'healthy_fat'] });
   });
 
-  it('la edición manda active, que es la baja lógica', () => {
-    expect(formToPayload(form, { isEditMode: true }).active).toBe(false);
-  });
-
-  it('manda las categorías en el orden del formulario, no en el que se marcaron', () => {
-    const payload = formToPayload({ ...form, categories: ['infusion', 'protein', 'fiber'] }, { isEditMode: false });
-
-    expect(payload.categories).toEqual(['protein', 'fiber', 'infusion']);
-  });
-});
-
-describe('foodToForm', () => {
-  it('carga el alimento de la API en el formulario', () => {
-    const food = {
-      id: 'x',
-      name: 'Caballa',
-      foodGroupId: 'pescados',
-      categories: ['protein'],
-      active: true,
-      editable: true,
-      foodGroup: { id: 'pescados', name: 'Pescados', parentId: 'carnes' },
-    };
-
-    expect(foodToForm(food)).toEqual({ name: 'Caballa', foodGroupId: 'pescados', categories: ['protein'], active: true });
+  it('no inventa datos: un formulario vacío se manda vacío y lo valida el backend', () => {
+    expect(formToPayload({ name: '', foodGroupId: '', categories: [] })).toEqual({ name: '', foodGroupId: '', categories: [] });
   });
 });
 
@@ -49,14 +23,12 @@ describe('toggleCategory', () => {
 });
 
 describe('foodsPath', () => {
-  it('sin filtros pide el listado de vigentes', () => {
+  it('sin filtros pide el listado completo', () => {
     expect(foodsPath()).toBe('/foods');
-    expect(foodsPath({ search: '   ', groupId: '', includeInactive: false })).toBe('/foods');
+    expect(foodsPath({ search: '   ', groupId: '' })).toBe('/foods');
   });
 
   it('agrega solo los filtros con valor', () => {
-    expect(foodsPath({ search: ' caba ', groupId: 'g-1', includeInactive: true })).toBe(
-      '/foods?search=caba&groupId=g-1&includeInactive=true',
-    );
+    expect(foodsPath({ search: ' caba ', groupId: 'g-1' })).toBe('/foods?search=caba&groupId=g-1');
   });
 });

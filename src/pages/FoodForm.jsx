@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { createFood, getFood, listFoodGroups, updateFood } from '../api/catalogs';
+import { useNavigate } from 'react-router-dom';
+import { createFood, listFoodGroups } from '../api/catalogs';
 import { flattenTree } from '../utils/foodGroupTree';
 import { FOOD_CATEGORIES } from '../utils/foodCategories';
-import { EMPTY_FOOD_FORM, foodToForm, formToPayload, toggleCategory } from './foodFormMapping';
+import { EMPTY_FOOD_FORM, formToPayload, toggleCategory } from './foodFormMapping';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass } from '../components/FormField';
 import BackButton from '../components/BackButton';
@@ -12,16 +12,14 @@ import iconCheck from '../assets/icons/icon-check.svg';
 
 const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2';
 const LIST_PATH = '/catalogos/alimentos';
-const NOT_EDITABLE_MESSAGE =
-  'Este alimento lo cargó otro nutricionista o es parte de la base inicial: solo quien lo cargó puede editarlo.';
 
 function indent(depth) {
   return '    '.repeat(depth);
 }
 
+// Solo alta: el alimento queda privado del nutricionista y después no se edita
+// desde su cuenta (lo corrige el administrador).
 function FoodForm() {
-  const { id } = useParams();
-  const isEditMode = Boolean(id);
   const navigate = useNavigate();
 
   const [form, setForm] = useState(EMPTY_FOOD_FORM);
@@ -35,15 +33,9 @@ function FoodForm() {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([listFoodGroups(), isEditMode ? getFood(id) : null])
-      .then(([groupList, food]) => {
-        if (cancelled) return;
-        setGroups(groupList);
-        if (!food) return;
-        // El backend rechazaría el guardado con 403; no se ofrece un formulario
-        // que no se va a poder guardar.
-        if (!food.editable) setLoadError(NOT_EDITABLE_MESSAGE);
-        else setForm(foodToForm(food));
+    listFoodGroups()
+      .then((data) => {
+        if (!cancelled) setGroups(data);
       })
       .catch((err) => {
         if (!cancelled) setLoadError(err.message);
@@ -55,7 +47,7 @@ function FoodForm() {
     return () => {
       cancelled = true;
     };
-  }, [id, isEditMode]);
+  }, []);
 
   const groupOptions = useMemo(() => flattenTree(groups), [groups]);
 
@@ -70,9 +62,7 @@ function FoodForm() {
     setIsSubmitting(true);
 
     try {
-      const payload = formToPayload(form, { isEditMode });
-      if (isEditMode) await updateFood(id, payload);
-      else await createFood(payload);
+      await createFood(formToPayload(form));
       navigate(LIST_PATH, { replace: true });
     } catch (err) {
       setFormError(err.message);
@@ -86,6 +76,7 @@ function FoodForm() {
     return <p className="text-sm text-muted">Cargando...</p>;
   }
 
+  // Sin grupos no se puede elegir dónde va el alimento.
   if (loadError) {
     return (
       <div className="max-w-3xl">
@@ -105,10 +96,10 @@ function FoodForm() {
 
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-title font-bold text-ink">{isEditMode ? 'Editar alimento' : 'Nuevo alimento'}</h1>
+          <h1 className="text-title font-bold text-ink">Nuevo alimento</h1>
           <p className="mt-2 text-sm text-muted">
-            El catálogo es común a todos los nutricionistas: lo que cargues lo van a ver todos, pero solo vos vas a
-            poder editarlo.
+            El alimento queda disponible solo para vos. Una vez guardado no se puede modificar: si hace falta
+            corregirlo, pedíselo al administrador del catálogo.
           </p>
         </div>
         <span className="text-note whitespace-nowrap text-muted">* Campo obligatorio</span>
@@ -166,19 +157,6 @@ function FoodForm() {
               </div>
               {fieldErrors.categories && <span className="text-note text-danger">{fieldErrors.categories}</span>}
             </fieldset>
-
-            {isEditMode && (
-              <div className="flex flex-col gap-1">
-                <label className="flex items-center gap-2 text-sm text-ink">
-                  <input type="checkbox" checked={form.active} onChange={(event) => updateField('active', event.target.checked)} />
-                  <span>Vigente</span>
-                </label>
-                <span className="text-note text-muted">
-                  Desmarcalo para dar de baja el alimento: deja de ofrecerse, pero no se borra.
-                </span>
-                {fieldErrors.active && <span className="text-note text-danger">{fieldErrors.active}</span>}
-              </div>
-            )}
           </div>
         </SectionCard>
 

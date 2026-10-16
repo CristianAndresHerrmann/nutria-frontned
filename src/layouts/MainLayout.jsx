@@ -23,7 +23,6 @@ const HEADER_TITLES = [
   { pattern: '/catalogos', title: 'Catálogos' },
   { pattern: '/catalogos/alimentos', title: 'Alimentos' },
   { pattern: '/catalogos/alimentos/nuevo', title: 'Nuevo alimento' },
-  { pattern: '/catalogos/alimentos/:id/editar', title: 'Editar alimento' },
   { pattern: '/catalogos/grupos', title: 'Grupos de alimentos' },
 ];
 
