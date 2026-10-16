@@ -35,6 +35,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
     - Componente nuevo `src/components/ClinicalFieldInput.jsx`; `FormField` exporta `textareaClass`.
     - Tests del mapeo (ida y vuelta, Sí/No, se mandan todos los campos porque el `PUT` reemplaza el objeto completo) y de la configuración, que tiene que coincidir con los campos del backend.
 - `src/api/catalogs.js`, `src/utils/foodGroupTree.js` (orden indentado y ruta de un grupo), `src/utils/foodCategories.js` (etiquetas en castellano) y `src/pages/foodFormMapping.js`, con sus tests.
+- Componente de fecha único `src/components/DateInput.jsx`, con selector de calendario (T17; RNF-04). Es el que van a usar todas las fechas: nacimiento desde ahora, consulta y medición cuando lleguen sus pantallas (T19/T20).
+  - Se tipea DD/MM/AAAA, con las barras agregadas solas, o se elige el día en un calendario (`react-day-picker`, en castellano, con listas de mes y año para saltar décadas). El calendario se estila con los tokens, sin el CSS de la librería.
+  - Hacia el formulario el valor siempre es `AAAA-MM-DD`, el formato de la API. El calendario trabaja en hora local, así que el día elegido es el que se guarda, sin corrimiento por zona horaria.
+  - Una fecha inexistente (30/02) o fuera de rango no se puede elegir en el calendario. Si se tipea, el campo avisa apenas se completa ("Esa fecha no existe", "La fecha no puede ser futura") y el formulario no guarda: frena el envío sin llamar a la API y marca el campo. Una fecha a medio escribir se avisa recién al intentar guardar. Nunca se convierte en "sin fecha". La regla es `dateValueError` en `src/utils/date.js`, para que cada formulario con fechas la reuse; el backend la sigue validando igual.
+  - `min`/`max` en `AAAA-MM-DD` deshabilitan los días fuera de rango.
+  - Helpers nuevos en `src/utils/date.js` (conversión DD/MM/AAAA ↔ AAAA-MM-DD, máscara, puente con el calendario), con tests en `src/utils/date.test.js` que corren en hora de Argentina.
+
+### Changed
+
+- La fecha de nacimiento del formulario de paciente usa `DateInput` en lugar del `<input type="date">` del navegador (T17).
+
+### Fixed
+
+- `todayInputValue()` (el tope de la fecha de nacimiento) usaba la fecha UTC, así que entre las 21 y las 24 en Argentina ya permitía elegir el día siguiente. Ahora usa la fecha local (T17).
 
 ## [0.0.1] - 2026-09-30
 

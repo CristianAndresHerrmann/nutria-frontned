@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createPatient, getPatient, updatePatient } from '../api/patients';
-import { isMinorFromDateInput, todayInputValue } from '../utils/date';
+import { completeDateValueError, dateValueError, isMinorFromDateInput, todayInputValue } from '../utils/date';
 import { EMPTY_FORM, formToPayload, patientToForm } from './patientFormMapping';
 import { CLINICAL_SECTIONS } from './patientClinicalFields';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass } from '../components/FormField';
 import ClinicalFieldInput from '../components/ClinicalFieldInput';
+import DateInput from '../components/DateInput';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 import iconPerson from '../assets/icons/icon-person.svg';
@@ -53,11 +54,29 @@ function PatientForm() {
   }
 
   const isMinor = isMinorFromDateInput(form.birthDate);
+  const birthDateRange = { max: todayInputValue() };
+  const birthDateError = fieldErrors.birthDate || completeDateValueError(form.birthDate, birthDateRange);
+
+  function updateBirthDate(value) {
+    updateField('birthDate', value);
+    // El error del último intento de guardado ya no aplica a la fecha nueva.
+    setFieldErrors((current) => ({ ...current, birthDate: undefined }));
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setFormError('');
     setFieldErrors({});
+
+    // Una fecha inexistente (30/02), incompleta o futura se advierte en su campo
+    // y no se manda: el backend la rechazaría igual, pero no hace falta el viaje.
+    const localBirthDateError = dateValueError(form.birthDate, birthDateRange);
+    if (localBirthDateError) {
+      setFieldErrors({ birthDate: localBirthDateError });
+      setFormError('Revisá los campos marcados antes de guardar.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -132,13 +151,12 @@ function PatientForm() {
               />
             </FormField>
 
-            <FormField label="Fecha de nacimiento" error={fieldErrors.birthDate}>
-              <input
-                type="date"
-                className={inputClass}
+            <FormField label="Fecha de nacimiento" error={birthDateError}>
+              <DateInput
                 value={form.birthDate}
-                max={todayInputValue()}
-                onChange={(event) => updateField('birthDate', event.target.value)}
+                max={birthDateRange.max}
+                invalid={Boolean(birthDateError)}
+                onChange={updateBirthDate}
               />
             </FormField>
 
