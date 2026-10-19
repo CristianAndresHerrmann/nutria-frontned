@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listFoodGroups, listFoods } from '../api/catalogs';
-import { flattenTree, groupPath } from '../utils/foodGroupTree';
+import { flattenTree, groupPath, indent } from '../utils/foodGroupTree';
 import { categoryLabel } from '../utils/foodCategories';
 import Badge from '../components/Badge';
 import Button from '../components/Button';
@@ -12,12 +12,6 @@ import searchIcon2 from '../assets/icons/search-2.svg';
 const TH = 'px-5 py-3 text-left text-xs font-bold tracking-[0.3px] text-muted uppercase';
 const TD = 'px-5 py-3 text-body-sm';
 const SEARCH_DELAY_MS = 300;
-
-// Sangría de las opciones del selector según la profundidad del grupo. Un
-// <option> no admite estilos, y los espacios comunes se colapsan: van NBSP.
-function indent(depth) {
-  return '    '.repeat(depth);
-}
 
 // Alimentos comunes más los propios del nutricionista. Solo lectura: el alta va
 // por su propia pantalla y no hay edición.

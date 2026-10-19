@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPatient } from '../api/patients';
 import { formatDate } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import { CLINICAL_TAB, HABITS_TAB, displayClinicalValue, sectionsForTab } from './patientClinicalFields';
 import SectionCard from '../components/SectionCard';
+import PatientConditions from '../components/PatientConditions';
 import Badge from '../components/Badge';
 import Avatar from '../components/Avatar';
 import BackButton from '../components/BackButton';
@@ -67,6 +68,15 @@ function PatientDetail() {
     return () => {
       cancelled = true;
     };
+  }, [id]);
+
+  // Tras cambiar una condición: el aviso de datos clínicos faltantes (RF-45)
+  // se calcula en el backend con las condiciones del paciente. Si falla, la
+  // ficha sigue mostrando lo que ya tenía.
+  const refreshPatient = useCallback(() => {
+    getPatient(id)
+      .then(setPatient)
+      .catch(() => {});
   }, [id]);
 
   if (error) {
@@ -165,7 +175,10 @@ function PatientDetail() {
       )}
 
       {(activeTab === CLINICAL_TAB || activeTab === HABITS_TAB) && (
-        <ClinicalSections tab={activeTab} patient={patient} />
+        <div className="flex flex-col gap-5">
+          <ClinicalSections tab={activeTab} patient={patient} />
+          {activeTab === CLINICAL_TAB && <PatientConditions patientId={id} onChange={refreshPatient} />}
+        </div>
       )}
 
       {activeTab === 'Planes' && (

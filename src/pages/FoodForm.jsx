@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createFood, listFoodGroups } from '../api/catalogs';
-import { flattenTree } from '../utils/foodGroupTree';
+import { flattenTree, indent } from '../utils/foodGroupTree';
 import { FOOD_CATEGORIES } from '../utils/foodCategories';
 import { EMPTY_FOOD_FORM, formToPayload, toggleCategory } from './foodFormMapping';
 import SectionCard from '../components/SectionCard';
@@ -12,10 +12,6 @@ import iconCheck from '../assets/icons/icon-check.svg';
 
 const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2';
 const LIST_PATH = '/catalogos/alimentos';
-
-function indent(depth) {
-  return '    '.repeat(depth);
-}
 
 // Solo alta: el alimento queda privado del nutricionista y después no se edita
 // desde su cuenta (lo corrige el administrador).

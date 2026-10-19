@@ -50,3 +50,9 @@ export function groupPath(groups, id) {
 
   return names.join(' › ');
 }
+
+// Sangría de las opciones del selector según la profundidad del grupo. Un
+// <option> no admite estilos, y los espacios comunes se colapsan: van NBSP.
+export function indent(depth) {
+  return '    '.repeat(depth);
+}
