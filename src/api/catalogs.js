@@ -7,6 +7,10 @@ export function listFoodGroups() {
   return apiRequest('/food-groups');
 }
 
+export function listPathologies() {
+  return apiRequest('/pathologies');
+}
+
 // Arma la URL del listado con los filtros que tienen valor.
 export function foodsPath({ search, groupId } = {}) {
   const params = new URLSearchParams();

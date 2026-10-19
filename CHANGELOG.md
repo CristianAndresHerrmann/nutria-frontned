@@ -41,9 +41,23 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - Una fecha inexistente (30/02) o fuera de rango no se puede elegir en el calendario. Si se tipea, el campo avisa apenas se completa ("Esa fecha no existe", "La fecha no puede ser futura") y el formulario no guarda: frena el envío sin llamar a la API y marca el campo. Una fecha a medio escribir se avisa recién al intentar guardar. Nunca se convierte en "sin fecha". La regla es `dateValueError` en `src/utils/date.js`, para que cada formulario con fechas la reuse; el backend la sigue validando igual.
   - `min`/`max` en `AAAA-MM-DD` deshabilitan los días fuera de rango.
   - Helpers nuevos en `src/utils/date.js` (conversión DD/MM/AAAA ↔ AAAA-MM-DD, máscara, puente con el calendario), con tests en `src/utils/date.test.js` que corren en hora de Argentina.
+- Condiciones alimentarias del paciente en la pestaña **Información clínica** (T18; RF-04 patologías, RF-07). No había Figma para este bloque, así que se armó con `SectionCard`, `FormField`, `Badge` y los tokens existentes.
+  - Bloque "Condiciones alimentarias", debajo de Antecedentes, con cinco grupos: Patologías, Alergias, Intolerancias, Rechazos y Preferencias. Un grupo vacío muestra "Sin registros".
+  - Cada condición muestra el alimento, grupo o patología (un grupo lleva la etiqueta "Grupo"), sus observaciones y la fecha de registro.
+  - **Alta y edición** con un formulario dentro de la misma ficha:
+    - Tipo de condición. Una patología se elige de un selector con el catálogo.
+    - Para los demás tipos se elige si se refiere a un alimento o a un grupo. El alimento se busca por nombre (comunes y propios, solo vigentes), y la búsqueda sale cuando se deja de tipear. El grupo se elige de un selector indentado según la jerarquía.
+    - Observaciones opcionales.
+    - Los errores del backend se muestran en su campo. Por ejemplo, una condición repetida o un rechazo sin alimento ni grupo.
+    - El botón se deshabilita mientras guarda.
+  - **Baja** con confirmación.
+  - Al agregar, editar o borrar una condición, la ficha vuelve a pedir el paciente, así el aviso de datos clínicos faltantes (RF-45) se actualiza solo.
+  - `src/api/patientConditions.js` (las cuatro rutas) y `listPathologies` en `src/api/catalogs.js`.
+  - `src/pages/patientConditions.js` (tipos, agrupado y mapeo del formulario), con tests: el payload manda solo el destino que corresponde al tipo y a lo elegido, y la edición vuelve al mismo payload.
 
 ### Changed
 
+- `indent` (sangría de las opciones de grupo) pasa de `Foods.jsx` y `FoodForm.jsx` a `src/utils/foodGroupTree.js`, para reusarla en el formulario de condiciones (T18).
 - La fecha de nacimiento del formulario de paciente usa `DateInput` en lugar del `<input type="date">` del navegador (T17).
 
 ### Fixed
