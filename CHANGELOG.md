@@ -54,6 +54,23 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - Al agregar, editar o borrar una condición, la ficha vuelve a pedir el paciente, así el aviso de datos clínicos faltantes (RF-45) se actualiza solo.
   - `src/api/patientConditions.js` (las cuatro rutas) y `listPathologies` en `src/api/catalogs.js`.
   - `src/pages/patientConditions.js` (tipos, agrupado y mapeo del formulario), con tests: el payload manda solo el destino que corresponde al tipo y a lo elegido, y la edición vuelve al mismo payload.
+- Pestaña **Consultas** en la ficha del paciente (T19; RF-13, RF-18, RF-22 registro). No había Figma, así que se armó con `SectionCard`, `FormField`, `DateInput`, `Badge` y los tokens existentes.
+  - **Historial**, de la más reciente a la más antigua. Cada consulta muestra:
+    - La fecha y el tipo (Primera o Seguimiento).
+    - Los datos de RF-13 y las observaciones, solo los que se cargaron.
+    - Los hábitos pautados con su estado. Al registrarlos es siempre "Pendiente"; los del seed ya evaluados muestran Cumplido o Parcial.
+  - Sin consultas, muestra "Sin consultas registradas".
+  - **Nueva consulta** con un formulario dentro de la misma pestaña:
+    - Fecha con `DateInput`, obligatoria, no futura; arranca en el día de hoy.
+    - Tipo con dos opciones. Propone Seguimiento si el paciente ya tiene consultas; es solo el valor inicial.
+    - Motivación, origen de la decisión de cambio, obstáculo percibido, hábito principal a modificar y observaciones, todos opcionales.
+    - Al final, la lista de hábitos pautados: una fila por hábito, "+ Agregar hábito" y "Quitar". Las filas en blanco no se mandan.
+    - Los errores del backend se muestran en su campo; el de cualquier hábito, una sola vez debajo de la lista.
+    - El botón se deshabilita mientras guarda.
+  - No se puede editar una consulta desde la pantalla: la tarea pide historial y alta. El `PUT` existe en la API.
+  - El encabezado de la ficha muestra la **última actualización** del paciente. Al guardar una consulta, la ficha vuelve a pedir el paciente y la fecha se actualiza.
+  - `src/api/patientConsultations.js` (listado y alta).
+  - `src/pages/patientConsultations.js` (tipos, campos, estados y mapeo del formulario), con tests: el payload descarta las filas de hábito en blanco y recorta las demás, y una consulta sin hábitos manda `habits: []`.
 
 ### Changed
 
