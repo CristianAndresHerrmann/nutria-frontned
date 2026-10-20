@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPatient } from '../api/patients';
-import { formatDate } from '../utils/date';
+import { formatDate, formatDateTime } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import { CLINICAL_TAB, HABITS_TAB, displayClinicalValue, sectionsForTab } from './patientClinicalFields';
 import SectionCard from '../components/SectionCard';
 import PatientConditions from '../components/PatientConditions';
+import PatientConsultations from '../components/PatientConsultations';
 import Badge from '../components/Badge';
 import Avatar from '../components/Avatar';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 
-const TABS = ['Resumen', CLINICAL_TAB, HABITS_TAB, 'Planes'];
+const CONSULTATIONS_TAB = 'Consultas';
+const TABS = ['Resumen', CLINICAL_TAB, HABITS_TAB, CONSULTATIONS_TAB, 'Planes'];
 
 const FIELD_GRID = 'grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4';
 
@@ -71,8 +73,9 @@ function PatientDetail() {
   }, [id]);
 
   // Tras cambiar una condición: el aviso de datos clínicos faltantes (RF-45)
-  // se calcula en el backend con las condiciones del paciente. Si falla, la
-  // ficha sigue mostrando lo que ya tenía.
+  // se calcula en el backend con las condiciones del paciente. Tras guardar una
+  // consulta: el backend movió la última actualización. Si falla, la ficha
+  // sigue mostrando lo que ya tenía.
   const refreshPatient = useCallback(() => {
     getPatient(id)
       .then(setPatient)
@@ -114,6 +117,7 @@ function PatientDetail() {
               )}
               {!patient.registrationComplete && <Badge tone="warning">Ficha incompleta</Badge>}
             </p>
+            <p className="mt-1 text-xs text-muted">Última actualización: {formatDateTime(patient.updatedAt)}</p>
           </div>
         </div>
         <Button variant="secondary" onClick={() => navigate(`/pacientes/${id}/editar`)}>
@@ -180,6 +184,8 @@ function PatientDetail() {
           {activeTab === CLINICAL_TAB && <PatientConditions patientId={id} onChange={refreshPatient} />}
         </div>
       )}
+
+      {activeTab === CONSULTATIONS_TAB && <PatientConsultations patientId={id} onChange={refreshPatient} />}
 
       {activeTab === 'Planes' && (
         <div className="flex flex-col gap-5">
