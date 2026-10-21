@@ -54,7 +54,27 @@ describe('formToConsultationPayload', () => {
       mainHabit: '',
       observations: '',
       habits: [],
+      measurements: [],
     });
+  });
+
+  it('manda peso, talla y las mediciones agregadas en measurements (T20)', () => {
+    const form = {
+      ...emptyConsultationForm({ today: '2026-10-19' }),
+      weight: '70,2',
+      height: '165',
+      measurements: [{ key: 1, type: 'glucose', detail: '', value: '98', unit: 'mg/dL' }],
+    };
+
+    const payload = formToConsultationPayload(form);
+
+    expect(payload.measurements).toEqual([
+      { type: 'weight', value: 70.2 },
+      { type: 'height', value: 165 },
+      { type: 'glucose', detail: '', value: 98, unit: 'mg/dL' },
+    ]);
+    expect(payload).not.toHaveProperty('weight');
+    expect(payload).not.toHaveProperty('height');
   });
 });
 

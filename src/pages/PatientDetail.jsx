@@ -7,13 +7,15 @@ import { CLINICAL_TAB, HABITS_TAB, displayClinicalValue, sectionsForTab } from '
 import SectionCard from '../components/SectionCard';
 import PatientConditions from '../components/PatientConditions';
 import PatientConsultations from '../components/PatientConsultations';
+import PatientMeasurements from '../components/PatientMeasurements';
 import Badge from '../components/Badge';
 import Avatar from '../components/Avatar';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 
 const CONSULTATIONS_TAB = 'Consultas';
-const TABS = ['Resumen', CLINICAL_TAB, HABITS_TAB, CONSULTATIONS_TAB, 'Planes'];
+const MEASUREMENTS_TAB = 'Mediciones';
+const TABS = ['Resumen', CLINICAL_TAB, HABITS_TAB, CONSULTATIONS_TAB, MEASUREMENTS_TAB, 'Planes'];
 
 const FIELD_GRID = 'grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4';
 
@@ -186,6 +188,8 @@ function PatientDetail() {
       )}
 
       {activeTab === CONSULTATIONS_TAB && <PatientConsultations patientId={id} onChange={refreshPatient} />}
+
+      {activeTab === MEASUREMENTS_TAB && <PatientMeasurements patientId={id} />}
 
       {activeTab === 'Planes' && (
         <div className="flex flex-col gap-5">
