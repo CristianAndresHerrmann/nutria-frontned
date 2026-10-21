@@ -1,4 +1,5 @@
 import { todayInputValue } from '../utils/date';
+import { formToMeasurementsPayload } from './patientMeasurements';
 
 // Consultas del paciente (T19; RF-13, RF-18, RF-22 registro). Los valores de
 // enum viajan en inglés y la ficha muestra la etiqueta en castellano.
@@ -54,20 +55,26 @@ export function emptyConsultationForm({ hasConsultations = false, today = todayI
     perceivedObstacle: '',
     mainHabit: '',
     observations: '',
+    // Mediciones tomadas en la consulta (T20): peso y talla en su propio bloque
+    // y las demás como filas que se agregan.
+    weight: '',
+    height: '',
+    measurements: [],
     habits: [newHabitRow()],
   };
 }
 
 // Las filas de hábito en blanco no se mandan: el formulario arranca con una
-// vacía y los hábitos son opcionales. El resto va tal cual (el backend recorta y
-// toma el texto vacío como "sin dato").
+// vacía y los hábitos son opcionales. Lo mismo las mediciones. El resto va tal
+// cual (el backend recorta y toma el texto vacío como "sin dato").
 export function formToConsultationPayload(form) {
-  const { habits, ...fields } = form;
+  const { habits, weight: _weight, height: _height, measurements: _measurements, ...fields } = form;
   return {
     ...fields,
     habits: habits
       .map((habit) => habit.description.trim())
       .filter(Boolean)
       .map((description) => ({ description })),
+    measurements: formToMeasurementsPayload(form),
   };
 }

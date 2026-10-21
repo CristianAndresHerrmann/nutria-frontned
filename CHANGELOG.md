@@ -71,6 +71,35 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - El encabezado de la ficha muestra la **última actualización** del paciente. Al guardar una consulta, la ficha vuelve a pedir el paciente y la fecha se actualiza.
   - `src/api/patientConsultations.js` (listado y alta).
   - `src/pages/patientConsultations.js` (tipos, campos, estados y mapeo del formulario), con tests: el payload descarta las filas de hábito en blanco y recorta las demás, y una consulta sin hábitos manda `habits: []`.
+- Mediciones antropométricas y valores de laboratorio (T20; RF-11, RF-12). No había Figma, así que se armó con `SectionCard`, `FormField` y los tokens existentes.
+  - **En el formulario de consulta**, un bloque opcional "Mediciones" antes de los hábitos pautados:
+    - Peso (kg) y talla (cm). Aceptan coma decimal.
+    - "+ Agregar medición o laboratorio": una fila por medición, con tipo (pliegue, circunferencia, colesterol, triglicéridos, glucemia u otro), detalle, valor y unidad, y un botón "Quitar".
+    - La unidad se elige de un desplegable según el tipo:
+      - Si el tipo tiene unidad fija, el desplegable muestra esa sola opción y no se puede cambiar: pliegue en mm, circunferencia en cm, y colesterol, triglicéridos y glucemia en mg/dL.
+      - En "Otro" se elige de una lista de unidades de laboratorio, o "Sin unidad".
+      - Al cambiar el tipo, la unidad vuelve a la del tipo nuevo.
+      - Las listas son espejo de las del backend.
+    - El detalle es obligatorio para pliegue, circunferencia y otro.
+    - Todas toman la fecha de la consulta y se guardan junto con ella.
+    - Antes de llamar a la API se validan valor y detalle, y el error se muestra en el campo y la fila que fallaron, con los mismos mensajes que el backend. El backend solo indica que falló alguna medición, sin decir cuál.
+    - Peso y talla vacíos y las filas en blanco no se mandan.
+  - **En la ficha**, la pestaña nueva **Mediciones**, entre Consultas y Planes, con el histórico de solo lectura en dos tablas:
+    - Antropometría: fecha, tipo (con el detalle, ej. "Circunferencia · Cintura"), valor, unidad e IMC.
+    - Laboratorio: fecha, tipo, valor y unidad. "Otro" va acá.
+    - El IMC lo calcula el backend y se muestra con un decimal, sin clasificarlo. Si un peso no tiene talla anterior o del mismo día, se muestra "—".
+    - Vacíos: "Sin mediciones registradas" y "Sin valores de laboratorio registrados".
+  - No hay edición ni baja de mediciones, ni alta fuera de una consulta: la tarea pide la carga en la consulta y el histórico. Esas rutas existen en la API.
+  - Los gráficos de evolución y la variación entre consultas son del Incremento 5.
+  - `src/api/patientMeasurements.js` (listado).
+  - `src/pages/patientMeasurements.js` (tipos, etiquetas, agrupado, validación y mapeo), con tests. Cubren:
+    - El payload de peso, talla y filas.
+    - Las unidades que ofrece cada tipo, y que la unidad cambie con el tipo.
+    - Que no se manden las filas en blanco.
+    - El detalle obligatorio.
+    - Antropometría y laboratorio por separado.
+    - El formato con coma decimal.
+  - Componente nuevo `src/components/ConsultationMeasurementsFields.jsx`. `formToConsultationPayload` ahora manda `measurements`.
 
 ### Changed
 
