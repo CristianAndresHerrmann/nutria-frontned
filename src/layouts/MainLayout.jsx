@@ -24,6 +24,9 @@ const HEADER_TITLES = [
   { pattern: '/catalogos/alimentos', title: 'Alimentos' },
   { pattern: '/catalogos/alimentos/nuevo', title: 'Nuevo alimento' },
   { pattern: '/catalogos/grupos', title: 'Grupos de alimentos' },
+  { pattern: '/catalogos/recomendaciones', title: 'Recomendaciones' },
+  { pattern: '/catalogos/recomendaciones/nueva', title: 'Nueva recomendación' },
+  { pattern: '/catalogos/recomendaciones/:id/editar', title: 'Editar recomendación' },
 ];
 
 function headerTitleFor(pathname) {

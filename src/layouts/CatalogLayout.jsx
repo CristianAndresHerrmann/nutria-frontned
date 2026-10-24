@@ -14,7 +14,8 @@ function CatalogLayout() {
       <div className="mb-6">
         <h1 className="text-[28px] font-bold text-ink">Catálogos</h1>
         <p className="mt-2 text-sm text-muted">
-          Alimentos de la base común y los que cargaste vos, y tus recetas. Lo que cargás vos solo lo ves vos.
+          Alimentos de la base común y los que cargaste vos, tus recetas y las recomendaciones por patología. Lo que
+          cargás vos solo lo ves vos.
         </p>
       </div>
 
@@ -27,6 +28,9 @@ function CatalogLayout() {
         </NavLink>
         <NavLink to="/catalogos/recetas" className={tabClass}>
           Recetas
+        </NavLink>
+        <NavLink to="/catalogos/recomendaciones" className={tabClass}>
+          Recomendaciones
         </NavLink>
       </nav>
 

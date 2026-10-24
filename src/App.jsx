@@ -13,6 +13,8 @@ import FoodGroups from './pages/FoodGroups';
 import FoodForm from './pages/FoodForm';
 import Recipes from './pages/Recipes';
 import RecipeForm from './pages/RecipeForm';
+import Recommendations from './pages/Recommendations';
+import RecommendationForm from './pages/RecommendationForm';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -33,10 +35,13 @@ function App() {
                 <Route path="alimentos" element={<Foods />} />
                 <Route path="grupos" element={<FoodGroups />} />
                 <Route path="recetas" element={<Recipes />} />
+                <Route path="recomendaciones" element={<Recommendations />} />
               </Route>
               <Route path="catalogos/alimentos/nuevo" element={<FoodForm />} />
               <Route path="catalogos/recetas/nueva" element={<RecipeForm />} />
               <Route path="catalogos/recetas/:id/editar" element={<RecipeForm />} />
+              <Route path="catalogos/recomendaciones/nueva" element={<RecommendationForm />} />
+              <Route path="catalogos/recomendaciones/:id/editar" element={<RecommendationForm />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
