@@ -11,6 +11,8 @@ import PatientDetail from './pages/PatientDetail';
 import Foods from './pages/Foods';
 import FoodGroups from './pages/FoodGroups';
 import FoodForm from './pages/FoodForm';
+import Recipes from './pages/Recipes';
+import RecipeForm from './pages/RecipeForm';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -30,8 +32,11 @@ function App() {
                 <Route index element={<Navigate to="alimentos" replace />} />
                 <Route path="alimentos" element={<Foods />} />
                 <Route path="grupos" element={<FoodGroups />} />
+                <Route path="recetas" element={<Recipes />} />
               </Route>
               <Route path="catalogos/alimentos/nuevo" element={<FoodForm />} />
+              <Route path="catalogos/recetas/nueva" element={<RecipeForm />} />
+              <Route path="catalogos/recetas/:id/editar" element={<RecipeForm />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
