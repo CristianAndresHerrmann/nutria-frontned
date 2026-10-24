@@ -117,6 +117,19 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - El filtro por condiciones del paciente (RF-28) existe en la API y no tiene pantalla en esta tarea: lo van a usar los planes del Incremento 3.
   - `src/api/recipes.js`, `src/utils/recipeLabels.js` (tipos de comida y métodos de cocción en castellano) y `src/pages/recipeFormMapping.js`, con tests: ida y vuelta del formulario, tipos en orden canónico, vacíos sin inventar datos, agregar sin repetir, mover filas y armado de la URL del listado.
   - Componentes nuevos `src/components/FoodPicker.jsx` y `src/components/RecipeIngredientsFields.jsx`.
+- Pestaña **Recomendaciones** en Catálogos (T22; RF-30). No había Figma, así que se armó con `SectionCard`, `FormField`, `Badge` y los tokens existentes.
+  - **Listado** (`/catalogos/recomendaciones`):
+    - Agrupado por patología, con las comunes y las propias del nutricionista.
+    - Filtro por patología.
+    - Casilla "Mostrar dadas de baja" para ver también las dadas de baja, que se marcan "Dada de baja".
+    - Cada recomendación muestra título, texto y si es "Común" o "Propia". "Editar" aparece solo en las propias: las comunes son de solo lectura.
+  - **Nueva recomendación** (`/catalogos/recomendaciones/nueva`) y **Editar recomendación** (`/catalogos/recomendaciones/:id/editar`):
+    - Patología, título y texto, todos obligatorios.
+    - En la edición, la casilla "Vigente" da de baja o reactiva la recomendación. No hay borrado.
+    - Abrir por URL la edición de una común muestra que es de solo lectura, sin formulario.
+    - Los errores del backend se muestran en su campo, con el borde en rojo.
+  - Títulos del encabezado para las tres pantallas.
+  - `src/api/recommendations.js` y `src/pages/recommendationFormMapping.js`, con tests: ida y vuelta del formulario, alta sin `active`, vacíos sin inventar datos, agrupado por patología y armado de la URL del listado.
 
 ### Changed
 
