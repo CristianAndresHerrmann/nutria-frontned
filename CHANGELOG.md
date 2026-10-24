@@ -100,6 +100,23 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
     - Antropometría y laboratorio por separado.
     - El formato con coma decimal.
   - Componente nuevo `src/components/ConsultationMeasurementsFields.jsx`. `formToConsultationPayload` ahora manda `measurements`.
+- Pestaña **Recetas** en Catálogos (T21; RF-27). No había Figma, así que se armó con `SectionCard`, `FormField`, `Badge` y los tokens existentes.
+  - **Listado** (`/catalogos/recetas`):
+    - Muestra solo las recetas del nutricionista.
+    - Filtro por tipo de comida (desayuno, almuerzo, merienda, cena).
+    - Casilla "Mostrar no disponibles" para ver también las dadas de baja, que se marcan "No disponible".
+    - Tabla con nombre, tipos de comida, ingredientes, tiempo y un acceso a "Editar".
+  - **Nueva receta** (`/catalogos/recetas/nueva`) y **Editar receta** (`/catalogos/recetas/:id/editar`):
+    - Nombre, método de cocción, tiempo, lugar de compra, tipos de comida (casillas), ingredientes, preparación y nota final.
+    - **Ingredientes:** se agregan con un buscador sobre el catálogo de alimentos (comunes y propios, vigentes), que consulta al backend cuando se deja de tipear.
+      - Cada ingrediente tiene una cantidad descriptiva y se puede subir, bajar o quitar. El orden de la lista es el de la receta.
+      - Un alimento ya agregado aparece deshabilitado en el buscador. Si se incorpora en tandas, se indica en la preparación.
+      - Un alimento que se dio de baja después de cargarlo se marca "Dado de baja".
+    - En la edición, la casilla "Disponible en el catálogo" da de baja o reactiva la receta. No hay borrado.
+    - Los errores del backend se muestran en su campo, con el borde en rojo.
+  - El filtro por condiciones del paciente (RF-28) existe en la API y no tiene pantalla en esta tarea: lo van a usar los planes del Incremento 3.
+  - `src/api/recipes.js`, `src/utils/recipeLabels.js` (tipos de comida y métodos de cocción en castellano) y `src/pages/recipeFormMapping.js`, con tests: ida y vuelta del formulario, tipos en orden canónico, vacíos sin inventar datos, agregar sin repetir, mover filas y armado de la URL del listado.
+  - Componentes nuevos `src/components/FoodPicker.jsx` y `src/components/RecipeIngredientsFields.jsx`.
 
 ### Changed
 
