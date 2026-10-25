@@ -1,0 +1,56 @@
+# CI del frontend (T12). Sin secrets ni variables. Cómo reproducir cada paso en
+# local: README, sección "Integración continua".
+name: CI
+
+# Sin filtros `paths:` a propósito: el ruleset exige el check `ci`, y un PR que no
+# dispara el workflow quedaría bloqueado esperando un check que nunca llega.
+on:
+  pull_request:
+    branches: [development, master]
+  push:
+    branches: [development]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # El nombre del job es el del check obligatorio del ruleset: no renombrarlo.
+  ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Misma línea mayor que el Dockerfile (node:22-alpine).
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests
+        run: npm test
+
+      # VITE_API_URL no hace falta para que el build pase. Si algún día se fija
+      # acá, va como env plano: termina en el bundle público, no es un secreto.
+      - name: Build
+        run: npm run build
+
+      - name: Auditoría de dependencias
+        run: npm audit --audit-level=high
+
+      # Sin push: solo valida que el Dockerfile construye.
+      - name: Build de la imagen
+        run: docker build -t nutria-frontend:ci .

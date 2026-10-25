@@ -31,6 +31,7 @@ Esta disposición es necesaria porque el `docker-compose.yml` de `nutria-backend
 - `src/App.jsx` — definición de rutas con React Router; `src/main.jsx` — punto de entrada.
 - `public/` — archivos estáticos servidos tal cual.
 - `Dockerfile` — imagen de este servicio, usada por el `docker-compose.yml` de `nutria-backend`.
+- `.github/workflows/ci.yml` — integración continua (ver "Integración continua").
 
 ## Variables de entorno
 
@@ -62,6 +63,27 @@ npm run dev
 La aplicación queda disponible en `http://localhost:5173`.
 
 Para levantar el stack completo con Docker (frontend + backend + ia + postgres + proxy) con un solo comando, ver la sección "Cómo ejecutar todo el stack con Docker Compose" en el README de `nutria-backend`. En ese modo la aplicación se accede como `http://local.nutria.com` (virtual host servido por Traefik), no por puerto ni por `localhost`.
+
+## Integración continua
+
+`.github/workflows/ci.yml` corre en cada PR hacia `development` o `master`, en cada
+push a `development` y a mano desde la pestaña Actions (`workflow_dispatch`). El job
+se llama `ci` y es el check obligatorio del ruleset de `development` y `master`: un
+PR no se puede mergear con ese check en rojo.
+
+No usa secrets ni variables de GitHub: el build no necesita `VITE_API_URL`.
+
+Cada paso, y cómo reproducirlo en local desde la carpeta raíz `nutria/` (dentro del
+contenedor; `C` abrevia `docker compose -f nutria-backend/docker-compose.yml`):
+
+| Paso de la CI | En local |
+|---|---|
+| `npm ci` | Lo hace el build de la imagen (`npm run build -- frontend`). |
+| `npm run lint` | `C run --build --rm --no-deps frontend npm run lint` |
+| `npm test` | `npm run test:frontend` |
+| `npm run build` | `C run --build --rm --no-deps frontend npm run build` |
+| `npm audit --audit-level=high` | `C run --build --rm --no-deps frontend npm audit --audit-level=high` |
+| `docker build` (sin push) | `npm run build -- frontend` |
 
 ## Stack
 

@@ -130,6 +130,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
     - Los errores del backend se muestran en su campo, con el borde en rojo.
   - Títulos del encabezado para las tres pantallas.
   - `src/api/recommendations.js` y `src/pages/recommendationFormMapping.js`, con tests: ida y vuelta del formulario, alta sin `active`, vacíos sin inventar datos, agrupado por patología y armado de la URL del listado.
+- Integración continua con GitHub Actions (T12; RNF-06, RNF-13), en `.github/workflows/ci.yml`. Corre en cada PR hacia `development` o `master`, en cada push a `development` y a mano (`workflow_dispatch`): `npm ci`, lint (oxlint), tests, `npm run build`, `npm audit --audit-level=high` y `docker build` sin push. Sin secrets ni variables. El job `ci` es el check obligatorio del ruleset de `development` y `master`.
 
 ### Changed
 
