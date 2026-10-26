@@ -30,8 +30,9 @@ Esta disposición es necesaria porque el `docker-compose.yml` de `nutria-backend
 - `src/utils/`, `src/assets/` — helpers y estáticos importados por el bundler.
 - `src/App.jsx` — definición de rutas con React Router; `src/main.jsx` — punto de entrada.
 - `public/` — archivos estáticos servidos tal cual.
-- `Dockerfile` — imagen de este servicio, usada por el `docker-compose.yml` de `nutria-backend`.
-- `.github/workflows/ci.yml` — integración continua (ver "Integración continua").
+- `Dockerfile` — imagen de este servicio, en etapas: `dev` (la última, el servidor de desarrollo de Vite que usa el `docker-compose.yml` de `nutria-backend`) y `prod` (build estático servido por nginx, para staging).
+- `nginx.conf` — config de nginx de la etapa `prod`: cualquier ruta devuelve `index.html` para que React Router resuelva al recargar.
+- `.github/workflows/ci.yml` — integración continua (ver "Integración continua"); `cd-staging.yml` — despliegue a staging (ver "Despliegue en staging").
 
 ## Variables de entorno
 
@@ -41,7 +42,7 @@ Copiar `.env.example` a `.env` (no se versiona) antes de ejecutar:
 cp .env.example .env
 ```
 
-`VITE_API_URL` apunta al backend; el valor por defecto sirve para el stack de Docker Compose.
+`VITE_API_URL` apunta al backend; el valor por defecto sirve para el stack de Docker Compose. `VITE_ENV_LABEL` es el texto del aviso de entorno de prueba: vacío en local (no se muestra) y, en staging, lo fija `docker-compose.staging.yml` de `nutria-backend`.
 
 ## Scripts disponibles
 
@@ -66,9 +67,9 @@ Para levantar el stack completo con Docker (frontend + backend + ia + postgres +
 
 ## Integración continua
 
-`.github/workflows/ci.yml` corre en cada PR hacia `development` o `master`, en cada
+`.github/workflows/ci.yml` corre en cada PR hacia `development`, `staging` o `master`, en cada
 push a `development` y a mano desde la pestaña Actions (`workflow_dispatch`). El job
-se llama `ci` y es el check obligatorio del ruleset de `development` y `master`: un
+se llama `ci` y es el check obligatorio del ruleset de `development`, `staging` y `master`: un
 PR no se puede mergear con ese check en rojo.
 
 No usa secrets ni variables de GitHub: el build no necesita `VITE_API_URL`.
@@ -84,6 +85,15 @@ contenedor; `C` abrevia `docker compose -f nutria-backend/docker-compose.yml`):
 | `npm run build` | `C run --build --rm --no-deps frontend npm run build` |
 | `npm audit --audit-level=high` | `C run --build --rm --no-deps frontend npm audit --audit-level=high` |
 | `docker build` (sin push) | `npm run build -- frontend` |
+| `docker build --target prod` | `docker build --target prod -t nutria-frontend:prod nutria-frontend` |
+
+## Despliegue en staging
+
+Un push a `staging` dispara `.github/workflows/cd-staging.yml`: corre el CI y, si
+pasa, despliega el servicio `frontend` en la VM de staging (imagen `prod`, con
+`VITE_API_URL` y `VITE_ENV_LABEL` fijadas en el build) y verifica que la página
+responde por HTTPS. Cómo funciona, la configuración del Environment `staging` y la
+operación de la VM: README de `nutria-backend`, sección "Staging".
 
 ## Stack
 
