@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApiError, apiRequest, getToken, setToken } from './client';
+import { ApiError, apiRequest, getToken, getTokenRole, isTokenExpired, setToken } from './client';
 
 // Entorno node: localStorage y window se reemplazan por dobles mínimos, y
 // fetch por un stub que devuelve la Response que cada caso necesita.
@@ -150,5 +150,31 @@ describe('apiRequest', () => {
     expect(error.status).toBe(502);
     expect(error.message).toContain('no está disponible');
     expect(error.message).not.toContain('html');
+  });
+});
+
+// JWT con el payload dado y una firma cualquiera: el cliente nunca la verifica.
+function fakeToken(payload) {
+  const encoded = btoa(JSON.stringify(payload)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+  return `header.${encoded}.firma`;
+}
+
+describe('lectura del token', () => {
+  it('getTokenRole devuelve el rol del claim role', () => {
+    expect(getTokenRole(fakeToken({ sub: '1', role: 'admin' }))).toBe('admin');
+    expect(getTokenRole(fakeToken({ sub: '1', role: 'nutritionist' }))).toBe('nutritionist');
+  });
+
+  it('getTokenRole devuelve null para un token sin rol o ilegible', () => {
+    expect(getTokenRole(fakeToken({ sub: '1' }))).toBeNull();
+    expect(getTokenRole('no-es-un-jwt')).toBeNull();
+  });
+
+  it('isTokenExpired compara exp con la hora actual y trata un token ilegible como vencido', () => {
+    const now = Math.floor(Date.now() / 1000);
+
+    expect(isTokenExpired(fakeToken({ exp: now + 3600 }))).toBe(false);
+    expect(isTokenExpired(fakeToken({ exp: now - 1 }))).toBe(true);
+    expect(isTokenExpired('no-es-un-jwt')).toBe(true);
   });
 });

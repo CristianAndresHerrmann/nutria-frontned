@@ -136,12 +136,32 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - Aviso de entorno de prueba (`src/components/EnvironmentBanner.jsx`), fijo abajo en todas las pantallas, incluido el login. El texto sale de `VITE_ENV_LABEL` en el build; en local no está y no se muestra.
   - `.github/workflows/cd-staging.yml`: en cada push a `staging` (o a mano) corre el CI y, si pasa, despliega el servicio en la VM y verifica que la página responde por HTTPS.
   - El CI también corre en los PR hacia `staging`, se puede reutilizar desde otro workflow (`workflow_call`) y construye además la imagen `prod`.
+- Rol administrador y pantalla de **Cuentas** (T31). No había Figma, así que se armó con `Badge`, `Button`, `FormField` y los tokens existentes.
+  - **Mismo login para los dos roles:**
+    - El administrador entra a `/admin` y el nutricionista, a su inicio.
+    - Después de un login, se vuelve a la pantalla que se quería abrir solo si es del rol que entró.
+  - **Rutas protegidas por rol:** una cuenta que abre una ruta del otro rol vuelve a su propio inicio. "Página no encontrada" lleva al inicio del rol.
+  - **Cuentas** (`/admin/cuentas`):
+    - Listado de las cuentas de nutricionista con nombre, email, estado ("Activa" o "Desactivada") y fecha de alta.
+    - **Nueva cuenta:** nombre, email y contraseña inicial, en un formulario en la misma pantalla.
+    - **Desactivar** y **Reactivar**, con confirmación.
+    - **Restablecer contraseña**, en un formulario en la fila de la cuenta.
+    - Los errores del backend se muestran junto a su campo, con el borde en rojo; por ejemplo, un email repetido.
+  - **Menú y encabezado según el rol:** el administrador ve solo "Cuentas" y se identifica como "Administrador", sin el "Lic.".
+  - **Sesión:**
+    - Una cuenta que se desactiva con la sesión abierta pasa a "Tu sesión expiró" en la siguiente request.
+    - Un token guardado de antes de este cambio, que no trae rol, se descarta y hay que volver a iniciar sesión.
+  - **Archivos y tests:**
+    - `src/api/adminNutritionists.js`, `src/pages/AdminAccounts.jsx`, `src/components/NutritionistAccountForm.jsx` y `src/components/PasswordResetForm.jsx`.
+    - `src/utils/roleRoutes.js`, con tests: inicio por rol, rutas permitidas y destino después del login.
+    - `getTokenRole` en `src/api/client.js`, con tests de lectura del rol y la expiración del token.
 
 ### Changed
 
 - Dependencias actualizadas con `npm audit fix` para que `npm audit --audit-level=high` de la CI pase (T12): `vite` 8.3.5, `vitest` 5.0.5 y `source-map-js` 1.2.2, dentro de los rangos de `package.json`.
 - `indent` (sangría de las opciones de grupo) pasa de `Foods.jsx` y `FoodForm.jsx` a `src/utils/foodGroupTree.js`, para reusarla en el formulario de condiciones (T18).
 - La fecha de nacimiento del formulario de paciente usa `DateInput` en lugar del `<input type="date">` del navegador (T17).
+- `ProtectedRoute` recibe el rol de las rutas que protege (T31). `useAuth()` suma `role` e `isAdmin`, y `MainLayout` arma el menú, los títulos y la etiqueta del encabezado según el rol.
 
 ### Fixed
 

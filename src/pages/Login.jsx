@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { resolvePostLoginPath } from '../utils/roleRoutes';
 import Button from '../components/Button';
 import { inputClass } from '../components/FormField';
 
@@ -31,7 +32,7 @@ function BrandMark() {
 }
 
 function Login() {
-  const { isAuthenticated, sessionExpired, login } = useAuth();
+  const { isAuthenticated, role, sessionExpired, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,9 +43,10 @@ function Login() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const from = location.state?.from?.pathname;
+
   if (isAuthenticated) {
-    const redirectTo = location.state?.from?.pathname || '/';
-    return <Navigate to={redirectTo} replace />;
+    return <Navigate to={resolvePostLoginPath(role, from)} replace />;
   }
 
   async function handleSubmit(event) {
@@ -54,9 +56,8 @@ function Login() {
     setIsSubmitting(true);
 
     try {
-      await login(email, password);
-      const redirectTo = location.state?.from?.pathname || '/';
-      navigate(redirectTo, { replace: true });
+      const { nutritionist } = await login(email, password);
+      navigate(resolvePostLoginPath(nutritionist.role, from), { replace: true });
     } catch (err) {
       // Un error de validación va debajo de cada input; el mensaje general queda
       // para lo que no es de un campo (credenciales inválidas, sin conexión).

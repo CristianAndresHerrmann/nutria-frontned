@@ -26,9 +26,9 @@ export function clearToken() {
   }
 }
 
-// { id, name, email } del login: se persiste junto al token para poder
-// mostrar el nombre del nutricionista en el layout sin pegarle a la API de
-// nuevo ni decodificarlo del JWT (que solo trae el id en `sub`).
+// { id, name, email, role } del login: se persiste junto al token para poder
+// mostrar el nombre de la cuenta en el layout sin pegarle a la API de nuevo ni
+// decodificarlo del JWT (que solo trae el id en `sub` y el rol en `role`).
 export function getNutritionist() {
   try {
     const raw = localStorage.getItem(NUTRITIONIST_KEY);
@@ -54,13 +54,27 @@ export function clearNutritionist() {
   }
 }
 
-export function isTokenExpired(token) {
+// Lee el payload sin verificar la firma: sirve para decidir qué mostrar, nunca
+// para autorizar. El backend verifica el token y lee el rol de la base.
+function decodeTokenPayload(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return typeof payload.exp === 'number' && Date.now() >= payload.exp * 1000;
+    return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
   } catch {
-    return true;
+    return null;
   }
+}
+
+export function isTokenExpired(token) {
+  const payload = decodeTokenPayload(token);
+  if (!payload) return true;
+  return typeof payload.exp === 'number' && Date.now() >= payload.exp * 1000;
+}
+
+// Rol del claim `role`, o null si el token no lo trae (uno emitido antes de que
+// existieran los roles): sin rol no se sabe a qué inicio llevar.
+export function getTokenRole(token) {
+  const role = decodeTokenPayload(token)?.role;
+  return typeof role === 'string' ? role : null;
 }
 
 const DEFAULT_TIMEOUT_MS = 15_000;

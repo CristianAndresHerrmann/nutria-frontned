@@ -4,6 +4,7 @@ import {
   clearToken,
   getNutritionist,
   getToken,
+  getTokenRole,
   isTokenExpired,
   setNutritionist as persistNutritionist,
   setToken as persistToken,
@@ -12,9 +13,11 @@ import { login as loginRequest } from '../api/auth';
 
 const AuthContext = createContext(null);
 
+// Un token vencido o sin rol (emitido antes de que existieran los roles) se
+// descarta: hay que volver a iniciar sesión.
 function getValidToken() {
   const stored = getToken();
-  if (stored && isTokenExpired(stored)) {
+  if (stored && (isTokenExpired(stored) || !getTokenRole(stored))) {
     clearToken();
     clearNutritionist();
     return null;
@@ -79,9 +82,13 @@ export function AuthProvider({ children }) {
     setSessionExpired(false);
   }, []);
 
+  const role = token ? getTokenRole(token) : null;
+
   const value = {
     token,
     nutritionist,
+    role,
+    isAdmin: role === 'admin',
     isAuthenticated: Boolean(token),
     sessionExpired,
     login,

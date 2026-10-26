@@ -16,6 +16,7 @@ import Recipes from './pages/Recipes';
 import RecipeForm from './pages/RecipeForm';
 import Recommendations from './pages/Recommendations';
 import RecommendationForm from './pages/RecommendationForm';
+import AdminAccounts from './pages/AdminAccounts';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRoute role="nutritionist" />}>
             <Route element={<MainLayout />}>
               <Route index element={<Home />} />
               <Route path="pacientes" element={<Patients />} />
@@ -43,6 +44,13 @@ function App() {
               <Route path="catalogos/recetas/:id/editar" element={<RecipeForm />} />
               <Route path="catalogos/recomendaciones/nueva" element={<RecommendationForm />} />
               <Route path="catalogos/recomendaciones/:id/editar" element={<RecommendationForm />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Route>
+          <Route path="admin" element={<ProtectedRoute role="admin" />}>
+            <Route element={<MainLayout />}>
+              <Route index element={<Navigate to="cuentas" replace />} />
+              <Route path="cuentas" element={<AdminAccounts />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
