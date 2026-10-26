@@ -1,8 +1,8 @@
+# .gitignore sí entra a la imagen: oxlint lo usa para no revisar node_modules.
 node_modules
 dist
 .env
 .env.*
 !.env.example
 .git
-.gitignore
 README.md

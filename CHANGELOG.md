@@ -131,6 +131,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - Títulos del encabezado para las tres pantallas.
   - `src/api/recommendations.js` y `src/pages/recommendationFormMapping.js`, con tests: ida y vuelta del formulario, alta sin `active`, vacíos sin inventar datos, agrupado por patología y armado de la URL del listado.
 - Integración continua con GitHub Actions (T12; RNF-06, RNF-13), en `.github/workflows/ci.yml`. Corre en cada PR hacia `development` o `master`, en cada push a `development` y a mano (`workflow_dispatch`): `npm ci`, lint (oxlint), tests, `npm run build`, `npm audit --audit-level=high` y `docker build` sin push. Sin secrets ni variables. El job `ci` es el check obligatorio del ruleset de `development` y `master`.
+- Despliegue en staging (T-; RNF-06, RNF-13). Cómo se opera: README de `nutria-backend`, sección "Staging".
+  - `Dockerfile` en etapas: `prod` sirve el build estático con nginx (`nginx.conf`: cualquier ruta devuelve `index.html` para React Router; caché larga para `assets/`, ninguna para `index.html`) y `dev`, la última, sigue siendo el `vite dev` del compose local.
+  - Aviso de entorno de prueba (`src/components/EnvironmentBanner.jsx`), fijo abajo en todas las pantallas, incluido el login. El texto sale de `VITE_ENV_LABEL` en el build; en local no está y no se muestra.
+  - `.github/workflows/cd-staging.yml`: en cada push a `staging` (o a mano) corre el CI y, si pasa, despliega el servicio en la VM y verifica que la página responde por HTTPS.
+  - El CI también corre en los PR hacia `staging`, se puede reutilizar desde otro workflow (`workflow_call`) y construye además la imagen `prod`.
 
 ### Changed
 
@@ -140,6 +145,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Fixed
 
+- `npm run lint` dentro del contenedor revisaba también `node_modules` (miles de avisos ajenos): oxlint se guía por `.gitignore`, que `.dockerignore` dejaba fuera de la imagen. Ahora entra.
 - `todayInputValue()` (el tope de la fecha de nacimiento) usaba la fecha UTC, así que entre las 21 y las 24 en Argentina ya permitía elegir el día siguiente. Ahora usa la fecha local (T17).
 
 ## [0.0.1] - 2026-09-30
