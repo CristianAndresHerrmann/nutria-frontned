@@ -6,10 +6,12 @@ name: CI
 # dispara el workflow quedaría bloqueado esperando un check que nunca llega.
 on:
   pull_request:
-    branches: [development, master]
+    branches: [development, staging, master]
   push:
     branches: [development]
   workflow_dispatch:
+  # Lo reutiliza cd-staging.yml: si el CI falla, no se despliega.
+  workflow_call:
 
 permissions:
   contents: read
@@ -51,6 +53,10 @@ jobs:
       - name: Auditoría de dependencias
         run: npm audit --audit-level=high
 
-      # Sin push: solo valida que el Dockerfile construye.
+      # Sin push: solo valida que el Dockerfile construye. El target por defecto
+      # es el servidor de desarrollo del compose local; `prod` es el de staging.
       - name: Build de la imagen
         run: docker build -t nutria-frontend:ci .
+
+      - name: Build de la imagen de producción
+        run: docker build --target prod -t nutria-frontend:ci-prod .

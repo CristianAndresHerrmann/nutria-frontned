@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import EnvironmentBanner from './components/EnvironmentBanner';
 import MainLayout from './layouts/MainLayout';
 import CatalogLayout from './layouts/CatalogLayout';
 import Login from './pages/Login';
@@ -46,6 +47,7 @@ function App() {
             </Route>
           </Route>
         </Routes>
+        <EnvironmentBanner />
       </BrowserRouter>
     </AuthProvider>
   );
