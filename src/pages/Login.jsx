@@ -132,7 +132,7 @@ function Login() {
                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 aria-pressed={showPassword}
               >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                {showPassword ? <EyeIcon /> : <EyeOffIcon />}
               </button>
             </div>
             {fieldErrors.password && <span className="text-note font-normal text-danger">{fieldErrors.password}</span>}
