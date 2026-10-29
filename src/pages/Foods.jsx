@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { listFoodGroups, listFoods } from '../api/catalogs';
 import { flattenTree, groupPath, indent } from '../utils/foodGroupTree';
 import { categoryLabel } from '../utils/foodCategories';
+import { usePagination } from '../hooks/usePagination';
 import Badge from '../components/Badge';
 import Button from '../components/Button';
+import DataTable from '../components/DataTable';
+import TablePagination from '../components/TablePagination';
 import { inputClass } from '../components/FormField';
 import searchIcon1 from '../assets/icons/search-1.svg';
 import searchIcon2 from '../assets/icons/search-2.svg';
 
-const TH = 'px-5 py-3 text-left text-xs font-bold tracking-[0.3px] text-muted uppercase';
-const TD = 'px-5 py-3 text-body-sm';
 const SEARCH_DELAY_MS = 300;
 
 // Alimentos comunes más los propios del nutricionista. Solo lectura: el alta va
@@ -68,6 +69,30 @@ function Foods() {
 
   const groupOptions = useMemo(() => flattenTree(groups), [groups]);
   const hasFilters = Boolean(debouncedSearch.trim() || groupId);
+  const pagination = usePagination(foods ?? [], { resetKey: `${debouncedSearch}|${groupId}` });
+
+  const columns = [
+    { key: 'name', header: 'Alimento', className: 'font-semibold text-ink', cell: (food) => food.name },
+    {
+      key: 'group',
+      header: 'Grupo',
+      className: 'text-muted',
+      cell: (food) => groupPath(groups, food.foodGroupId) || food.foodGroup?.name,
+    },
+    {
+      key: 'categories',
+      header: 'Categorías',
+      cell: (food) => (
+        <div className="flex flex-wrap gap-1.5">
+          {food.categories.map((category) => (
+            <Badge key={category} tone="neutral">
+              {categoryLabel(category)}
+            </Badge>
+          ))}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
@@ -122,32 +147,10 @@ function Foods() {
       )}
 
       {foods && !error && foods.length > 0 && (
-        <table className="w-full">
-          <thead>
-            <tr className="bg-neutral-soft/45">
-              <th className={TH}>Alimento</th>
-              <th className={TH}>Grupo</th>
-              <th className={TH}>Categorías</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {foods.map((food) => (
-              <tr key={food.id}>
-                <td className={`${TD} font-semibold text-ink`}>{food.name}</td>
-                <td className={`${TD} text-muted`}>{groupPath(groups, food.foodGroupId) || food.foodGroup?.name}</td>
-                <td className={TD}>
-                  <div className="flex flex-wrap gap-1.5">
-                    {food.categories.map((category) => (
-                      <Badge key={category} tone="neutral">
-                        {categoryLabel(category)}
-                      </Badge>
-                    ))}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <>
+          <DataTable columns={columns} rows={pagination.pageItems} rowKey={(food) => food.id} />
+          <TablePagination {...pagination} />
+        </>
       )}
     </div>
   );
