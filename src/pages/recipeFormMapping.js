@@ -59,6 +59,20 @@ export function recipeToForm(recipe) {
   };
 }
 
+// Copia de una receta, común o propia, como borrador de una receta nueva: el
+// alta la guarda como propia y la original no cambia. El nombre se marca como
+// copia para no confundirla con la original en el listado.
+export function recipeToDraft(recipe) {
+  return { ...recipeToForm(recipe), name: `${recipe.name} (copia)`, availableInCatalog: true };
+}
+
+// Body del PUT para dar de baja o reactivar una receta desde el listado. El PUT
+// reemplaza la receta entera: se arma con el mismo mapeo que el formulario de
+// edición, para no pisar ningún campo.
+export function availabilityPayload(recipe, available) {
+  return { ...formToPayload(recipeToForm(recipe), { isEditMode: true }), availableInCatalog: available };
+}
+
 // Un número si se escribió uno; vacío es null. Lo que no sea un número se manda
 // igual y lo rechaza el backend con el error en su campo.
 function minutesToPayload(value) {
