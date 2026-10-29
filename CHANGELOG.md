@@ -6,6 +6,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Added
 
+- Paginación de las tablas (T28; DA-33): Alimentos, Pacientes, Recetas y Cuentas muestran 10 o 25 filas por página, a elección (10 por defecto), con el rango ("11–20 de 232") y botones de página anterior y siguiente. Cambiar la búsqueda o un filtro vuelve a la primera página. El pie no aparece si las filas entran en una página. La paginación es en el cliente: la API no cambia.
+- Categoría **Complementario** en el alta de alimentos y en los listados (T28; DA-32), para los alimentos sin aporte a la composición (azúcar, sal, condimentos, manteca, agua).
 - Sección **Catálogos** en el menú principal (T15). El Figma no tiene estas pantallas, así que se armaron con los componentes y tokens existentes. Tiene dos pestañas, Alimentos y Grupos:
   - **Alimentos** (`/catalogos/alimentos`):
     - Muestra los alimentos de la base común y los que cargó el nutricionista, que solo ve él.
@@ -158,6 +160,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Changed
 
+- Las cuatro tablas usan los componentes nuevos `DataTable` y `TablePagination`, y el hook `usePagination` (T28), en lugar de repetir el marcado y las constantes `TH`/`TD` en cada pantalla. En Cuentas, la fila para restablecer la contraseña pasa a `renderExpanded` de `DataTable`. `Button` suma la variante `icon`.
 - Dependencias actualizadas con `npm audit fix` para que `npm audit --audit-level=high` de la CI pase (T12): `vite` 8.3.5, `vitest` 5.0.5 y `source-map-js` 1.2.2, dentro de los rangos de `package.json`.
 - `indent` (sangría de las opciones de grupo) pasa de `Foods.jsx` y `FoodForm.jsx` a `src/utils/foodGroupTree.js`, para reusarla en el formulario de condiciones (T18).
 - La fecha de nacimiento del formulario de paciente usa `DateInput` en lugar del `<input type="date">` del navegador (T17).

@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { listPatients } from '../api/patients';
 import { formatDateTime } from '../utils/date';
 import { initialsOf } from '../utils/initials';
+import { usePagination } from '../hooks/usePagination';
 import Badge from '../components/Badge';
 import Avatar from '../components/Avatar';
 import Button from '../components/Button';
+import DataTable from '../components/DataTable';
+import TablePagination from '../components/TablePagination';
 import { inputClass } from '../components/FormField';
 import searchIcon1 from '../assets/icons/search-1.svg';
 import searchIcon2 from '../assets/icons/search-2.svg';
 import rowDot from '../assets/icons/row-dot.svg';
-
-const TH = 'px-5 py-3 text-left text-xs font-bold tracking-[0.3px] text-muted uppercase';
-const TD = 'px-5 py-3 text-body-sm';
 
 function fullName(patient) {
   return `${patient.firstName} ${patient.lastName}`.trim();
@@ -49,6 +49,48 @@ function Patients() {
     if (!term) return patients;
     return patients.filter((patient) => fullName(patient).toLowerCase().includes(term));
   }, [patients, search]);
+
+  const pagination = usePagination(filteredPatients, { resetKey: search.trim().toLowerCase() });
+
+  const columns = [
+    {
+      key: 'name',
+      header: 'Paciente',
+      cell: (patient) => (
+        <div className="flex items-center gap-2.5">
+          <button type="button" className="group inline-flex items-center gap-3" onClick={() => navigate(`/pacientes/${patient.id}`)}>
+            <Avatar>{initialsOf(patient)}</Avatar>
+            <span className="text-sm font-semibold text-ink group-hover:text-primary">{fullName(patient)}</span>
+          </button>
+          {!patient.registrationComplete && <Badge tone="warning">Ficha incompleta</Badge>}
+        </div>
+      ),
+    },
+    { key: 'age', header: 'Edad', cell: (patient) => (patient.age === null ? 'Sin dato' : `${patient.age} años`) },
+    {
+      key: 'goal',
+      header: 'Objetivo',
+      cell: (patient) => (patient.goal ? <Badge tone="mint">{patient.goal}</Badge> : 'Sin dato'),
+    },
+    { key: 'updatedAt', header: 'Última actualización', cell: (patient) => formatDateTime(patient.updatedAt) },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      hideHeader: true,
+      cell: (patient) => (
+        <button
+          type="button"
+          className="inline-flex items-center gap-0.75 rounded-lg p-2 hover:bg-surface [&>img]:size-1"
+          onClick={() => navigate(`/pacientes/${patient.id}`)}
+          aria-label={`Abrir ficha de ${fullName(patient)}`}
+        >
+          <img src={rowDot} alt="" />
+          <img src={rowDot} alt="" />
+          <img src={rowDot} alt="" />
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -93,47 +135,10 @@ function Patients() {
         )}
 
         {!isLoading && !error && filteredPatients.length > 0 && (
-          <table className="w-full">
-            <thead>
-              <tr className="bg-neutral-soft/45">
-                <th className={TH}>Paciente</th>
-                <th className={TH}>Edad</th>
-                <th className={TH}>Objetivo</th>
-                <th className={TH}>Última actualización</th>
-                <th className={TH} />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {filteredPatients.map((patient) => (
-                <tr key={patient.id}>
-                  <td className={TD}>
-                    <div className="flex items-center gap-2.5">
-                      <button type="button" className="group inline-flex items-center gap-3" onClick={() => navigate(`/pacientes/${patient.id}`)}>
-                        <Avatar>{initialsOf(patient)}</Avatar>
-                        <span className="text-sm font-semibold text-ink group-hover:text-primary">{fullName(patient)}</span>
-                      </button>
-                      {!patient.registrationComplete && <Badge tone="warning">Ficha incompleta</Badge>}
-                    </div>
-                  </td>
-                  <td className={TD}>{patient.age === null ? 'Sin dato' : `${patient.age} años`}</td>
-                  <td className={TD}>{patient.goal ? <Badge tone="mint">{patient.goal}</Badge> : 'Sin dato'}</td>
-                  <td className={TD}>{formatDateTime(patient.updatedAt)}</td>
-                  <td className={TD}>
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-0.75 rounded-lg p-2 hover:bg-surface [&>img]:size-1"
-                      onClick={() => navigate(`/pacientes/${patient.id}`)}
-                      aria-label={`Abrir ficha de ${fullName(patient)}`}
-                    >
-                      <img src={rowDot} alt="" />
-                      <img src={rowDot} alt="" />
-                      <img src={rowDot} alt="" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            <DataTable columns={columns} rows={pagination.pageItems} rowKey={(patient) => patient.id} />
+            <TablePagination {...pagination} />
+          </>
         )}
       </div>
     </div>

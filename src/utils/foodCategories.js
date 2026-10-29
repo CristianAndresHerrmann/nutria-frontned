@@ -7,6 +7,7 @@ export const FOOD_CATEGORIES = [
   { value: 'fiber', label: 'Fibra' },
   { value: 'healthy_fat', label: 'Grasa saludable' },
   { value: 'infusion', label: 'Infusión' },
+  { value: 'complementary', label: 'Complementario' },
 ];
 
 const LABELS = Object.fromEntries(FOOD_CATEGORIES.map(({ value, label }) => [value, label]));
