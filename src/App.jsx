@@ -14,6 +14,7 @@ import FoodGroups from './pages/FoodGroups';
 import FoodForm from './pages/FoodForm';
 import Recipes from './pages/Recipes';
 import RecipeForm from './pages/RecipeForm';
+import RecipeDetail from './pages/RecipeDetail';
 import Recommendations from './pages/Recommendations';
 import RecommendationForm from './pages/RecommendationForm';
 import AdminAccounts from './pages/AdminAccounts';
@@ -41,6 +42,7 @@ function App() {
               </Route>
               <Route path="catalogos/alimentos/nuevo" element={<FoodForm />} />
               <Route path="catalogos/recetas/nueva" element={<RecipeForm />} />
+              <Route path="catalogos/recetas/:id" element={<RecipeDetail />} />
               <Route path="catalogos/recetas/:id/editar" element={<RecipeForm />} />
               <Route path="catalogos/recomendaciones/nueva" element={<RecommendationForm />} />
               <Route path="catalogos/recomendaciones/:id/editar" element={<RecommendationForm />} />

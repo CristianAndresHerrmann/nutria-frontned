@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   EMPTY_RECIPE_FORM,
   addIngredient,
+  availabilityPayload,
   formToPayload,
   moveIngredient,
   newIngredientRow,
+  recipeToDraft,
   recipeToForm,
   toggleMealType,
 } from './recipeFormMapping';
@@ -71,6 +73,47 @@ describe('recipeToForm / formToPayload', () => {
     expect(formToPayload(EMPTY_RECIPE_FORM)).toMatchObject({ cookingMethod: null, timeMinutes: null, mealTypes: [], ingredients: [] });
     expect(formToPayload({ ...EMPTY_RECIPE_FORM, timeMinutes: ' 40 ' }).timeMinutes).toBe(40);
     expect(formToPayload({ ...EMPTY_RECIPE_FORM, timeMinutes: 'media hora' }).timeMinutes).toBe('media hora');
+  });
+});
+
+describe('availabilityPayload', () => {
+  it('manda la receta entera, con los ingredientes en orden, y solo cambia la disponibilidad', () => {
+    expect(availabilityPayload(recipe, false)).toEqual({
+      name: 'Ensalada de arroz y atún',
+      cookingMethod: 'stovetop',
+      timeMinutes: 25,
+      purchasePlace: '',
+      mealTypes: ['lunch', 'dinner'],
+      ingredients: [
+        { foodId: 'arroz', quantityDescription: '1 taza cocida' },
+        { foodId: 'atun', quantityDescription: '' },
+      ],
+      preparation: '1. Hervir el arroz.',
+      finalNote: '',
+      availableInCatalog: false,
+    });
+    expect(availabilityPayload({ ...recipe, availableInCatalog: false }, true).availableInCatalog).toBe(true);
+  });
+});
+
+describe('recipeToDraft', () => {
+  it('copia la receta entera como alta nueva, con el nombre marcado como copia', () => {
+    const draft = recipeToDraft({ ...recipe, own: false, availableInCatalog: false });
+
+    expect(draft).toMatchObject({ name: 'Ensalada de arroz y atún (copia)', availableInCatalog: true, timeMinutes: '25' });
+    expect(formToPayload(draft)).toEqual({
+      name: 'Ensalada de arroz y atún (copia)',
+      cookingMethod: 'stovetop',
+      timeMinutes: 25,
+      purchasePlace: '',
+      mealTypes: ['lunch', 'dinner'],
+      ingredients: [
+        { foodId: 'arroz', quantityDescription: '1 taza cocida' },
+        { foodId: 'atun', quantityDescription: '' },
+      ],
+      preparation: '1. Hervir el arroz.',
+      finalNote: '',
+    });
   });
 });
 

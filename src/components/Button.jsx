@@ -1,10 +1,12 @@
 // El tamaño va en cada variante: `icon` es un botón cuadrado sin texto, y pasar su
-// tamaño por className pisaría la altura y el padding de la base.
+// tamaño por className pisaría la altura y el padding de la base. `ghost` es el
+// botón de ícono sin borde de las acciones de una fila de tabla.
 const VARIANTS = {
   primary:
     'h-10.5 px-5 bg-primary text-on-primary shadow-sm hover:enabled:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-70',
   secondary: 'h-10.5 px-5 border border-line bg-white text-ink hover:bg-surface',
   icon: 'size-9 border border-line bg-white hover:enabled:bg-surface disabled:cursor-not-allowed disabled:opacity-40',
+  ghost: 'size-8 hover:enabled:bg-surface disabled:cursor-not-allowed disabled:opacity-40',
 };
 
 function Button({ variant = 'primary', type = 'button', className = '', children, ...props }) {
