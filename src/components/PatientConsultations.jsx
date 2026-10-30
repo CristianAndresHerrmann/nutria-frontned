@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { createConsultation, listConsultations } from '../api/patientConsultations';
 import { CONSULTATION_TEXT_FIELDS, complianceBadge, consultationTypeLabel } from '../pages/patientConsultations';
 import { formatDate } from '../utils/date';
+import { usePatientData } from '../hooks/usePatientData';
 import ConsultationForm from './ConsultationForm';
 import SectionCard from './SectionCard';
 import Badge from './Badge';
@@ -70,29 +71,16 @@ function ConsultationCard({ consultation }) {
 // ficha que se guardó una consulta, para que muestre la nueva última
 // actualización.
 function PatientConsultations({ patientId, onChange }) {
-  const [consultations, setConsultations] = useState(null);
-  const [error, setError] = useState('');
+  const { data: consultations, error, reload, isCurrent } = usePatientData(patientId, listConsultations);
   const [isCreating, setIsCreating] = useState(false);
-
-  const load = useCallback(
-    () =>
-      listConsultations(patientId).then((data) => {
-        setConsultations(data);
-        setError('');
-      }),
-    [patientId],
-  );
-
-  useEffect(() => {
-    load().catch((err) => setError(err.message));
-  }, [load]);
 
   // Los errores de guardado los muestra el formulario en su campo.
   async function handleSubmit(payload) {
     await createConsultation(patientId, payload);
+    if (!isCurrent()) return;
     setIsCreating(false);
-    await load().catch((err) => setError(err.message));
-    onChange?.();
+    await reload();
+    if (isCurrent()) onChange?.();
   }
 
   return (

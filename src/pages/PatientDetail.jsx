@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPatient } from '../api/patients';
+import { usePatientData } from '../hooks/usePatientData';
 import { formatDate, formatDateTime } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import { CLINICAL_TAB, HABITS_TAB, displayClinicalValue, sectionsForTab } from './patientClinicalFields';
@@ -53,38 +54,21 @@ function ClinicalSections({ tab, patient }) {
 
 function PatientDetail() {
   const { id } = useParams();
+  // Una ficha nueva reinicia también los formularios inline y la pestaña:
+  // nunca se reutiliza el estado de edición del paciente anterior.
+  return <PatientDetailContent key={id} id={id} />;
+}
+
+function PatientDetailContent({ id }) {
   const navigate = useNavigate();
-  const [patient, setPatient] = useState(null);
-  const [error, setError] = useState('');
+  const { data: patient, error, reload: refreshPatient } = usePatientData(id, getPatient);
   const [activeTab, setActiveTab] = useState('Resumen');
-
-  useEffect(() => {
-    let cancelled = false;
-
-    getPatient(id)
-      .then((data) => {
-        if (!cancelled) setPatient(data);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err.message);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
 
   // Tras cambiar una condición: el aviso de datos clínicos faltantes (RF-45)
   // se calcula en el backend con las condiciones del paciente. Tras guardar una
   // consulta: el backend movió la última actualización. Si falla, la ficha
   // sigue mostrando lo que ya tenía.
-  const refreshPatient = useCallback(() => {
-    getPatient(id)
-      .then(setPatient)
-      .catch(() => {});
-  }, [id]);
-
-  if (error) {
+  if (error && !patient) {
     return (
       <p className="text-sm text-danger" role="alert">
         {error}

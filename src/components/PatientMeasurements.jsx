@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import { listMeasurements } from '../api/patientMeasurements';
 import { formatBmi, formatMeasurementValue, measurementLabel, splitMeasurements } from '../pages/patientMeasurements';
 import { formatDate } from '../utils/date';
+import { usePatientData } from '../hooks/usePatientData';
 import SectionCard from './SectionCard';
 
 const TH = 'px-4 py-3 text-left text-xs font-bold tracking-[0.3px] text-muted uppercase';
@@ -46,17 +46,7 @@ function MeasurementTable({ measurements, withBmi = false, emptyMessage }) {
 // cargan desde el formulario de consulta. Gráficos y variación entre consultas
 // son del Incremento 5.
 function PatientMeasurements({ patientId }) {
-  const [measurements, setMeasurements] = useState(null);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    listMeasurements(patientId)
-      .then((data) => {
-        setMeasurements(data);
-        setError('');
-      })
-      .catch((err) => setError(err.message));
-  }, [patientId]);
+  const { data: measurements, error } = usePatientData(patientId, listMeasurements);
 
   if (error) {
     return (

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listRecipes, updateRecipe } from '../api/recipes';
-import { availabilityPayload } from './recipeFormMapping';
+import { listRecipes, setRecipeAvailability } from '../api/recipes';
 import { MEAL_TYPES, mealTypeLabel } from '../utils/recipeLabels';
 import { filterRecipes } from '../utils/recipeSearch';
 import { usePagination } from '../hooks/usePagination';
@@ -71,7 +70,7 @@ function Recipes() {
     setActionError('');
     setTogglingId(recipe.id);
     try {
-      const updated = await updateRecipe(recipe.id, availabilityPayload(recipe, !deactivating));
+      const updated = await setRecipeAvailability(recipe.id, !deactivating);
       setRecipes((current) =>
         deactivating && !includeUnavailable
           ? current.filter(({ id }) => id !== recipe.id)

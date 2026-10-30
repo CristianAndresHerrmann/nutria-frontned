@@ -54,6 +54,12 @@ cp .env.example .env
 | `npm run lint` | `oxlint` | Linter del repo. |
 | `npm test` | `vitest run` | Corre los tests una vez. La verificación que cuenta es dentro del contenedor: `npm run test:frontend` desde la carpeta raíz `nutria/`. |
 
+Las pruebas de componentes con efectos usan `// @vitest-environment jsdom` y
+montan React con `createRoot` y `act`. La ficha del paciente cubre respuestas fuera
+de orden, cambios de paciente y recargas tras guardar, con API simulada y datos
+ficticios. Los demás tests mantienen el entorno Node por defecto; no son pruebas
+E2E contra el backend.
+
 ## Cómo ejecutar
 
 ```bash

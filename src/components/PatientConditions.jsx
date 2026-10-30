@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { createCondition, deleteCondition, listConditions, updateCondition } from '../api/patientConditions';
 import { conditionTargetName, groupConditionsByType } from '../pages/patientConditions';
 import { formatDate } from '../utils/date';
+import { usePatientData } from '../hooks/usePatientData';
 import ConditionForm from './ConditionForm';
 import SectionCard from './SectionCard';
 import Badge from './Badge';
@@ -14,29 +15,19 @@ const NEW = 'new';
 // edición y baja inline. `onChange` avisa a la ficha que cambiaron, porque el
 // aviso de datos clínicos faltantes (RF-45) depende de ellas.
 function PatientConditions({ patientId, onChange }) {
-  const [conditions, setConditions] = useState(null);
-  const [error, setError] = useState('');
+  const { data: conditions, error: loadError, reload, isCurrent } = usePatientData(patientId, listConditions);
+  const [actionError, setActionError] = useState('');
+  const error = actionError || loadError;
   // null: sin formulario; NEW: alta; un id: edición de esa condición.
   const [editing, setEditing] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
-  const load = useCallback(
-    () =>
-      listConditions(patientId).then((data) => {
-        setConditions(data);
-        setError('');
-      }),
-    [patientId],
-  );
-
-  useEffect(() => {
-    load().catch((err) => setError(err.message));
-  }, [load]);
-
   async function afterChange() {
+    if (!isCurrent()) return;
     setEditing(null);
-    await load().catch((err) => setError(err.message));
-    onChange?.();
+    setActionError('');
+    await reload();
+    if (isCurrent()) onChange?.();
   }
 
   // Los errores de guardado los muestra el formulario en su campo.
@@ -50,13 +41,14 @@ function PatientConditions({ patientId, onChange }) {
     if (!window.confirm(`¿Eliminar "${conditionTargetName(condition)}" de ${groupLabel.toLowerCase()}?`)) return;
 
     setDeletingId(condition.id);
+    setActionError('');
     try {
       await deleteCondition(patientId, condition.id);
       await afterChange();
     } catch (err) {
-      setError(err.message);
+      if (isCurrent()) setActionError(err.message);
     } finally {
-      setDeletingId(null);
+      if (isCurrent()) setDeletingId(null);
     }
   }
 
