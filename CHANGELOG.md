@@ -174,6 +174,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Changed
 
+- Los formularios de paciente, receta, alimento, condición, consulta y recomendación muestran los errores de la misma forma (T29; RNF-04). El error de cada campo sigue junto al campo, y arriba del botón de guardar aparece "Revisá los campos marcados antes de guardar." (también en la validación local de fechas y mediciones), en lugar de repetir el primer error de campo. Un error sin campos (conflicto, servidor caído, sin conexión) se sigue mostrando arriba del botón con su mensaje. Lo resuelven el hook `useFormErrors` y el componente `FormError`, con pruebas unitarias.
 - Las cuatro tablas usan los componentes nuevos `DataTable` y `TablePagination`, y el hook `usePagination` (T28), en lugar de repetir el marcado y las constantes `TH`/`TD` en cada pantalla. En Cuentas, la fila para restablecer la contraseña pasa a `renderExpanded` de `DataTable`. `Button` suma la variante `icon`.
 - Dependencias actualizadas con `npm audit fix` para que `npm audit --audit-level=high` de la CI pase (T12): `vite` 8.3.5, `vitest` 5.0.5 y `source-map-js` 1.2.2, dentro de los rangos de `package.json`.
 - `indent` (sangría de las opciones de grupo) pasa de `Foods.jsx` y `FoodForm.jsx` a `src/utils/foodGroupTree.js`, para reusarla en el formulario de condiciones (T18).

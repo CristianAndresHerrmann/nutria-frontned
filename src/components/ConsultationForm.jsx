@@ -13,7 +13,9 @@ import {
   newMeasurementRow,
 } from '../pages/patientMeasurements';
 import { completeDateValueError, dateValueError, todayInputValue } from '../utils/date';
+import { useFormErrors } from '../hooks/useFormErrors';
 import FormField, { inputClass, textareaClass } from './FormField';
+import FormError from './FormError';
 import ConsultationMeasurementsFields from './ConsultationMeasurementsFields';
 import DateInput from './DateInput';
 import Button from './Button';
@@ -31,16 +33,17 @@ const NO_MEASUREMENT_ERRORS = { rows: {} };
 function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
   const [form, setForm] = useState(() => emptyConsultationForm({ hasConsultations }));
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
   const [measurementErrors, setMeasurementErrors] = useState(NO_MEASUREMENT_ERRORS);
+  const { fieldErrors, formError, reset, clearField, showFieldErrors, showError } = useFormErrors({
+    hasOtherErrors: hasMeasurementErrors(measurementErrors),
+  });
 
   const dateRange = { max: todayInputValue() };
   const dateError = fieldErrors.date || completeDateValueError(form.date, dateRange);
 
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
-    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+    clearField(field);
   }
 
   function updateHabit(key, description) {
@@ -48,7 +51,7 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
       ...current,
       habits: current.habits.map((habit) => (habit.key === key ? { ...habit, description } : habit)),
     }));
-    setFieldErrors((current) => ({ ...current, habits: undefined }));
+    clearField('habits');
   }
 
   function addHabit() {
@@ -57,18 +60,18 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
 
   function removeHabit(key) {
     setForm((current) => ({ ...current, habits: current.habits.filter((habit) => habit.key !== key) }));
-    setFieldErrors((current) => ({ ...current, habits: undefined }));
+    clearField('habits');
   }
 
   function updateFixedMeasurement(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
     setMeasurementErrors((current) => ({ ...current, [field]: undefined }));
-    setFieldErrors((current) => ({ ...current, measurements: undefined }));
+    clearField('measurements');
   }
 
   function clearRowErrors(key) {
     setMeasurementErrors(({ rows: { [key]: _removed, ...rows }, ...current }) => ({ ...current, rows }));
-    setFieldErrors((current) => ({ ...current, measurements: undefined }));
+    clearField('measurements');
   }
 
   function updateMeasurementRow(key, field, value) {
@@ -90,7 +93,6 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
 
     // DateInput deja pasar una fecha a medio tipear o inexistente, y el backend
     // señala cualquier medición inválida sin decir cuál: las dos cosas se frenan
@@ -99,20 +101,17 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
     const localMeasurementErrors = measurementFormErrors(form);
     setMeasurementErrors(localMeasurementErrors);
     if (localDateError || hasMeasurementErrors(localMeasurementErrors)) {
-      setFieldErrors(localDateError ? { date: localDateError } : {});
+      showFieldErrors(localDateError ? { date: localDateError } : {});
       return;
     }
 
-    setFieldErrors({});
+    reset();
     setIsSubmitting(true);
 
     try {
       await onSubmit(formToConsultationPayload(form));
     } catch (err) {
-      const fields = err.fields || {};
-      setFieldErrors(fields);
-      // Si el error ya está en un campo, no se repite arriba del botón.
-      if (Object.keys(fields).length === 0) setFormError(err.message);
+      showError(err);
       setIsSubmitting(false);
     }
   }
@@ -217,11 +216,7 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
         </div>
       </fieldset>
 
-      {formError && (
-        <p className="text-body-sm text-danger" role="alert">
-          {formError}
-        </p>
-      )}
+      <FormError message={formError} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end xl:flex-nowrap">
         <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>

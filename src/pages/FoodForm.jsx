@@ -4,8 +4,10 @@ import { createFood, listFoodGroups } from '../api/catalogs';
 import { flattenTree, indent } from '../utils/foodGroupTree';
 import { FOOD_CATEGORIES } from '../utils/foodCategories';
 import { EMPTY_FOOD_FORM, formToPayload, toggleCategory } from './foodFormMapping';
+import { useFormErrors } from '../hooks/useFormErrors';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass } from '../components/FormField';
+import FormError from '../components/FormError';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 import iconCheck from '../assets/icons/icon-check.svg';
@@ -23,8 +25,7 @@ function FoodForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadError, setLoadError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  const { fieldErrors, formError, reset, showError } = useFormErrors();
 
   useEffect(() => {
     let cancelled = false;
@@ -53,16 +54,14 @@ function FoodForm() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
-    setFieldErrors({});
+    reset();
     setIsSubmitting(true);
 
     try {
       await createFood(formToPayload(form));
       navigate(LIST_PATH, { replace: true });
     } catch (err) {
-      setFormError(err.message);
-      setFieldErrors(err.fields || {});
+      showError(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -156,11 +155,7 @@ function FoodForm() {
           </div>
         </SectionCard>
 
-        {formError && (
-          <p className="text-body-sm text-danger" role="alert">
-            {formError}
-          </p>
-        )}
+        <FormError message={formError} />
 
         <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={() => navigate(LIST_PATH)}>
