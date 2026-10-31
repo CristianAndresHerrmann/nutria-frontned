@@ -17,20 +17,20 @@ function RecipeIngredientsFields({ rows, error, onAdd, onQuantityChange, onMove,
           {rows.map((row, index) => (
             <li key={row.key} className="flex flex-wrap items-center gap-3 rounded-xl border border-line px-3.5 py-2">
               <span className="w-5 text-body-sm font-semibold text-muted">{index + 1}.</span>
-              <span className="flex min-w-40 flex-1 items-center gap-2 text-sm font-medium text-ink">
-                {row.food.name}
+              <span className="flex min-w-0 basis-full flex-wrap items-center gap-2 text-sm font-medium text-ink sm:min-w-40 sm:flex-1 xl:flex-nowrap">
+                <span className="min-w-0 max-w-full break-words">{row.food.name}</span>
                 {/* Un alimento dado de baja después de cargar la receta se puede conservar, no volver a agregar. */}
                 {!row.food.active && <Badge tone="warning">Dado de baja</Badge>}
               </span>
               <input
                 type="text"
-                className={`${inputClass} max-w-56`}
+                className={`${inputClass} sm:max-w-56`}
                 placeholder="Cantidad, ej. 1 taza"
                 value={row.quantityDescription}
                 onChange={(event) => onQuantityChange(row.key, event.target.value)}
                 aria-label={`Cantidad de ${row.food.name}`}
               />
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   className={LINK_BUTTON}

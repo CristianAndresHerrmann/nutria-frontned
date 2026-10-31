@@ -119,7 +119,7 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
 
   return (
     <form
-      className="flex flex-col gap-5 rounded-xl border border-line bg-surface p-5"
+      className="flex min-w-0 flex-col gap-5 rounded-xl border border-line bg-surface p-5"
       onSubmit={handleSubmit}
       noValidate
     >
@@ -135,11 +135,11 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
           />
         </FormField>
 
-        <fieldset className="flex flex-col gap-2">
+        <fieldset className="flex min-w-0 flex-col gap-2">
           <legend className="mb-2 text-sm font-medium text-ink">
             Tipo <span className="text-primary">*</span>
           </legend>
-          <div className="flex h-10.5 items-center gap-6">
+          <div className="flex min-h-10.5 flex-wrap items-center gap-x-6 gap-y-3 xl:h-10.5 xl:flex-nowrap">
             {CONSULTATION_TYPES.map((option) => (
               <label key={option.value} className={RADIO_OPTION}>
                 <input
@@ -188,13 +188,13 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
         onRemoveRow={removeMeasurementRow}
       />
 
-      <fieldset className="flex flex-col gap-2">
+      <fieldset className="flex min-w-0 flex-col gap-2">
         <legend className="text-sm font-medium text-ink">Hábitos pautados</legend>
         <p className="text-body-sm text-muted">
           Lo que el paciente se propone trabajar hasta la próxima consulta. Se registran como pendientes.
         </p>
         {form.habits.map((habit, index) => (
-          <div key={habit.key} className="flex items-center gap-3">
+          <div key={habit.key} className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
             <input
               type="text"
               className={inputClass}
@@ -223,7 +223,7 @@ function ConsultationForm({ hasConsultations, onSubmit, onCancel }) {
         </p>
       )}
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end xl:flex-nowrap">
         <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </Button>

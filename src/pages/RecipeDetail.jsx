@@ -61,8 +61,8 @@ function RecipeDetail() {
     <div className="max-w-4xl">
       <BackButton onClick={() => navigate(LIST_PATH)}>Volver a recetas</BackButton>
 
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col flex-wrap items-start justify-between gap-4 sm:flex-row">
+        <div className="min-w-0 max-w-full">
           <h1 className="text-2xl font-bold text-ink">{recipe.name}</h1>
           <p className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-muted">
             <Badge tone={recipe.own ? 'mint' : 'neutral'}>{recipe.own ? 'Propia' : 'Común'}</Badge>
@@ -79,7 +79,7 @@ function RecipeDetail() {
             </p>
           )}
         </div>
-        <div className="flex gap-3">
+        <div className="flex max-w-full flex-wrap gap-3 xl:flex-nowrap">
           {recipe.own && (
             <Button variant="secondary" onClick={() => navigate(`${LIST_PATH}/${id}/editar`)}>
               Editar
@@ -105,8 +105,8 @@ function RecipeDetail() {
           <ul className="flex flex-col divide-y divide-line">
             {recipe.ingredients.map(({ order, quantityDescription, food }) => (
               <li key={order} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm first:pt-0 last:pb-0">
-                <span className="flex items-center gap-2 text-ink">
-                  {food.name}
+                <span className="flex min-w-0 max-w-full flex-wrap items-center gap-2 text-ink xl:flex-nowrap">
+                  <span className="min-w-0 max-w-full break-words">{food.name}</span>
                   {!food.active && <Badge tone="warning">Dado de baja</Badge>}
                 </span>
                 <span className="text-muted">{quantityDescription || '—'}</span>

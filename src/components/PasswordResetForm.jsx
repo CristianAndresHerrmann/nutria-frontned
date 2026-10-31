@@ -4,38 +4,37 @@ import Button from './Button';
 
 // Restablecimiento de la contraseña de una cuenta, inline en su fila. La define
 // el administrador: no hay recuperación por email.
-function PasswordResetForm({ accountName, onSubmit, onCancel }) {
-  const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+function PasswordResetForm({ accountName, onSubmit, onCancel, state, onStateChange }) {
+  // DataTable monta ambas variantes CSS: el padre comparte este estado para
+  // conservar el borrador, los errores y el envío al cruzar md. El modo local
+  // mantiene la API previa para usar el formulario de manera independiente.
+  const [localState, setLocalState] = useState({ password: '', isSubmitting: false, formError: '', fieldErrors: {} });
+  const { password, isSubmitting, formError, fieldErrors } = state ?? localState;
+  const setState = onStateChange ?? setLocalState;
+  function update(changes) { setState((current) => ({ ...current, ...changes })); }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
-    setFieldErrors({});
-    setIsSubmitting(true);
+    update({ formError: '', fieldErrors: {}, isSubmitting: true });
 
     try {
       await onSubmit(password);
     } catch (err) {
       const fields = err.fields || {};
-      setFieldErrors(fields);
-      if (Object.keys(fields).length === 0) setFormError(err.message);
-      setIsSubmitting(false);
+      update({ fieldErrors: fields, formError: Object.keys(fields).length === 0 ? err.message : '', isSubmitting: false });
     }
   }
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="sm:w-80">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start xl:flex-nowrap">
+        <div className="min-w-0 max-w-full sm:w-80">
           <FormField label={`Nueva contraseña de ${accountName}`} required error={fieldErrors.password}>
             <input
               type="password"
               className={inputClass}
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => update({ password: event.target.value })}
               aria-invalid={Boolean(fieldErrors.password)}
               autoComplete="new-password"
               placeholder="Al menos 8 caracteres"
@@ -43,7 +42,7 @@ function PasswordResetForm({ accountName, onSubmit, onCancel }) {
             />
           </FormField>
         </div>
-        <div className="flex gap-3 sm:mt-7">
+        <div className="flex max-w-full flex-wrap gap-3 sm:mt-7 xl:flex-nowrap">
           <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
             Cancelar
           </Button>

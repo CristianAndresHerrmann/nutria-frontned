@@ -86,21 +86,21 @@ function PatientConditions({ patientId, onChange }) {
         )}
 
         {conditions && (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
+          <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
             {groupConditionsByType(conditions).map((group) => (
-              <div key={group.value} className="flex flex-col gap-2">
+              <div key={group.value} className="flex min-w-0 flex-col gap-2">
                 <h3 className="text-xs font-bold tracking-[0.3px] text-muted uppercase">{group.label}</h3>
                 {group.conditions.length === 0 && <p className="text-sm text-muted">Sin registros</p>}
                 {group.conditions.map((condition) => (
                   <div key={condition.id} className="flex flex-col gap-1 rounded-xl border border-line p-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-semibold text-ink">{conditionTargetName(condition)}</span>
+                      <span className="min-w-0 max-w-full break-words text-sm font-semibold text-ink">{conditionTargetName(condition)}</span>
                       {condition.foodGroup && <Badge tone="neutral">Grupo</Badge>}
                     </div>
                     {condition.observations && (
                       <p className="text-body-sm whitespace-pre-line text-ink">{condition.observations}</p>
                     )}
-                    <div className="mt-1 flex items-center gap-4">
+                    <div className="mt-1 flex flex-wrap items-center gap-4 xl:flex-nowrap">
                       <span className="text-xs text-muted">Registrada el {formatDate(condition.registeredAt)}</span>
                       <button
                         type="button"

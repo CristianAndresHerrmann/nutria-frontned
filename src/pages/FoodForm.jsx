@@ -90,8 +90,8 @@ function FoodForm() {
     <div className="max-w-3xl">
       <BackButton onClick={() => navigate(LIST_PATH)}>Volver</BackButton>
 
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">Nuevo alimento</h1>
           <p className="mt-2 text-sm text-muted">
             El alimento queda disponible solo para vos. Una vez guardado no se puede modificar: si hace falta
@@ -135,11 +135,11 @@ function FoodForm() {
               </FormField>
             </div>
 
-            <fieldset className="flex flex-col gap-2">
+            <fieldset className="flex min-w-0 flex-col gap-2">
               <legend className="mb-2 text-sm font-medium text-ink">
                 Categorías <span className="text-primary">*</span>
               </legend>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2 xl:grid-cols-3">
                 {FOOD_CATEGORIES.map(({ value, label }) => (
                   <label key={value} className="flex items-center gap-2 text-sm text-ink">
                     <input
@@ -162,7 +162,7 @@ function FoodForm() {
           </p>
         )}
 
-        <div className="flex justify-end gap-3 border-t border-line pt-3">
+        <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={() => navigate(LIST_PATH)}>
             Cancelar
           </Button>

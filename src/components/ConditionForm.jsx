@@ -108,7 +108,7 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
 
   return (
     <form
-      className="flex flex-col gap-5 rounded-xl border border-line bg-surface p-5"
+      className="flex min-w-0 flex-col gap-5 rounded-xl border border-line bg-surface p-5"
       onSubmit={handleSubmit}
       noValidate
     >
@@ -155,11 +155,11 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
         )}
 
         {!isPathology && (
-          <fieldset className="flex flex-col gap-2">
+          <fieldset className="flex min-w-0 flex-col gap-2">
             <legend className="mb-2 text-sm font-medium text-ink">
               Se refiere a <span className="text-primary">*</span>
             </legend>
-            <div className="flex h-10.5 items-center gap-6">
+            <div className="flex min-h-10.5 flex-wrap items-center gap-x-6 gap-y-3 xl:h-10.5 xl:flex-nowrap">
               <label className={TARGET_OPTION}>
                 <input
                   type="radio"
@@ -189,8 +189,8 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
             Alimento <span className="text-primary">*</span>
           </span>
           {form.foodId ? (
-            <div className="flex items-center gap-3">
-              <span className="font-semibold">{form.foodName}</span>
+            <div className="flex min-w-0 flex-wrap items-center gap-3">
+              <span className="min-w-0 max-w-full break-words font-semibold">{form.foodName}</span>
               <button
                 type="button"
                 className="text-body-sm font-medium text-primary hover:underline"
@@ -219,11 +219,11 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
                     <li key={food.id}>
                       <button
                         type="button"
-                        className="flex w-full items-center justify-between gap-3 px-3.5 py-2 text-left text-sm hover:bg-surface"
+                        className="flex w-full min-w-0 flex-col items-start justify-between gap-1 break-words px-3.5 py-2 text-left text-sm hover:bg-surface xl:flex-row xl:items-center xl:gap-3"
                         onClick={() => chooseFood(food)}
                       >
-                        <span className="text-ink">{food.name}</span>
-                        <span className="text-xs font-normal text-muted">{food.foodGroup?.name}</span>
+                        <span className="min-w-0 max-w-full text-ink">{food.name}</span>
+                        <span className="min-w-0 max-w-full text-xs font-normal text-muted">{food.foodGroup?.name}</span>
                       </button>
                     </li>
                   ))}
@@ -272,7 +272,7 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
         </p>
       )}
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end xl:flex-nowrap">
         <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </Button>

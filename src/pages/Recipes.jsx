@@ -87,8 +87,9 @@ function Recipes() {
   // el nombre de la receta, para que cada botón se distinga con lector de pantalla.
   function iconAction(action, recipe, icon, onClick, disabled = false) {
     return (
-      <Button variant="ghost" aria-label={`${action} «${recipe.name}»`} title={action} onClick={onClick} disabled={disabled}>
+      <Button variant="action" aria-label={`${action} «${recipe.name}»`} title={action} onClick={onClick} disabled={disabled}>
         <img src={icon} alt="" />
+        <span className="xl:sr-only">{action}</span>
       </Button>
     );
   }
@@ -102,7 +103,7 @@ function Recipes() {
         <span className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="text-left hover:text-primary hover:underline"
+            className="min-w-0 max-w-full break-words text-left hover:text-primary hover:underline"
             onClick={() => navigate(`${RECIPES_PATH}/${recipe.id}`)}
           >
             {recipe.name}
@@ -145,7 +146,7 @@ function Recipes() {
       cell: (recipe) => {
         const busy = togglingId === recipe.id;
         return (
-          <span className="inline-flex justify-end gap-1">
+          <span className="inline-flex max-w-full flex-wrap justify-end gap-1 xl:flex-nowrap">
             {iconAction('Ver', recipe, iconEye, () => navigate(`${RECIPES_PATH}/${recipe.id}`))}
             {recipe.own && iconAction('Editar', recipe, iconEdit, () => navigate(`${RECIPES_PATH}/${recipe.id}/editar`), busy)}
             {iconAction('Duplicar', recipe, iconCopy, () => navigate(`${RECIPES_PATH}/nueva?base=${recipe.id}`))}
@@ -162,7 +163,7 @@ function Recipes() {
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
       <div className="flex flex-wrap items-center gap-4 border-b border-line p-5">
-        <div className="relative w-full max-w-80">
+        <div className="relative w-full min-w-0 sm:max-w-80">
           <span className="absolute top-1/2 left-3.5 size-4.25 -translate-y-1/2">
             <img src={searchIcon1} alt="" style={{ position: 'absolute', inset: '69.42% 12.5% 12.5% 69.42%' }} />
             <img src={searchIcon2} alt="" style={{ position: 'absolute', inset: '12.5% 20.83% 20.83% 12.5%' }} />
@@ -178,7 +179,7 @@ function Recipes() {
         </div>
 
         <select
-          className={`${inputClass} max-w-64`}
+          className={`${inputClass} sm:max-w-64`}
           value={mealType}
           onChange={(event) => setMealType(event.target.value)}
           aria-label="Filtrar por tipo de comida"
@@ -200,7 +201,7 @@ function Recipes() {
           Mostrar no disponibles
         </label>
 
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex w-full flex-col items-start gap-4 sm:ml-auto sm:w-auto sm:flex-row sm:flex-wrap sm:items-center xl:flex-nowrap">
           {recipes && <span className="text-body-sm whitespace-nowrap text-muted">{filteredRecipes.length} recetas</span>}
           <Button onClick={() => navigate(`${RECIPES_PATH}/nueva`)}>+ Nueva receta</Button>
         </div>

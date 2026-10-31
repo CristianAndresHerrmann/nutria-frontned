@@ -98,8 +98,8 @@ function RecommendationForm() {
     <div className="max-w-4xl">
       <BackButton onClick={() => navigate(LIST_PATH)}>Volver</BackButton>
 
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">
             {isEditMode ? 'Editar recomendación' : 'Nueva recomendación'}
           </h1>
@@ -177,7 +177,7 @@ function RecommendationForm() {
           </p>
         )}
 
-        <div className="flex justify-end gap-3 border-t border-line pt-3">
+        <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={() => navigate(LIST_PATH)}>
             Cancelar
           </Button>

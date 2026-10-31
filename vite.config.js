@@ -8,5 +8,11 @@ export default defineConfig({
   server: {
     host: true,
     allowedHosts: ['local.nutria.com'],
+    // Docker Desktop sobre Windows/OneDrive puede no emitir eventos de archivos.
+    // El polling se habilita solo en el servicio local del compose.
+    watch: {
+      usePolling: process.env.WATCH_POLLING === 'true',
+      interval: 500,
+    },
   },
 })

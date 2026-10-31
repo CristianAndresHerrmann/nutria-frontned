@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -6,7 +7,7 @@ import DataTable from './DataTable';
 const columns = [
   { key: 'name', header: 'Alimento', className: 'font-semibold', cell: (row) => row.name },
   { key: 'group', header: 'Grupo', cell: (row) => row.group },
-  { key: 'actions', header: 'Acciones', hideHeader: true, cell: () => 'Editar' },
+  { key: 'actions', header: 'Acciones', hideHeader: true, cell: (row) => createElement('button', { 'aria-label': `Editar ${row.name}` }, 'Editar') },
 ];
 
 const rows = [
@@ -15,37 +16,58 @@ const rows = [
 ];
 
 function render(props) {
-  return renderToStaticMarkup(createElement(DataTable, { columns, rows, rowKey: (row) => row.id, ...props }));
+  const html = renderToStaticMarkup(createElement(DataTable, { columns, rows, rowKey: (row) => row.id, ...props }));
+  return new DOMParser().parseFromString(html, 'text/html');
 }
 
-const count = (html, pattern) => (html.match(pattern) || []).length;
-
-describe('tabla de listados', () => {
+describe('tabla y tarjetas de listados', () => {
   it('dibuja un encabezado por columna y oculta visualmente el de acciones', () => {
-    const html = render();
-
-    expect(html).toContain('>Alimento</th>');
-    expect(html).toContain('>Grupo</th>');
-    expect(html).toContain('<span class="sr-only">Acciones</span>');
+    const table = render().querySelector('table');
+    expect([...table.querySelectorAll('th')].map((node) => node.textContent)).toEqual(['Alimento', 'Grupo', 'Acciones']);
+    expect(table.querySelector('th:last-child .sr-only').textContent).toBe('Acciones');
   });
 
   it('dibuja una fila por elemento, con las celdas de cada columna', () => {
-    const html = render();
-
-    expect(count(html, /<tr>/g)).toBe(rows.length);
-    expect(html).toContain('Manzana');
-    expect(html).toContain('Legumbres secas y en conserva');
+    const document = render();
+    const tableRows = document.querySelectorAll('tbody > tr');
+    const cards = document.querySelectorAll('article');
+    expect(tableRows).toHaveLength(rows.length);
+    expect(cards).toHaveLength(rows.length);
+    rows.forEach((row, index) => {
+      for (const node of [tableRows[index], cards[index]]) {
+        expect(node.textContent).toContain(row.name);
+        expect(node.textContent).toContain(row.group);
+        expect(node.querySelector('button').getAttribute('aria-label')).toBe(`Editar ${row.name}`);
+      }
+      expect([...cards[index].querySelectorAll('dt')].map((node) => node.textContent)).toEqual(['Alimento', 'Grupo']);
+      expect(cards[index].querySelector('button').closest('dl')).toBeNull();
+    });
   });
 
   it('suma las clases de la columna a las de la celda base', () => {
-    expect(render()).toContain('class="px-5 py-3 text-body-sm font-semibold"');
+    const cell = render().querySelector('tbody td');
+    expect(cell.classList.contains('px-5')).toBe(true);
+    expect(cell.classList.contains('font-semibold')).toBe(true);
   });
 
   it('agrega la fila expandida debajo, ocupando todas las columnas', () => {
-    const html = render({ renderExpanded: (row) => (row.id === 'b' ? 'Formulario de Lentejas' : null) });
+    const document = render({ renderExpanded: (row) => row.id === 'b' ? createElement('form', null, 'Formulario de Lentejas') : null });
+    const table = document.querySelector('table');
+    expect(table.querySelectorAll('tbody > tr')).toHaveLength(rows.length + 1);
+    expect(table.querySelector('form').closest('td').colSpan).toBe(columns.length);
+    const cards = document.querySelectorAll('article');
+    expect(cards[0].querySelector('form')).toBeNull();
+    expect(cards[1].querySelector('form').textContent).toBe('Formulario de Lentejas');
+    expect(cards[1].querySelector('button').compareDocumentPosition(cards[1].querySelector('form')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 
-    expect(count(html, /<tr>/g)).toBe(rows.length + 1);
-    expect(html).toMatch(new RegExp(`colspan="${columns.length}"`, 'i'));
-    expect(html.indexOf('Lentejas')).toBeLessThan(html.indexOf('Formulario de Lentejas'));
+  it('selecciona las variantes con CSS y conserva textos largos completos', () => {
+    const name = 'Nombre'.repeat(60);
+    const document = render({ rows: [{ id: 'long', name, group: 'Grupo completo' }] });
+    expect(document.querySelector('table').classList.contains('hidden')).toBe(true);
+    expect(document.querySelector('table').classList.contains('md:table')).toBe(true);
+    expect(document.querySelector('article').parentElement.classList.contains('md:hidden')).toBe(true);
+    expect(document.querySelector('article dd').textContent).toBe(name);
+    expect(document.querySelector('tbody td').textContent).toBe(name);
   });
 });

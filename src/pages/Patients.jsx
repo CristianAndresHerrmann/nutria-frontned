@@ -57,10 +57,10 @@ function Patients() {
       key: 'name',
       header: 'Paciente',
       cell: (patient) => (
-        <div className="flex items-center gap-2.5">
-          <button type="button" className="group inline-flex items-center gap-3" onClick={() => navigate(`/pacientes/${patient.id}`)}>
+        <div className="flex min-w-0 flex-wrap items-center gap-2.5 xl:flex-nowrap">
+          <button type="button" className="group inline-flex min-w-0 items-center gap-3 text-left" onClick={() => navigate(`/pacientes/${patient.id}`)}>
             <Avatar>{initialsOf(patient)}</Avatar>
-            <span className="text-sm font-semibold text-ink group-hover:text-primary">{fullName(patient)}</span>
+            <span className="min-w-0 break-words text-sm font-semibold text-ink group-hover:text-primary">{fullName(patient)}</span>
           </button>
           {!patient.registrationComplete && <Badge tone="warning">Ficha incompleta</Badge>}
         </div>
@@ -94,8 +94,8 @@ function Patients() {
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
+        <div className="min-w-0">
           <h1 className="text-[28px] font-bold text-ink">Pacientes</h1>
           <p className="mt-2 text-sm text-muted">Gestioná la información de tus pacientes.</p>
         </div>
@@ -103,8 +103,8 @@ function Patients() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-        <div className="flex items-center justify-between gap-4 border-b border-line p-5">
-          <div className="relative w-full max-w-96">
+        <div className="flex flex-col items-start justify-between gap-4 border-b border-line p-5 sm:flex-row sm:items-center">
+          <div className="relative w-full min-w-0 sm:max-w-96">
             <span className="absolute top-1/2 left-3.5 size-4.25 -translate-y-1/2">
               <img src={searchIcon1} alt="" style={{ position: 'absolute', inset: '69.42% 12.5% 12.5% 69.42%' }} />
               <img src={searchIcon2} alt="" style={{ position: 'absolute', inset: '12.5% 20.83% 20.83% 12.5%' }} />
