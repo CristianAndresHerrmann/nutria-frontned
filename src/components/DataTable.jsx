@@ -1,5 +1,5 @@
 const TH = 'px-5 py-3 text-left text-xs font-bold tracking-[0.3px] text-muted uppercase';
-const TD = 'px-5 py-3 text-body-sm';
+const TD = 'break-words px-5 py-3 text-body-sm';
 
 // Tabla de listados (DA-33). Cada columna define su encabezado y cómo se dibuja
 // la celda; `className` suma clases a la celda sin pisar las de la base.
@@ -8,22 +8,46 @@ const TD = 'px-5 py-3 text-body-sm';
 // Los estados de carga, error y vacío los resuelve cada pantalla.
 function DataTable({ columns, rows, rowKey, renderExpanded }) {
   return (
-    <table className="w-full">
-      <thead>
-        <tr className="bg-neutral-soft/45">
-          {columns.map((column) => (
-            <th key={column.key} className={TH}>
-              {column.hideHeader ? <span className="sr-only">{column.header}</span> : column.header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-line">
+    <>
+      <div className="divide-y divide-line md:hidden">
         {rows.map((row) => (
-          <DataRow key={rowKey(row)} columns={columns} row={row} expanded={renderExpanded?.(row)} />
+          <article key={rowKey(row)} className="min-w-0 p-5">
+            <dl className="flex min-w-0 flex-col gap-4">
+              {columns.filter((column) => !column.hideHeader).map((column) => (
+                <div key={column.key} className="min-w-0">
+                  <dt className="mb-1 text-xs font-bold tracking-[0.3px] text-muted uppercase">{column.header}</dt>
+                  <dd className="min-w-0 break-words text-body-sm">{column.cell(row)}</dd>
+                </div>
+              ))}
+            </dl>
+            {columns.some((column) => column.hideHeader) && (
+              <div className="mt-4 flex min-w-0 flex-wrap gap-3 border-t border-line pt-3">
+                {columns.filter((column) => column.hideHeader).map((column) => (
+                  <div key={column.key} className="min-w-0">{column.cell(row)}</div>
+                ))}
+              </div>
+            )}
+            {renderExpanded && <div className="min-w-0">{renderExpanded(row)}</div>}
+          </article>
         ))}
-      </tbody>
-    </table>
+      </div>
+      <table className="hidden w-full table-fixed md:table xl:table-auto">
+        <thead>
+          <tr className="bg-neutral-soft/45">
+            {columns.map((column) => (
+              <th key={column.key} className={TH}>
+                {column.hideHeader ? <span className="sr-only">{column.header}</span> : column.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line">
+          {rows.map((row) => (
+            <DataRow key={rowKey(row)} columns={columns} row={row} expanded={renderExpanded?.(row)} />
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 

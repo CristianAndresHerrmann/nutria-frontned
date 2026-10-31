@@ -97,7 +97,7 @@ function Foods() {
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
       <div className="flex flex-wrap items-center gap-4 border-b border-line p-5">
-        <div className="relative w-full max-w-80">
+        <div className="relative w-full min-w-0 sm:max-w-80">
           <span className="absolute top-1/2 left-3.5 size-4.25 -translate-y-1/2">
             <img src={searchIcon1} alt="" style={{ position: 'absolute', inset: '69.42% 12.5% 12.5% 69.42%' }} />
             <img src={searchIcon2} alt="" style={{ position: 'absolute', inset: '12.5% 20.83% 20.83% 12.5%' }} />
@@ -113,7 +113,7 @@ function Foods() {
         </div>
 
         <select
-          className={`${inputClass} max-w-64`}
+          className={`${inputClass} sm:max-w-64`}
           value={groupId}
           onChange={(event) => setGroupId(event.target.value)}
           aria-label="Filtrar por grupo"
@@ -127,7 +127,7 @@ function Foods() {
           ))}
         </select>
 
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex w-full flex-col items-start gap-4 sm:ml-auto sm:w-auto sm:flex-row sm:flex-wrap sm:items-center xl:flex-nowrap">
           {foods && <span className="text-body-sm whitespace-nowrap text-muted">{foods.length} alimentos</span>}
           <Button onClick={() => navigate('/catalogos/alimentos/nuevo')}>+ Nuevo alimento</Button>
         </div>

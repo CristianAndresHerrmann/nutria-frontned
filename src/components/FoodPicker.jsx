@@ -6,7 +6,7 @@ import searchIcon2 from '../assets/icons/search-2.svg';
 
 const SEARCH_DELAY_MS = 300;
 const MAX_RESULTS = 8;
-const OPTION = 'flex w-full items-center justify-between gap-3 px-3.5 py-2 text-left text-sm';
+const OPTION = 'flex w-full min-w-0 flex-col items-start justify-between gap-1 break-words px-3.5 py-2 text-left text-sm sm:flex-row sm:items-center sm:gap-3';
 
 // Buscador sobre el catálogo de alimentos (T15): los comunes y los privados del
 // nutricionista, solo vigentes. Elegir uno llama a `onSelect(food)` y limpia la
@@ -55,28 +55,30 @@ function FoodPicker({ onSelect, excludeIds = [], invalid = false }) {
   const isOpen = Boolean(search.trim() && debouncedSearch);
 
   return (
-    <div className="relative">
-      <span className="absolute top-1/2 left-3.5 size-4.25 -translate-y-1/2">
-        <img src={searchIcon1} alt="" style={{ position: 'absolute', inset: '69.42% 12.5% 12.5% 69.42%' }} />
-        <img src={searchIcon2} alt="" style={{ position: 'absolute', inset: '12.5% 20.83% 20.83% 12.5%' }} />
-      </span>
-      <input
-        type="search"
-        className={`${inputClass} pl-10`}
-        placeholder="Buscar un alimento del catálogo para agregarlo..."
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        onKeyDown={(event) => {
-          // Enter en el buscador no envía el formulario de la receta.
-          if (event.key === 'Enter') event.preventDefault();
-          if (event.key === 'Escape') setSearch('');
-        }}
-        aria-label="Buscar alimento para agregar como ingrediente"
-        aria-invalid={invalid}
-      />
+    <div className="relative min-w-0">
+      <div className="relative">
+        <span className="absolute top-1/2 left-3.5 size-4.25 -translate-y-1/2">
+          <img src={searchIcon1} alt="" style={{ position: 'absolute', inset: '69.42% 12.5% 12.5% 69.42%' }} />
+          <img src={searchIcon2} alt="" style={{ position: 'absolute', inset: '12.5% 20.83% 20.83% 12.5%' }} />
+        </span>
+        <input
+          type="search"
+          className={`${inputClass} pl-10`}
+          placeholder="Buscar un alimento del catálogo para agregarlo..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          onKeyDown={(event) => {
+            // Enter en el buscador no envía el formulario de la receta.
+            if (event.key === 'Enter') event.preventDefault();
+            if (event.key === 'Escape') setSearch('');
+          }}
+          aria-label="Buscar alimento para agregar como ingrediente"
+          aria-invalid={invalid}
+        />
+      </div>
 
       {isOpen && (
-        <div className="absolute inset-x-0 top-full z-10 mt-1 overflow-hidden rounded-xl border border-line bg-white shadow-card">
+        <div className="relative z-10 mt-1 max-h-72 overflow-y-auto overscroll-contain rounded-xl border border-line bg-white shadow-card xl:absolute xl:inset-x-0 xl:top-full xl:max-h-none">
           {error && (
             <p className="px-3.5 py-2 text-sm text-danger" role="alert">
               {error}
@@ -100,8 +102,8 @@ function FoodPicker({ onSelect, excludeIds = [], invalid = false }) {
                       onClick={() => choose(food)}
                       disabled={alreadyAdded}
                     >
-                      <span>{food.name}</span>
-                      <span className="text-note text-muted">{alreadyAdded ? 'Ya agregado' : food.foodGroup?.name}</span>
+                      <span className="min-w-0 max-w-full">{food.name}</span>
+                      <span className="min-w-0 max-w-full text-note text-muted">{alreadyAdded ? 'Ya agregado' : food.foodGroup?.name}</span>
                     </button>
                   </li>
                 );

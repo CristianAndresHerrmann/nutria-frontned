@@ -3,7 +3,7 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 # Build estático para staging. Vite fija las variables VITE_* en el build, no al
 # arrancar el contenedor: por eso llegan como build args.

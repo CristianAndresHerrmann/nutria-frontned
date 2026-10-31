@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPatient } from '../api/patients';
+import { usePatientData } from '../hooks/usePatientData';
 import { formatDate, formatDateTime } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import { CLINICAL_TAB, HABITS_TAB, displayClinicalValue, sectionsForTab } from './patientClinicalFields';
@@ -12,18 +13,19 @@ import Badge from '../components/Badge';
 import Avatar from '../components/Avatar';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
+import ScrollTabs from '../components/ScrollTabs';
 
 const CONSULTATIONS_TAB = 'Consultas';
 const MEASUREMENTS_TAB = 'Mediciones';
 const TABS = ['Resumen', CLINICAL_TAB, HABITS_TAB, CONSULTATIONS_TAB, MEASUREMENTS_TAB, 'Planes'];
 
-const FIELD_GRID = 'grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4';
+const FIELD_GRID = 'grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))]';
 
 // `wide` ocupa la fila entera (texto largo); whitespace-pre-line respeta los
 // saltos de línea que se cargaron en un textarea.
 function Field({ label, value, wide = false }) {
   return (
-    <div className={`flex flex-col gap-1 ${wide ? 'col-span-full' : ''}`}>
+    <div className={`flex min-w-0 flex-col gap-1 break-words ${wide ? 'col-span-full' : ''}`}>
       <span className="text-xs text-muted">{label}</span>
       <span className="text-sm font-medium whitespace-pre-line text-ink">{value || 'Sin dato'}</span>
     </div>
@@ -53,38 +55,21 @@ function ClinicalSections({ tab, patient }) {
 
 function PatientDetail() {
   const { id } = useParams();
+  // Una ficha nueva reinicia también los formularios inline y la pestaña:
+  // nunca se reutiliza el estado de edición del paciente anterior.
+  return <PatientDetailContent key={id} id={id} />;
+}
+
+function PatientDetailContent({ id }) {
   const navigate = useNavigate();
-  const [patient, setPatient] = useState(null);
-  const [error, setError] = useState('');
+  const { data: patient, error, reload: refreshPatient } = usePatientData(id, getPatient);
   const [activeTab, setActiveTab] = useState('Resumen');
-
-  useEffect(() => {
-    let cancelled = false;
-
-    getPatient(id)
-      .then((data) => {
-        if (!cancelled) setPatient(data);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err.message);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
 
   // Tras cambiar una condición: el aviso de datos clínicos faltantes (RF-45)
   // se calcula en el backend con las condiciones del paciente. Tras guardar una
   // consulta: el backend movió la última actualización. Si falla, la ficha
   // sigue mostrando lo que ya tenía.
-  const refreshPatient = useCallback(() => {
-    getPatient(id)
-      .then(setPatient)
-      .catch(() => {});
-  }, [id]);
-
-  if (error) {
+  if (error && !patient) {
     return (
       <p className="text-sm text-danger" role="alert">
         {error}
@@ -102,14 +87,14 @@ function PatientDetail() {
     <div>
       <BackButton onClick={() => navigate('/pacientes')}>Volver a pacientes</BackButton>
 
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
+        <div className="flex min-w-0 items-center gap-4">
           <Avatar size="lg">{initialsOf(patient)}</Avatar>
-          <div>
+          <div className="min-w-0 break-words">
             <h1 className="text-2xl font-bold text-ink">
               {patient.firstName} {patient.lastName}
             </h1>
-            <p className="mt-1.5 flex items-center gap-2 text-sm text-muted">
+            <p className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-muted">
               {patient.age === null ? 'Sin dato' : `${patient.age} años`}
               {patient.goal && (
                 <>
@@ -134,12 +119,13 @@ function PatientDetail() {
         </p>
       )}
 
-      <nav className="mb-6 flex gap-1 border-b border-line">
+      <ScrollTabs activeKey={activeTab} className="mb-6 flex gap-1 border-b border-line" aria-label="Ficha del paciente">
         {TABS.map((tab) => (
           <button
             key={tab}
             type="button"
-            className={`border-b-2 px-4 py-2.5 text-sm font-medium ${
+            aria-pressed={tab === activeTab}
+            className={`shrink-0 whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium ${
               tab === activeTab ? 'border-primary text-primary' : 'border-transparent text-muted'
             }`}
             onClick={() => setActiveTab(tab)}
@@ -147,7 +133,7 @@ function PatientDetail() {
             {tab}
           </button>
         ))}
-      </nav>
+      </ScrollTabs>
 
       {activeTab === 'Resumen' && (
         <div className="flex flex-col gap-5">

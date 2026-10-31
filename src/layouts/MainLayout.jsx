@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logoMark from '../assets/icons/logo-mark.svg';
@@ -158,6 +159,34 @@ function MainLayout() {
   const { logout, nutritionist, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [menuLocationKey, setMenuLocationKey] = useState(null);
+  const menuOpen = menuLocationKey === location.key;
+  const menuButtonRef = useRef(null);
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    const panel = panelRef.current;
+    const menuButton = menuButtonRef.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    panel.showModal();
+    panel.focus();
+
+    // El botón deja de participar del layout desde lg. Evita dejar el body
+    // bloqueado al rotar o agrandar la ventana con el panel abierto.
+    function handleResize() {
+      if (menuButton?.getClientRects().length === 0) setMenuLocationKey(null);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      panel.close();
+      document.body.style.overflow = previousOverflow;
+      menuButton?.focus();
+    };
+  }, [menuOpen]);
 
   function handleLogout() {
     logout();
@@ -168,9 +197,9 @@ function MainLayout() {
   const variant = ROLE_VARIANTS[role] || ROLE_VARIANTS.nutritionist;
   const { Nav } = variant;
 
-  return (
-    <div className="flex min-h-screen bg-surface">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-line bg-white px-4 py-6">
+  function sidebarContent() {
+    return (
+      <>
         <div className="mb-6 flex items-center gap-2.5 px-3">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-primary">
             <img src={logoMark} alt="" className="size-4.75" />
@@ -185,8 +214,24 @@ function MainLayout() {
         <div className="mt-auto flex items-center gap-2.5 border-t border-line px-3 pt-4">
           <Avatar>{initials}</Avatar>
           <div className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate text-sm font-semibold text-ink">{nutritionist?.name || variant.label}</span>
-            <span className="truncate text-caption text-muted">{nutritionist?.email || ''}</span>
+            <div className="flex min-w-0 flex-col lg:hidden">
+              <span className="break-words text-sm font-semibold text-ink">{nutritionist?.name || variant.label}</span>
+              <span className="break-words text-caption text-muted">{nutritionist?.email || ''}</span>
+              <span className="text-caption text-muted">{variant.label}</span>
+            </div>
+            {/* Conserva la composición de escritorio. El summary permite leer
+                la identidad completa con teclado, mouse o tacto, sin title. */}
+            <details className="relative hidden min-w-0 lg:block">
+              <summary aria-label={`${nutritionist?.name || variant.label}, ${nutritionist?.email || ''}, ${variant.label}`} className="flex min-w-0 cursor-pointer list-none flex-col rounded-sm focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+                <span className="truncate text-sm font-semibold text-ink">{nutritionist?.name || variant.label}</span>
+                <span className="truncate text-caption text-muted">{nutritionist?.email || ''}</span>
+              </summary>
+              <div className="absolute bottom-full left-0 z-30 mb-2 w-64 max-w-[calc(100vw-2rem)] break-words rounded-xl border border-line bg-white p-3 shadow-card">
+                <p className="text-sm font-semibold text-ink">{nutritionist?.name || variant.label}</p>
+                <p className="text-caption text-muted">{nutritionist?.email || ''}</p>
+                <p className="text-caption text-muted">{variant.label}</p>
+              </div>
+            </details>
           </div>
           <button
             type="button"
@@ -197,22 +242,61 @@ function MainLayout() {
             <LogoutIcon />
           </button>
         </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen bg-surface">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-line bg-white px-4 py-6 lg:flex">
+        {sidebarContent()}
       </aside>
 
+      {/* dialog provee Escape, foco contenido y fondo inerte sin librerías. */}
+      <dialog
+        ref={panelRef}
+        id="mobile-navigation"
+        aria-label="Menú principal"
+        tabIndex={-1}
+        onCancel={() => setMenuLocationKey(null)}
+        onClose={() => setMenuLocationKey(null)}
+        onClick={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect();
+          if (event.target === event.currentTarget &&
+            (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) {
+            setMenuLocationKey(null);
+          }
+          if (event.target.closest('a')) setMenuLocationKey(null);
+        }}
+        className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-80 max-w-[calc(100%-2rem)] border-r border-line bg-white p-0 text-ink backdrop:bg-ink/40 lg:hidden"
+      >
+        <div className="flex min-h-full flex-col px-4 py-6">
+          <button type="button" aria-label="Cerrar menú" className="mb-4 self-end rounded-lg px-3 py-2 text-sm text-muted hover:bg-surface" onClick={() => setMenuLocationKey(null)}>
+            ✕
+          </button>
+          {sidebarContent()}
+        </div>
+      </dialog>
+
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-18 shrink-0 items-center justify-between border-b border-line bg-surface/95 px-10 backdrop-blur-xs">
-          <span className="text-body-sm text-muted">{headerTitleFor(variant.headerTitles, location.pathname)}</span>
-          <div className="flex items-center gap-3">
+        <header className="flex min-h-18 shrink-0 items-center justify-between gap-3 border-b border-line bg-surface/95 px-4 py-2 backdrop-blur-xs sm:px-6 lg:px-10 xl:h-18 xl:py-0">
+          <div className="flex min-w-0 items-center gap-3">
+            <button ref={menuButtonRef} type="button" aria-label="Abrir menú" aria-expanded={menuOpen} aria-controls="mobile-navigation" className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-white text-ink lg:hidden" onClick={() => setMenuLocationKey(location.key)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-5" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+            <span className="min-w-0 break-words text-body-sm text-muted">{headerTitleFor(variant.headerTitles, location.pathname)}</span>
+          </div>
+          <div className="flex min-w-0 items-center gap-3">
             <span className="h-6 w-px bg-line" />
             <Avatar>{initials}</Avatar>
-            <div className="flex flex-col">
-              <span className="text-caption font-semibold text-ink">{variant.displayName(nutritionist?.name)}</span>
+            <div className="hidden min-w-0 flex-col sm:flex">
+              <span className="break-words text-caption font-semibold text-ink">{variant.displayName(nutritionist?.name)}</span>
               <span className="text-[10.8px] text-muted">{variant.label}</span>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 px-10 py-8">
+        <main className="min-w-0 flex-1 break-words px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
           <Outlet />
         </main>
       </div>

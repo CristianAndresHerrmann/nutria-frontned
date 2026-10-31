@@ -1,7 +1,7 @@
 import { apiRequest } from './client';
 
-// Recetas del nutricionista (T21). Ve solo las suyas; no hay borrado: la baja es
-// lógica (availableInCatalog = false) y va por la edición.
+// Recetas comunes y propias (T21, T30). La baja lógica de una propia puede
+// hacerse por PATCH desde el listado o junto con la edición completa por PUT.
 
 // Arma la URL del listado con los filtros que tienen valor.
 export function recipesPath({ mealType, includeUnavailable } = {}) {
@@ -27,4 +27,8 @@ export function createRecipe(data) {
 
 export function updateRecipe(id, data) {
   return apiRequest(`/recipes/${id}`, { method: 'PUT', body: data });
+}
+
+export function setRecipeAvailability(id, availableInCatalog) {
+  return apiRequest(`/recipes/${id}`, { method: 'PATCH', body: { availableInCatalog } });
 }

@@ -15,7 +15,7 @@ function TablePagination({ page, pageSize, total, setPage, setPageSize }) {
   return (
     <nav
       aria-label="Paginación"
-      className="flex flex-wrap items-center justify-between gap-4 border-t border-line px-5 py-4 text-body-sm text-muted"
+      className="flex flex-col items-start gap-4 border-t border-line px-5 py-4 text-body-sm text-muted sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >
       <label className="flex items-center gap-2.5">
         Filas por página
@@ -32,7 +32,7 @@ function TablePagination({ page, pageSize, total, setPage, setPageSize }) {
         </select>
       </label>
 
-      <div className="flex items-center gap-3">
+      <div className="flex max-w-full flex-wrap items-center gap-3">
         <span aria-live="polite" className="whitespace-nowrap">
           {from}–{to} de {total}
         </span>

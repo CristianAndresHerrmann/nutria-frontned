@@ -80,7 +80,7 @@ function Login() {
         </span>
       </div>
 
-      <div className="w-full max-w-[420px] rounded-2xl border border-line bg-white px-9 py-9 shadow-card">
+      <div className="w-full max-w-[420px] break-words rounded-2xl border border-line bg-white px-5 py-6 shadow-card sm:px-9 sm:py-9">
         <p className="mb-1.5 text-sm font-medium text-primary">Espacio profesional</p>
         <h1 className="mb-3 text-2xl font-semibold tracking-[-0.6px] text-ink">Iniciar sesión</h1>
         <p className="mb-7 text-sm leading-6 text-muted">Gestioná la información de tus pacientes de forma simple y segura.</p>

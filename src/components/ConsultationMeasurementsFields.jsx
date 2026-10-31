@@ -7,7 +7,7 @@ import {
 import FormField, { inputClass } from './FormField';
 
 const FIXED_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2';
-const ROW_GRID = 'grid grid-cols-1 gap-3 sm:grid-cols-4';
+const ROW_GRID = 'grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4';
 const LINK_BUTTON = 'text-body-sm font-medium text-primary hover:underline disabled:opacity-50';
 
 // Bloque opcional de mediciones del formulario de consulta (T20; RF-11, RF-12).
@@ -26,7 +26,7 @@ function ConsultationMeasurementsFields({
   onRemoveRow,
 }) {
   return (
-    <fieldset className="flex flex-col gap-3">
+    <fieldset className="flex min-w-0 flex-col gap-3">
       <legend className="text-sm font-medium text-ink">Mediciones</legend>
       <p className="text-body-sm text-muted">
         Opcionales. Se registran con la fecha de la consulta; el IMC se calcula solo cuando hay peso y talla.

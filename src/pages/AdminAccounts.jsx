@@ -25,6 +25,7 @@ function AdminAccounts() {
   const [loadError, setLoadError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [resettingId, setResettingId] = useState(null);
+  const [resetForm, setResetForm] = useState({ password: '', isSubmitting: false, formError: '', fieldErrors: {} });
   const [togglingId, setTogglingId] = useState(null);
   const [actionError, setActionError] = useState('');
   const [notice, setNotice] = useState('');
@@ -114,7 +115,7 @@ function AdminAccounts() {
       header: 'Acciones',
       hideHeader: true,
       cell: (account) => (
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex flex-wrap items-center justify-end gap-4 xl:flex-nowrap">
           <button
             type="button"
             className={LINK_BUTTON}
@@ -122,6 +123,7 @@ function AdminAccounts() {
             onClick={() => {
               setNotice('');
               setActionError('');
+              setResetForm({ password: '', isSubmitting: false, formError: '', fieldErrors: {} });
               setResettingId(account.id);
             }}
           >
@@ -140,6 +142,8 @@ function AdminAccounts() {
     return (
       <PasswordResetForm
         accountName={account.name}
+        state={resetForm}
+        onStateChange={setResetForm}
         onSubmit={(password) => handleResetPassword(account, password)}
         onCancel={() => setResettingId(null)}
       />
@@ -148,8 +152,8 @@ function AdminAccounts() {
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
+        <div className="min-w-0">
           <h1 className="text-[28px] font-bold text-ink">Cuentas</h1>
           <p className="mt-2 text-sm text-muted">Cuentas de las nutricionistas que usan NutrIA.</p>
         </div>

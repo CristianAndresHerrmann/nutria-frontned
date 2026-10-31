@@ -58,7 +58,7 @@ function Recommendations() {
     <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
       <div className="flex flex-wrap items-center gap-4 border-b border-line p-5">
         <select
-          className={`${inputClass} max-w-64`}
+          className={`${inputClass} sm:max-w-64`}
           value={pathologyId}
           onChange={(event) => setPathologyId(event.target.value)}
           aria-label="Filtrar por patología"
@@ -80,9 +80,9 @@ function Recommendations() {
           Mostrar dadas de baja
         </label>
 
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex w-full flex-col items-start gap-4 sm:ml-auto sm:w-auto sm:flex-row sm:flex-wrap sm:items-center xl:flex-nowrap">
           {recommendations && (
-            <span className="text-body-sm whitespace-nowrap text-muted">{recommendations.length} recomendaciones</span>
+            <span className="text-body-sm text-muted xl:whitespace-nowrap">{recommendations.length} recomendaciones</span>
           )}
           <Button onClick={() => navigate('/catalogos/recomendaciones/nueva')}>+ Nueva recomendación</Button>
         </div>
@@ -102,14 +102,14 @@ function Recommendations() {
       )}
 
       {recommendations && !error && recommendations.length > 0 && (
-        <div className="flex flex-col gap-6 p-5">
+        <div className="flex min-w-0 flex-col gap-6 p-5">
           {groupByPathology(recommendations).map((group) => (
             <div key={group.pathology.id} className="flex flex-col gap-2">
               <h3 className="text-xs font-bold tracking-[0.3px] text-muted uppercase">{group.pathology.name}</h3>
               {group.recommendations.map((recommendation) => (
-                <article key={recommendation.id} className="flex flex-col gap-1.5 rounded-xl border border-line p-4">
+                <article key={recommendation.id} className="flex min-w-0 flex-col gap-1.5 rounded-xl border border-line p-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="text-sm font-semibold text-ink">{recommendation.title}</h4>
+                    <h4 className="min-w-0 max-w-full break-words text-sm font-semibold text-ink">{recommendation.title}</h4>
                     <Badge tone={recommendation.own ? 'mint' : 'neutral'}>{recommendation.own ? 'Propia' : 'Común'}</Badge>
                     {!recommendation.active && <Badge tone="warning">Dada de baja</Badge>}
                     {recommendation.own && (

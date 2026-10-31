@@ -114,8 +114,8 @@ function PatientForm() {
     <div className="max-w-4xl">
       <BackButton onClick={() => navigate('/pacientes')}>Volver</BackButton>
 
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">{isEditMode ? 'Editar paciente' : 'Nuevo paciente'}</h1>
           <p className="mt-2 text-sm text-muted">
             {isEditMode ? 'Actualizá los datos de la ficha.' : 'Completá los datos básicos para crear una nueva ficha.'}
@@ -294,7 +294,7 @@ function PatientForm() {
           </p>
         )}
 
-        <div className="flex justify-end gap-3 border-t border-line pt-3">
+        <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={() => navigate('/pacientes')}>
             Cancelar
           </Button>

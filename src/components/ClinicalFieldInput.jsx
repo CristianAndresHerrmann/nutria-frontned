@@ -25,7 +25,7 @@ function ClinicalFieldInput({ field, value, error, onChange }) {
   }
 
   return (
-    <div className={field.kind === 'textarea' ? 'sm:col-span-2' : undefined}>
+    <div className={field.kind === 'textarea' ? 'min-w-0 sm:col-span-2' : 'min-w-0'}>
       <FormField label={field.label} error={error}>
         {control}
       </FormField>

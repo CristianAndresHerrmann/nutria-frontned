@@ -4,6 +4,14 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
+### Fixed
+
+- AUD-010: todas las etapas derivadas de `deps` instalan con `npm ci`, para construir las imágenes de desarrollo y producción con las versiones del lockfile.
+
+- AUD-017: las cargas de condiciones, consultas, mediciones y ficha usan `usePatientData`, limitado a ese flujo. Solo la última request vigente puede publicar datos o errores; cambiar de paciente oculta los datos anteriores y reinicia formularios y pestaña. Los guardados o eliminaciones pendientes no recargan ni notifican una ficha abandonada. Se conserva la recarga posterior al guardado y la ficha existente si falla su actualización. Pruebas de ciclo de vida con React montado y `jsdom` como dependencia de desarrollo, incluidas respuestas demoradas y `StrictMode`. Los buscadores y sus debounces no cambian.
+
+- AUD-008: dar de baja o reactivar una receta desde el listado usa `PATCH /recipes/:id` con solo `availableInCatalog`. Conserva las ediciones hechas desde otra pestaña y usa la receta actual devuelta por el servidor. Se elimina la reconstrucción del PUT desde la fila; el formulario sigue usando la edición completa.
+
 ### Added
 
 - Recetas básicas comunes (T30; DA-34). El listado de Recetas muestra las comunes junto con las propias, marcadas como **Común** o **Propia**. Una común no se edita ni se da de baja: no tiene la acción Editar, y si se llega a su edición por URL se muestra "Las recetas comunes son de solo lectura." sin formulario.
