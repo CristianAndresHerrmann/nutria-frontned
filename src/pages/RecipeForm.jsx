@@ -11,8 +11,10 @@ import {
   recipeToForm,
   toggleMealType,
 } from './recipeFormMapping';
+import { useFormErrors } from '../hooks/useFormErrors';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass, textareaClass } from '../components/FormField';
+import FormError from '../components/FormError';
 import RecipeIngredientsFields from '../components/RecipeIngredientsFields';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
@@ -44,8 +46,7 @@ function RecipeForm() {
   const [isLoading, setIsLoading] = useState(isEditMode || Boolean(baseId));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadError, setLoadError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  const { fieldErrors, formError, reset, clearField, showError } = useFormErrors();
 
   useEffect(() => {
     if (!sourceId) return undefined;
@@ -78,18 +79,17 @@ function RecipeForm() {
 
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
-    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+    clearField(field);
   }
 
   function updateIngredients(change) {
     setForm((current) => ({ ...current, ingredients: change(current.ingredients) }));
-    setFieldErrors((current) => ({ ...current, ingredients: undefined }));
+    clearField('ingredients');
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
-    setFieldErrors({});
+    reset();
     setIsSubmitting(true);
 
     try {
@@ -97,8 +97,7 @@ function RecipeForm() {
       const saved = await (isEditMode ? updateRecipe(id, payload) : createRecipe(payload));
       navigate(`${LIST_PATH}/${saved.id}`, { replace: true });
     } catch (err) {
-      setFormError(err.message);
-      setFieldErrors(err.fields || {});
+      showError(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -281,11 +280,7 @@ function RecipeForm() {
           </SectionCard>
         )}
 
-        {formError && (
-          <p className="text-body-sm text-danger" role="alert">
-            {formError}
-          </p>
-        )}
+        <FormError message={formError} />
 
         <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={() => navigate(backPath)}>

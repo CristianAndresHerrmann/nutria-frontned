@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { listFoodGroups, listFoods, listPathologies } from '../api/catalogs';
 import { flattenTree, indent } from '../utils/foodGroupTree';
 import { CONDITION_TYPES, EMPTY_CONDITION_FORM, conditionToForm, formToConditionPayload } from '../pages/patientConditions';
+import { useFormErrors } from '../hooks/useFormErrors';
 import FormField, { inputClass, textareaClass } from './FormField';
+import FormError from './FormError';
 import Button from './Button';
 
 const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2';
@@ -23,8 +25,7 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
   const [found, setFound] = useState({ query: '', foods: [] });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadError, setLoadError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  const { fieldErrors, formError, reset, showError } = useFormErrors();
 
   useEffect(() => {
     let cancelled = false;
@@ -86,17 +87,13 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
-    setFieldErrors({});
+    reset();
     setIsSubmitting(true);
 
     try {
       await onSubmit(formToConditionPayload(form));
     } catch (err) {
-      const fields = err.fields || {};
-      setFieldErrors(fields);
-      // Si el error ya está en un campo, no se repite arriba del botón.
-      if (Object.keys(fields).length === 0) setFormError(err.message);
+      showError(err);
       setIsSubmitting(false);
     }
   }
@@ -266,11 +263,7 @@ function ConditionForm({ condition, onSubmit, onCancel }) {
         />
       </FormField>
 
-      {formError && (
-        <p className="text-body-sm text-danger" role="alert">
-          {formError}
-        </p>
-      )}
+      <FormError message={formError} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end xl:flex-nowrap">
         <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
