@@ -10,8 +10,15 @@ const OPTION = 'flex w-full min-w-0 flex-col items-start justify-between gap-1 b
 
 // Buscador sobre el catálogo de alimentos (T15): los comunes y los privados del
 // nutricionista, solo vigentes. Elegir uno llama a `onSelect(food)` y limpia la
-// búsqueda. Los de `excludeIds` (ya elegidos) se muestran deshabilitados.
-function FoodPicker({ onSelect, excludeIds = [], invalid = false }) {
+// búsqueda. Los de `excludeIds` (ya elegidos) se muestran deshabilitados. Los
+// textos por defecto son los de los ingredientes de una receta.
+function FoodPicker({
+  onSelect,
+  excludeIds = [],
+  invalid = false,
+  placeholder = 'Buscar un alimento del catálogo para agregarlo...',
+  ariaLabel = 'Buscar alimento para agregar como ingrediente',
+}) {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [results, setResults] = useState(null);
@@ -64,15 +71,15 @@ function FoodPicker({ onSelect, excludeIds = [], invalid = false }) {
         <input
           type="search"
           className={`${inputClass} pl-10`}
-          placeholder="Buscar un alimento del catálogo para agregarlo..."
+          placeholder={placeholder}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           onKeyDown={(event) => {
-            // Enter en el buscador no envía el formulario de la receta.
+            // Enter en el buscador no envía el formulario que lo contiene.
             if (event.key === 'Enter') event.preventDefault();
             if (event.key === 'Escape') setSearch('');
           }}
-          aria-label="Buscar alimento para agregar como ingrediente"
+          aria-label={ariaLabel}
           aria-invalid={invalid}
         />
       </div>

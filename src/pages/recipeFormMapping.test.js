@@ -135,5 +135,6 @@ describe('recipesPath', () => {
 
   it('agrega solo los filtros con valor', () => {
     expect(recipesPath({ mealType: 'lunch', includeUnavailable: true })).toBe('/recipes?mealType=lunch&includeUnavailable=true');
+    expect(recipesPath({ mealType: 'lunch', patientId: 'pac-1' })).toBe('/recipes?mealType=lunch&patientId=pac-1');
   });
 });

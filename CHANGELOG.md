@@ -16,6 +16,24 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Added
 
+- Edición y revalidación del borrador del plan (T40; RF-28, RF-29, RF-40, RF-46, RNF-10). La propuesta (`/pacientes/:id/planes/:planId`) se sigue abriendo en lectura, como en T39, y se edita en la misma pantalla con **Editar propuesta**, sin ruta aparte. La leyenda avisa en los dos modos que es un borrador que requiere revisión. No había Figma.
+  - **Cancelar** descarta lo editado y vuelve a la lectura; si hay cambios, pide confirmación. **Guardar cambios** también vuelve a la lectura, con los hallazgos recalculados.
+  - **Textos** (RF-40): diagnóstico situacional, introducción, objetivos y recomendaciones generales, contextuales y temáticas, en campos editables. Las clínicas aparecen solo si el plan ya las tiene, porque elegirlas del catálogo no es parte de esta tarea. Por comida se editan la indicación y la descripción de cada opción.
+  - **Ítems y opciones**: cada ítem se puede **reemplazar** o **quitar**. Cada opción puede **agregar ítems** (hasta 15) y quitarse; si tiene ítems, pide confirmación. Cada comida puede **agregar opciones** (hasta 10).
+  - **Elegir un ítem** del catálogo, nunca texto libre:
+    - Alimento: con el buscador de alimentos, que ahora acepta su texto e `aria-label` por props.
+    - Grupo: con el selector jerárquico.
+    - Receta (RF-29): solo las del tipo de comida y sin ingredientes restringidos por las alergias, intolerancias o rechazos del paciente (`GET /recipes?patientId=`, RF-28), con búsqueda por nombre o ingrediente.
+    - Así se resuelve un ítem no reconocido.
+  - **Guardar cambios** manda el borrador completo (`PUT /patients/:id/plans/:planId`). El backend lo revalida y la pantalla muestra los hallazgos nuevos junto a cada ítem u opción (RF-46).
+    - Mientras haya cambios sin guardar, un aviso indica que los hallazgos son de la última versión guardada. Un bloqueo solo desaparece al guardar la corrección de lo que lo produce.
+    - Volver a la ficha o cerrar la pestaña con cambios pide confirmación.
+    - Reabrir el borrador muestra los hallazgos con las condiciones actuales del paciente.
+  - **Errores** con el criterio de T29 (`useFormErrors`, `FormError`): el de un texto va junto a su campo. El de un ítem llega en `meals` con la opción y el ítem en el mensaje, y se muestra arriba de las comidas.
+  - Nuevos `updatePlan` y el filtro `patientId` en `recipesPath`. Mapeo puro en `src/pages/planForm.js` y componentes `PlanMealFields`, `PlanItemPicker` y `FindingList`. Ya no se usa `optionDescription`: la descripción de la opción se edita tal cual.
+  - Pruebas del mapeo, del cliente y de la pantalla: guardar, reemplazar un no reconocido, asignar una receta con bloqueo, quitar y agregar, errores por campo y confirmación al salir.
+  - El registro detallado de modificaciones para la trazabilidad (RF-41) queda para el Incremento 4.
+
 - Generación y vista de la propuesta de plan alimentario (T39; RF-34, RF-45, RNF-02, RNF-10). No había Figma para estas pantallas, así que se armaron con los componentes y tokens existentes.
   - **Pestaña Planes** de la ficha (reemplaza el "Pronto"):
     - Listado de planes del paciente (creado, última modificación, estado "Borrador") con acceso a cada uno.

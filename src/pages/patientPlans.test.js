@@ -4,6 +4,7 @@ import {
   findingCounts,
   generationErrorMessage,
   groupFindings,
+  editableRecommendationSections,
   itemDisplay,
   optionDescription,
   planStatusLabel,
@@ -108,6 +109,27 @@ describe('secciones de texto', () => {
     expect(recommendationSections(plan)).toEqual([
       { name: 'generalRecommendations', label: 'Generales', text: 'Generales' },
       { name: 'thematicRecommendations', label: 'Temáticas', text: 'Temáticas' },
+    ]);
+  });
+});
+
+describe('editableRecommendationSections', () => {
+  const plan = { generalRecommendations: 'Generales', contextualRecommendations: null, thematicRecommendations: null };
+
+  it('las que escribe la IA siempre se editan, aunque estén vacías', () => {
+    expect(editableRecommendationSections({ ...plan, clinicalRecommendations: null })).toEqual([
+      { name: 'generalRecommendations', label: 'Generales' },
+      { name: 'contextualRecommendations', label: 'Contextuales' },
+      { name: 'thematicRecommendations', label: 'Temáticas' },
+    ]);
+  });
+
+  it('las clínicas aparecen solo si el plan las tiene', () => {
+    expect(editableRecommendationSections({ ...plan, clinicalRecommendations: 'Del catálogo' }).map(({ name }) => name)).toEqual([
+      'generalRecommendations',
+      'contextualRecommendations',
+      'clinicalRecommendations',
+      'thematicRecommendations',
     ]);
   });
 });
