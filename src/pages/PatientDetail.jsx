@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getPatient } from '../api/patients';
 import { usePatientData } from '../hooks/usePatientData';
+import { usePlanGeneration } from '../hooks/usePlanGeneration';
 import { formatDate, formatDateTime } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import { CLINICAL_TAB, HABITS_TAB, displayClinicalValue, sectionsForTab } from './patientClinicalFields';
@@ -9,6 +10,8 @@ import SectionCard from '../components/SectionCard';
 import PatientConditions from '../components/PatientConditions';
 import PatientConsultations from '../components/PatientConsultations';
 import PatientMeasurements from '../components/PatientMeasurements';
+import PatientPlans from '../components/PatientPlans';
+import MissingClinicalDataWarning from '../components/MissingClinicalDataWarning';
 import Badge from '../components/Badge';
 import Avatar from '../components/Avatar';
 import BackButton from '../components/BackButton';
@@ -17,7 +20,8 @@ import ScrollTabs from '../components/ScrollTabs';
 
 const CONSULTATIONS_TAB = 'Consultas';
 const MEASUREMENTS_TAB = 'Mediciones';
-const TABS = ['Resumen', CLINICAL_TAB, HABITS_TAB, CONSULTATIONS_TAB, MEASUREMENTS_TAB, 'Planes'];
+const PLANS_TAB = 'Planes';
+const TABS = ['Resumen', CLINICAL_TAB, HABITS_TAB, CONSULTATIONS_TAB, MEASUREMENTS_TAB, PLANS_TAB];
 
 const FIELD_GRID = 'grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))]';
 
@@ -62,8 +66,11 @@ function PatientDetail() {
 
 function PatientDetailContent({ id }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: patient, error, reload: refreshPatient } = usePatientData(id, getPatient);
-  const [activeTab, setActiveTab] = useState('Resumen');
+  // Volver desde la vista de un plan abre directamente la pestaña Planes.
+  const [activeTab, setActiveTab] = useState(() => (TABS.includes(location.state?.tab) ? location.state.tab : 'Resumen'));
+  const generation = usePlanGeneration(id);
 
   // Tras cambiar una condición: el aviso de datos clínicos faltantes (RF-45)
   // se calcula en el backend con las condiciones del paciente. Tras guardar una
@@ -112,12 +119,7 @@ function PatientDetailContent({ id }) {
         </Button>
       </div>
 
-      {/* RF-45: advertencia, no bloquea nada. La confirmación antes de aprobar un plan es del Incremento 4. */}
-      {patient.missingClinicalData && (
-        <p className="mb-6 rounded-xl bg-warning-bg px-3.5 py-2.5 text-body-sm text-warning" role="status">
-          No hay patologías, alergias, intolerancias ni medicación registradas para este paciente.
-        </p>
-      )}
+      {patient.missingClinicalData && <MissingClinicalDataWarning />}
 
       <ScrollTabs activeKey={activeTab} className="mb-6 flex gap-1 border-b border-line" aria-label="Ficha del paciente">
         {TABS.map((tab) => (
@@ -131,6 +133,12 @@ function PatientDetailContent({ id }) {
             onClick={() => setActiveTab(tab)}
           >
             {tab}
+            {/* La generación sigue en curso aunque se cambie de pestaña (RNF-02). */}
+            {tab === PLANS_TAB && generation.status === 'generating' && (
+              <span className="ml-2">
+                <Badge tone="neutral">Generando</Badge>
+              </span>
+            )}
           </button>
         ))}
       </ScrollTabs>
@@ -177,13 +185,7 @@ function PatientDetailContent({ id }) {
 
       {activeTab === MEASUREMENTS_TAB && <PatientMeasurements patientId={id} />}
 
-      {activeTab === 'Planes' && (
-        <div className="flex flex-col gap-5">
-          <SectionCard>
-            <p className="text-sm text-muted">Pronto</p>
-          </SectionCard>
-        </div>
-      )}
+      {activeTab === PLANS_TAB && <PatientPlans patientId={id} generation={generation} />}
     </div>
   );
 }

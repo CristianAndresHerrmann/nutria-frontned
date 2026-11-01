@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Patients from './pages/Patients';
 import PatientForm from './pages/PatientForm';
 import PatientDetail from './pages/PatientDetail';
+import PlanDetail from './pages/PlanDetail';
 import Foods from './pages/Foods';
 import FoodGroups from './pages/FoodGroups';
 import FoodForm from './pages/FoodForm';
@@ -33,6 +34,7 @@ function App() {
               <Route path="pacientes/nuevo" element={<PatientForm />} />
               <Route path="pacientes/:id" element={<PatientDetail />} />
               <Route path="pacientes/:id/editar" element={<PatientForm />} />
+              <Route path="pacientes/:id/planes/:planId" element={<PlanDetail />} />
               <Route path="catalogos" element={<CatalogLayout />}>
                 <Route index element={<Navigate to="alimentos" replace />} />
                 <Route path="alimentos" element={<Foods />} />

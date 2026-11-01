@@ -21,6 +21,7 @@ const NUTRITIONIST_HEADER_TITLES = [
   { pattern: '/pacientes/nuevo', title: 'Nuevo paciente' },
   { pattern: '/pacientes/:id/editar', title: 'Editar paciente' },
   { pattern: '/pacientes/:id', title: 'Ficha del paciente' },
+  { pattern: '/pacientes/:id/planes/:planId', title: 'Propuesta de plan' },
   { pattern: '/catalogos', title: 'Catálogos' },
   { pattern: '/catalogos/alimentos', title: 'Alimentos' },
   { pattern: '/catalogos/alimentos/nuevo', title: 'Nuevo alimento' },
@@ -248,7 +249,8 @@ function MainLayout() {
 
   return (
     <div className="flex min-h-screen bg-surface">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-line bg-white px-4 py-6 lg:flex">
+      {/* Fija mientras el contenido scrollea: queda siempre a la vista la navegación y la sesión. */}
+      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col self-start border-r border-line bg-white px-4 py-6 lg:flex">
         {sidebarContent()}
       </aside>
 
