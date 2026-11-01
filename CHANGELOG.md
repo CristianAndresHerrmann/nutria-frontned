@@ -6,6 +6,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Fixed
 
+- La barra lateral de escritorio (desde `lg`) queda fija al alto de la ventana y ya no se desplaza con el contenido en pantallas largas, como la vista de un plan.
+
 - AUD-010: todas las etapas derivadas de `deps` instalan con `npm ci`, para construir las imágenes de desarrollo y producción con las versiones del lockfile.
 
 - AUD-017: las cargas de condiciones, consultas, mediciones y ficha usan `usePatientData`, limitado a ese flujo. Solo la última request vigente puede publicar datos o errores; cambiar de paciente oculta los datos anteriores y reinicia formularios y pestaña. Los guardados o eliminaciones pendientes no recargan ni notifican una ficha abandonada. Se conserva la recarga posterior al guardado y la ficha existente si falla su actualización. Pruebas de ciclo de vida con React montado y `jsdom` como dependencia de desarrollo, incluidas respuestas demoradas y `StrictMode`. Los buscadores y sus debounces no cambian.
@@ -14,6 +16,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Added
 
+- Generación y vista de la propuesta de plan alimentario (T39; RF-34, RF-45, RNF-02, RNF-10). No había Figma para estas pantallas, así que se armaron con los componentes y tokens existentes.
+  - **Pestaña Planes** de la ficha (reemplaza el "Pronto"):
+    - Listado de planes del paciente (creado, última modificación, estado "Borrador") con acceso a cada uno.
+    - **Generar propuesta** pide a la IA las cuatro comidas. Mientras genera, el botón queda deshabilitado con un aviso de proceso en curso, y la ficha se puede seguir usando: al cambiar de pestaña, "Planes" muestra "Generando" y al volver el estado sigue ahí.
+    - Si la IA falla (503 `IA_UNAVAILABLE`), se muestra el motivo, se aclara que no se creó ningún plan y se ofrece **Reintentar**. Si el cliente deja de esperar, se avisa que la propuesta pudo haberse generado y se recarga el listado.
+    - Al terminar se ofrece **Ver propuesta**; no se navega solo, para no interrumpir lo que se esté haciendo.
+  - **Vista de la propuesta** (`/pacientes/:id/planes/:planId`), de solo lectura:
+    - Leyenda fija: es un borrador editable generado con IA que el profesional debe revisar y validar.
+    - Aviso de datos clínicos faltantes (RF-45), el mismo de la ficha.
+    - Resumen de hallazgos bloqueantes y advertencias; diagnóstico situacional, introducción, objetivos y recomendaciones cargadas; y cada comida con sus opciones e ítems (alimento, grupo o receta).
+    - Cada hallazgo se muestra junto a su ítem, o al pie de la opción si es de composición, con badge **Bloqueante** o **Advertencia**. Los ítems no reconocidos quedan destacados en rojo.
+    - "Volver a la ficha" abre la pestaña Planes.
+  - La edición del plan no está en esta tarea.
+  - Nuevo tono `danger` de `Badge` y token `danger-bg`.
 - Recetas básicas comunes (T30; DA-34). El listado de Recetas muestra las comunes junto con las propias, marcadas como **Común** o **Propia**. Una común no se edita ni se da de baja: no tiene la acción Editar, y si se llega a su edición por URL se muestra "Las recetas comunes son de solo lectura." sin formulario.
 - Detalle de una receta (`/catalogos/recetas/:id`, T30), de solo lectura: datos, ingredientes con sus cantidades, preparación y nota final. Se llega tocando el nombre en el listado, y desde ahí se edita (solo las propias) o se duplica. Guardar una edición o una copia lleva al detalle de la receta guardada, y Volver o Cancelar, a la receta de la que se partió.
 - El encabezado muestra el título de las pantallas de recetas (Recetas, Nueva receta, Editar receta, Receta), que antes decía "Página no encontrada".

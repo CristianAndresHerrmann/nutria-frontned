@@ -110,7 +110,8 @@ Las casillas quedan deliberadamente sin marcar hasta la revisión en navegador.
 | Ficha — Hábitos y alimentación | Todos los valores y textos extensos, manteniendo saltos de línea. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Ficha — Consultas | Historial y badges; nueva consulta; fecha/tipo; agregar/quitar hábitos y mediciones; unidades y errores. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Ficha — Mediciones | Antropometría y laboratorio: fecha, tipo/detalle, valor, unidad e IMC; scroll táctil y por teclado dentro de tabla. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Ficha — Planes | Pestaña alcanzable y contenido actual “Pronto”. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Ficha — Planes | Generar propuesta, aviso en curso, badge “Generando” en la pestaña, error con Reintentar, aviso “Ver propuesta” y listado/tarjetas con Ver. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| `/pacientes/:id/planes/:planId` | Leyenda de propuesta editable, aviso RF-45, resumen de hallazgos, textos largos, opciones e ítems con hallazgos y no reconocidos destacados. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | `/catalogos` | Redirección a alimentos; barra completa y pestaña activa. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | `/catalogos/alimentos` | Buscar, filtrar por grupo, categorías completas, contador, alta y paginación. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | `/catalogos/alimentos/nuevo` | Nombre/grupo, todas las categorías, errores y guardar/cancelar. | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |

@@ -2,6 +2,7 @@ const TONES = {
   mint: 'bg-mint-50 text-mint-700',
   warning: 'bg-warning-bg text-warning',
   neutral: 'bg-neutral-soft text-muted',
+  danger: 'bg-danger-bg text-danger',
 };
 
 function Badge({ children, tone = 'mint' }) {

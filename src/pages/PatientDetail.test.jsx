@@ -8,11 +8,14 @@ import { getPatient } from '../api/patients';
 import { createCondition, deleteCondition, listConditions, updateCondition } from '../api/patientConditions';
 import { createConsultation, listConsultations } from '../api/patientConsultations';
 import { listMeasurements } from '../api/patientMeasurements';
+import { generatePlan, listPlans } from '../api/patientPlans';
+import { ApiError } from '../api/client';
 
 vi.mock('../api/patients', () => ({ getPatient: vi.fn() }));
 vi.mock('../api/patientConditions', () => ({ listConditions: vi.fn(), createCondition: vi.fn(), updateCondition: vi.fn(), deleteCondition: vi.fn() }));
 vi.mock('../api/patientConsultations', () => ({ listConsultations: vi.fn(), createConsultation: vi.fn() }));
 vi.mock('../api/patientMeasurements', () => ({ listMeasurements: vi.fn() }));
+vi.mock('../api/patientPlans', () => ({ listPlans: vi.fn(), generatePlan: vi.fn() }));
 // Los formularios solo entregan un payload ficticio: se prueban la ficha y las
 // pestañas reales, sus efectos y sus callbacks de guardado, no sus validadores.
 vi.mock('../components/ConditionForm', () => ({ default: ({ onSubmit, onCancel }) => (
@@ -51,10 +54,14 @@ beforeEach(async () => {
   listConditions.mockResolvedValue([]);
   listConsultations.mockResolvedValue([]);
   listMeasurements.mockResolvedValue([]);
+  listPlans.mockResolvedValue([]);
   container = document.createElement('div');
   document.body.append(container);
   root = createRoot(container);
-  router = createMemoryRouter([{ path: '/pacientes/:id', element: <PatientDetail /> }], { initialEntries: ['/pacientes/A'] });
+  router = createMemoryRouter([
+    { path: '/pacientes/:id', element: <PatientDetail /> },
+    { path: '/pacientes/:id/planes/:planId', element: <p>Vista del plan</p> },
+  ], { initialEntries: ['/pacientes/A'] });
   await act(async () => root.render(<RouterProvider router={router} />));
 });
 
@@ -190,5 +197,90 @@ describe('ficha y pestañas con respuestas demoradas (AUD-017)', () => {
     expect(listConditions).toHaveBeenCalledTimes(1);
     expect(getPatient).toHaveBeenCalledTimes(1);
     expect(container.textContent).toContain('Datos personales');
+  });
+});
+
+describe('pestaña Planes (T39)', () => {
+  const summary = (id) => ({ id, patientId: 'A', status: 'draft', createdAt: '2026-10-30T12:00:00Z', updatedAt: '2026-10-30T12:00:00Z' });
+
+  function button(text) {
+    return [...container.querySelectorAll('button')].find((node) => node.textContent === text);
+  }
+
+  it('lista los planes y abre la vista de uno', async () => {
+    listPlans.mockResolvedValueOnce([summary('plan-1')]);
+    await click('Planes');
+    expect(listPlans).toHaveBeenCalledWith('A');
+    expect(container.textContent).toContain('Borrador');
+    await act(async () => button('Ver').click());
+    expect(router.state.location.pathname).toBe('/pacientes/A/planes/plan-1');
+  });
+
+  it('sin planes muestra el estado vacío', async () => {
+    await click('Planes');
+    expect(container.textContent).toContain('Sin planes registrados');
+  });
+
+  it('mientras genera la ficha sigue operativa y el estado sobrevive al cambio de pestaña (RNF-02)', async () => {
+    const request = deferred();
+    generatePlan.mockReturnValueOnce(request.promise);
+    await click('Planes');
+    await click('Generar propuesta');
+
+    expect(button('Generando propuesta...').disabled).toBe(true);
+    expect(container.querySelector('[role="status"]').textContent).toContain('podés seguir usando la ficha');
+
+    await click('Consultas');
+    expect(container.textContent).toContain('Sin consultas registradas');
+    expect(button('PlanesGenerando')).toBeDefined();
+
+    await click('PlanesGenerando');
+    expect(button('Generando propuesta...').disabled).toBe(true);
+
+    listPlans.mockResolvedValueOnce([summary('plan-nuevo')]);
+    await act(async () => request.resolve({ id: 'plan-nuevo' }));
+    expect(container.textContent).toContain('Propuesta generada.');
+    expect(container.textContent).toContain('Borrador');
+    expect(button('Planes')).toBeDefined();
+
+    await click('Ver propuesta');
+    expect(router.state.location.pathname).toBe('/pacientes/A/planes/plan-nuevo');
+  });
+
+  it('un error de la IA muestra el motivo y permite reintentar', async () => {
+    generatePlan
+      .mockRejectedValueOnce(new ApiError({
+        status: 503, code: 'IA_UNAVAILABLE', message: 'El servicio de IA no está disponible', details: { reason: 'provider_error' },
+      }))
+      .mockResolvedValueOnce({ id: 'plan-1' });
+    await click('Planes');
+    await click('Generar propuesta');
+
+    expect(container.querySelector('[role="alert"]').textContent).toBe(
+      'El servicio de IA no está disponible. No se creó ningún plan. Podés reintentar.',
+    );
+
+    await click('Reintentar');
+    expect(generatePlan).toHaveBeenCalledTimes(2);
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+    expect(container.textContent).toContain('Propuesta generada.');
+  });
+
+  it('una generación que termina tras cambiar de paciente no aparece en la ficha nueva', async () => {
+    const request = deferred();
+    generatePlan.mockReturnValueOnce(request.promise);
+    await click('Planes');
+    await click('Generar propuesta');
+    await navigate('B');
+    await click('Planes');
+    await act(async () => request.resolve({ id: 'plan-de-A' }));
+    expect(container.textContent).toContain('Paciente B');
+    expect(container.textContent).not.toContain('Propuesta generada.');
+    expect(button('Generar propuesta').disabled).toBe(false);
+  });
+
+  it('volver desde la vista de un plan abre la pestaña Planes', async () => {
+    await act(async () => router.navigate('/pacientes/B', { state: { tab: 'Planes' } }));
+    expect(container.textContent).toContain('Generar propuesta');
   });
 });
