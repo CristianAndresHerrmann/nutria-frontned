@@ -66,7 +66,7 @@ export function findingCounts(findings) {
   };
 }
 
-const TEXT_SECTIONS = [
+export const TEXT_SECTIONS = [
   { name: 'situationalDiagnosis', label: 'Diagnóstico situacional' },
   { name: 'introduction', label: 'Introducción' },
   { name: 'objectives', label: 'Objetivos' },
@@ -87,6 +87,13 @@ export function planTextSections(plan) {
 // Solo las cargadas: la IA nunca escribe las clínicas (DA-28).
 export function recommendationSections(plan) {
   return RECOMMENDATION_SECTIONS.filter(({ name }) => plan[name]).map(({ name, label }) => ({ name, label, text: plan[name] }));
+}
+
+// Las recomendaciones que se editan (RF-40): las que escribe la IA, siempre, y
+// las clínicas solo si el plan guardado las tiene. Elegirlas del catálogo no es
+// parte de esta pantalla.
+export function editableRecommendationSections(plan) {
+  return RECOMMENDATION_SECTIONS.filter(({ name }) => name !== 'clinicalRecommendations' || plan[name]);
 }
 
 const IA_TIMEOUT_REASONS = ['timeout', 'provider_timeout'];

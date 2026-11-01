@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { GENERATE_TIMEOUT_MS, generatePlan, getPlan, listPlans } from './patientPlans';
+import { GENERATE_TIMEOUT_MS, generatePlan, getPlan, listPlans, updatePlan } from './patientPlans';
 import { ApiError } from './client';
 
 afterEach(() => {
@@ -60,6 +60,32 @@ describe('planes del paciente (T39)', () => {
       code: 'IA_UNAVAILABLE',
       message: 'El servicio de IA no está disponible',
       details: { reason: 'provider_error' },
+    });
+  });
+});
+
+describe('edición del borrador (T40)', () => {
+  it('reemplaza el borrador con PUT y devuelve el plan revalidado', async () => {
+    const saved = { id: 'p-1', meals: [], findings: [] };
+    const payload = { introduction: 'Nueva', meals: [] };
+    const fetchMock = stubFetch(saved);
+
+    await expect(updatePlan('pac-1', 'p-1', payload)).resolves.toEqual(saved);
+
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(url).toMatch(/\/patients\/pac-1\/plans\/p-1$/);
+    expect(options.method).toBe('PUT');
+    expect(JSON.parse(options.body)).toEqual(payload);
+  });
+
+  it('propaga el 400 con el error en su campo', async () => {
+    stubFetch({
+      error: { code: 'VALIDATION_ERROR', message: 'Datos inválidos', details: { fields: { meals: 'Opción 1 del almuerzo, ítem 2: el alimento no existe' } } },
+    }, 400);
+
+    await expect(updatePlan('pac-1', 'p-1', { meals: [] })).rejects.toMatchObject({
+      status: 400,
+      fields: { meals: 'Opción 1 del almuerzo, ítem 2: el alimento no existe' },
     });
   });
 });
