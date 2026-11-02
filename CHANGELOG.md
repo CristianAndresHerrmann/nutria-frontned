@@ -16,6 +16,12 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Added
 
+- Crear un alimento desde el formulario de receta (T26; RF-24, RF-25, RF-27, RNF-04), en el alta, la edición y la copia de una receta. Si la búsqueda de ingredientes no encuentra nada, ofrece **+ Crear «texto buscado»**. La opción abre un modal con el alta de alimento: nombre precargado, grupo, categorías y el mismo aviso de que queda privado y no se edita después.
+  - Al guardar, el alimento se agrega como último ingrediente y el modal se cierra. Lo cargado en la receta no cambia, y el submit del modal no envía la receta.
+  - Los errores se muestran por campo dentro del modal, con `useFormErrors` y `FormError` (T29). Con un nombre repetido (`409`), el error aparece en Nombre y el modal sigue abierto. Cancelar o Escape lo cierra sin crear nada.
+  - El modal es `CreateFoodDialog`: un `dialog` nativo en un portal (el de la receta ya es un `form`) que reutiliza `FoodFields` y `POST /foods`, sin cambios en la API. `FoodPicker` muestra la opción solo si recibe `onCreate`, así que el buscador de alimentos de los planes no cambia. El aviso de alimento privado pasa a `PRIVATE_FOOD_NOTICE`, compartido con la pantalla de alta.
+  - Pruebas del modal (nombre precargado, payload, `409` en el campo, no envía la receta) y del flujo completo desde el buscador de ingredientes.
+
 - Catálogo en el panel del administrador (T25; RF-04, RF-24, RF-25, RNF-05). Nuevo ítem **Catálogo** en el menú del administrador, con cuatro pestañas en `/admin/catalogo`. No había Figma: se usaron los tokens y componentes existentes.
   - **Alimentos:**
     - El listado trae los comunes y los privados de cada nutricionista, incluidos los dados de baja. Se filtra por origen (comunes o los privados de una nutricionista), por nombre y por grupo.

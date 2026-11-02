@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createFood, listFoodGroups } from '../api/catalogs';
 import { flattenTree } from '../utils/foodGroupTree';
-import { EMPTY_FOOD_FORM, formToPayload } from './foodFormMapping';
+import { EMPTY_FOOD_FORM, PRIVATE_FOOD_NOTICE, formToPayload } from './foodFormMapping';
 import { useFormErrors } from '../hooks/useFormErrors';
 import SectionCard from '../components/SectionCard';
 import FoodFields from '../components/FoodFields';
@@ -90,10 +90,7 @@ function FoodForm() {
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">Nuevo alimento</h1>
-          <p className="mt-2 text-sm text-muted">
-            El alimento queda disponible solo para vos. Una vez guardado no se puede modificar: si hace falta
-            corregirlo, pedíselo al administrador del catálogo.
-          </p>
+          <p className="mt-2 text-sm text-muted">{PRIVATE_FOOD_NOTICE}</p>
         </div>
         <span className="text-note whitespace-nowrap text-muted">* Campo obligatorio</span>
       </div>
