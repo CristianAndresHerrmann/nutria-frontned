@@ -4,15 +4,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
-### Fixed
+## [0.0.3] - 2026-11-01
 
-- La barra lateral de escritorio (desde `lg`) queda fija al alto de la ventana y ya no se desplaza con el contenido en pantallas largas, como la vista de un plan.
-
-- AUD-010: todas las etapas derivadas de `deps` instalan con `npm ci`, para construir las imágenes de desarrollo y producción con las versiones del lockfile.
-
-- AUD-017: las cargas de condiciones, consultas, mediciones y ficha usan `usePatientData`, limitado a ese flujo. Solo la última request vigente puede publicar datos o errores; cambiar de paciente oculta los datos anteriores y reinicia formularios y pestaña. Los guardados o eliminaciones pendientes no recargan ni notifican una ficha abandonada. Se conserva la recarga posterior al guardado y la ficha existente si falla su actualización. Pruebas de ciclo de vida con React montado y `jsdom` como dependencia de desarrollo, incluidas respuestas demoradas y `StrictMode`. Los buscadores y sus debounces no cambian.
-
-- AUD-008: dar de baja o reactivar una receta desde el listado usa `PATCH /recipes/:id` con solo `availableInCatalog`. Conserva las ediciones hechas desde otra pestaña y usa la receta actual devuelta por el servidor. Se elimina la reconstrucción del PUT desde la fila; el formulario sigue usando la edición completa.
+Incremento 3 (ver `docs/cierre-incremento-3.md` en el repo raíz).
 
 ### Added
 
@@ -73,6 +67,48 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 - **Duplicar** una receta, común o propia (T30, fuera del alcance original de la card): abre el alta de receta (`/catalogos/recetas/nueva?base=<id>`) con todos sus datos copiados y el nombre marcado como "(copia)". El nutricionista la adapta (ingredientes, pasos, tipos de comida) y al guardar queda como receta propia nueva; la original no cambia.
 - Paginación de las tablas (T28; DA-33): Alimentos, Pacientes, Recetas y Cuentas muestran 10 o 25 filas por página, a elección (10 por defecto), con el rango ("11–20 de 232") y botones de página anterior y siguiente. Cambiar la búsqueda o un filtro vuelve a la primera página. El pie no aparece si las filas entran en una página. La paginación es en el cliente: la API no cambia.
 - Categoría **Complementario** en el alta de alimentos y en los listados (T28; DA-32), para los alimentos sin aporte a la composición (azúcar, sal, condimentos, manteca, agua).
+- Rol administrador y pantalla de **Cuentas** (T31). No había Figma, así que se armó con `Badge`, `Button`, `FormField` y los tokens existentes.
+  - **Mismo login para los dos roles:**
+    - El administrador entra a `/admin` y el nutricionista, a su inicio.
+    - Después de un login, se vuelve a la pantalla que se quería abrir solo si es del rol que entró.
+  - **Rutas protegidas por rol:** una cuenta que abre una ruta del otro rol vuelve a su propio inicio. "Página no encontrada" lleva al inicio del rol.
+  - **Cuentas** (`/admin/cuentas`):
+    - Listado de las cuentas de nutricionista con nombre, email, estado ("Activa" o "Desactivada") y fecha de alta.
+    - **Nueva cuenta:** nombre, email y contraseña inicial, en un formulario en la misma pantalla.
+    - **Desactivar** y **Reactivar**, con confirmación.
+    - **Restablecer contraseña**, en un formulario en la fila de la cuenta.
+    - Los errores del backend se muestran junto a su campo, con el borde en rojo; por ejemplo, un email repetido.
+  - **Menú y encabezado según el rol:** el administrador ve solo "Cuentas" y se identifica como "Administrador", sin el "Lic.".
+  - **Sesión:**
+    - Una cuenta que se desactiva con la sesión abierta pasa a "Tu sesión expiró" en la siguiente request.
+    - Un token guardado de antes de este cambio, que no trae rol, se descarta y hay que volver a iniciar sesión.
+  - **Archivos y tests:**
+    - `src/api/adminNutritionists.js`, `src/pages/AdminAccounts.jsx`, `src/components/NutritionistAccountForm.jsx` y `src/components/PasswordResetForm.jsx`.
+    - `src/utils/roleRoutes.js`, con tests: inicio por rol, rutas permitidas y destino después del login.
+    - `getTokenRole` en `src/api/client.js`, con tests de lectura del rol y la expiración del token.
+
+### Changed
+
+- Los formularios de paciente, receta, alimento, condición, consulta y recomendación muestran los errores de la misma forma (T29; RNF-04). El error de cada campo sigue junto al campo, y arriba del botón de guardar aparece "Revisá los campos marcados antes de guardar." (también en la validación local de fechas y mediciones), en lugar de repetir el primer error de campo. Un error sin campos (conflicto, servidor caído, sin conexión) se sigue mostrando arriba del botón con su mensaje. Lo resuelven el hook `useFormErrors` y el componente `FormError`, con pruebas unitarias.
+- Las cuatro tablas usan los componentes nuevos `DataTable` y `TablePagination`, y el hook `usePagination` (T28), en lugar de repetir el marcado y las constantes `TH`/`TD` en cada pantalla. En Cuentas, la fila para restablecer la contraseña pasa a `renderExpanded` de `DataTable`. `Button` suma la variante `icon`.
+- `ProtectedRoute` recibe el rol de las rutas que protege (T31). `useAuth()` suma `role` e `isAdmin`, y `MainLayout` arma el menú, los títulos y la etiqueta del encabezado según el rol.
+
+### Fixed
+
+- La barra lateral de escritorio (desde `lg`) queda fija al alto de la ventana y ya no se desplaza con el contenido en pantallas largas, como la vista de un plan.
+
+- AUD-010: todas las etapas derivadas de `deps` instalan con `npm ci`, para construir las imágenes de desarrollo y producción con las versiones del lockfile.
+
+- AUD-017: las cargas de condiciones, consultas, mediciones y ficha usan `usePatientData`, limitado a ese flujo. Solo la última request vigente puede publicar datos o errores; cambiar de paciente oculta los datos anteriores y reinicia formularios y pestaña. Los guardados o eliminaciones pendientes no recargan ni notifican una ficha abandonada. Se conserva la recarga posterior al guardado y la ficha existente si falla su actualización. Pruebas de ciclo de vida con React montado y `jsdom` como dependencia de desarrollo, incluidas respuestas demoradas y `StrictMode`. Los buscadores y sus debounces no cambian.
+
+- AUD-008: dar de baja o reactivar una receta desde el listado usa `PATCH /recipes/:id` con solo `availableInCatalog`. Conserva las ediciones hechas desde otra pestaña y usa la receta actual devuelta por el servidor. Se elimina la reconstrucción del PUT desde la fila; el formulario sigue usando la edición completa.
+
+## [0.0.2] - 2026-10-25
+
+Incremento 2 (ver `docs/cierre-incremento-2.md` en el repo raíz).
+
+### Added
+
 - Sección **Catálogos** en el menú principal (T15). El Figma no tiene estas pantallas, así que se armaron con los componentes y tokens existentes. Tiene dos pestañas, Alimentos y Grupos:
   - **Alimentos** (`/catalogos/alimentos`):
     - Muestra los alimentos de la base común y los que cargó el nutricionista, que solo ve él.
@@ -203,34 +239,12 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - Aviso de entorno de prueba (`src/components/EnvironmentBanner.jsx`), fijo abajo en todas las pantallas, incluido el login. El texto sale de `VITE_ENV_LABEL` en el build; en local no está y no se muestra.
   - `.github/workflows/cd-staging.yml`: en cada push a `staging` (o a mano) corre el CI y, si pasa, despliega el servicio en la VM y verifica que la página responde por HTTPS.
   - El CI también corre en los PR hacia `staging`, se puede reutilizar desde otro workflow (`workflow_call`) y construye además la imagen `prod`.
-- Rol administrador y pantalla de **Cuentas** (T31). No había Figma, así que se armó con `Badge`, `Button`, `FormField` y los tokens existentes.
-  - **Mismo login para los dos roles:**
-    - El administrador entra a `/admin` y el nutricionista, a su inicio.
-    - Después de un login, se vuelve a la pantalla que se quería abrir solo si es del rol que entró.
-  - **Rutas protegidas por rol:** una cuenta que abre una ruta del otro rol vuelve a su propio inicio. "Página no encontrada" lleva al inicio del rol.
-  - **Cuentas** (`/admin/cuentas`):
-    - Listado de las cuentas de nutricionista con nombre, email, estado ("Activa" o "Desactivada") y fecha de alta.
-    - **Nueva cuenta:** nombre, email y contraseña inicial, en un formulario en la misma pantalla.
-    - **Desactivar** y **Reactivar**, con confirmación.
-    - **Restablecer contraseña**, en un formulario en la fila de la cuenta.
-    - Los errores del backend se muestran junto a su campo, con el borde en rojo; por ejemplo, un email repetido.
-  - **Menú y encabezado según el rol:** el administrador ve solo "Cuentas" y se identifica como "Administrador", sin el "Lic.".
-  - **Sesión:**
-    - Una cuenta que se desactiva con la sesión abierta pasa a "Tu sesión expiró" en la siguiente request.
-    - Un token guardado de antes de este cambio, que no trae rol, se descarta y hay que volver a iniciar sesión.
-  - **Archivos y tests:**
-    - `src/api/adminNutritionists.js`, `src/pages/AdminAccounts.jsx`, `src/components/NutritionistAccountForm.jsx` y `src/components/PasswordResetForm.jsx`.
-    - `src/utils/roleRoutes.js`, con tests: inicio por rol, rutas permitidas y destino después del login.
-    - `getTokenRole` en `src/api/client.js`, con tests de lectura del rol y la expiración del token.
 
 ### Changed
 
-- Los formularios de paciente, receta, alimento, condición, consulta y recomendación muestran los errores de la misma forma (T29; RNF-04). El error de cada campo sigue junto al campo, y arriba del botón de guardar aparece "Revisá los campos marcados antes de guardar." (también en la validación local de fechas y mediciones), en lugar de repetir el primer error de campo. Un error sin campos (conflicto, servidor caído, sin conexión) se sigue mostrando arriba del botón con su mensaje. Lo resuelven el hook `useFormErrors` y el componente `FormError`, con pruebas unitarias.
-- Las cuatro tablas usan los componentes nuevos `DataTable` y `TablePagination`, y el hook `usePagination` (T28), en lugar de repetir el marcado y las constantes `TH`/`TD` en cada pantalla. En Cuentas, la fila para restablecer la contraseña pasa a `renderExpanded` de `DataTable`. `Button` suma la variante `icon`.
 - Dependencias actualizadas con `npm audit fix` para que `npm audit --audit-level=high` de la CI pase (T12): `vite` 8.3.5, `vitest` 5.0.5 y `source-map-js` 1.2.2, dentro de los rangos de `package.json`.
 - `indent` (sangría de las opciones de grupo) pasa de `Foods.jsx` y `FoodForm.jsx` a `src/utils/foodGroupTree.js`, para reusarla en el formulario de condiciones (T18).
 - La fecha de nacimiento del formulario de paciente usa `DateInput` en lugar del `<input type="date">` del navegador (T17).
-- `ProtectedRoute` recibe el rol de las rutas que protege (T31). `useAuth()` suma `role` e `isAdmin`, y `MainLayout` arma el menú, los títulos y la etiqueta del encabezado según el rol.
 
 ### Fixed
 
