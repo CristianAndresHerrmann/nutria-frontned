@@ -115,6 +115,7 @@ describe('navegación móvil', () => {
     if (role === 'admin') {
       expect(panel().textContent).toContain('Administrador');
       expect(panel().querySelector('a[href="/admin/cuentas"]')).not.toBeNull();
+      expect(panel().querySelector('a[href="/admin/catalogo"]')).not.toBeNull();
       expect(panel().querySelector('a[href="/pacientes"]')).toBeNull();
     } else {
       expect(panel().textContent).toContain('Nutricionista');

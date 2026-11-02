@@ -35,6 +35,20 @@ export function flattenTree(groups) {
   return result;
 }
 
+// Los padres posibles de un grupo (T25), en el orden indentado: todos menos el
+// grupo y sus subgrupos, a cualquier profundidad. Sin groupId (alta), todos. Es
+// ayuda visual: el backend igual rechaza un ciclo con 400 en parentId.
+export function parentOptions(groups, groupId) {
+  const tree = flattenTree(groups);
+  if (!groupId) return tree;
+
+  const start = tree.findIndex((group) => group.id === groupId);
+  if (start === -1) return tree;
+  let end = start + 1;
+  while (end < tree.length && tree[end].depth > tree[start].depth) end += 1;
+  return [...tree.slice(0, start), ...tree.slice(end)];
+}
+
 // "Carnes, pescados y huevos › Aves". Corta si encuentra un ciclo en los datos.
 export function groupPath(groups, id) {
   const byId = new Map(groups.map((group) => [group.id, group]));

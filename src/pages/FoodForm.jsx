@@ -1,18 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createFood, listFoodGroups } from '../api/catalogs';
-import { flattenTree, indent } from '../utils/foodGroupTree';
-import { FOOD_CATEGORIES } from '../utils/foodCategories';
-import { EMPTY_FOOD_FORM, formToPayload, toggleCategory } from './foodFormMapping';
+import { flattenTree } from '../utils/foodGroupTree';
+import { EMPTY_FOOD_FORM, formToPayload } from './foodFormMapping';
 import { useFormErrors } from '../hooks/useFormErrors';
 import SectionCard from '../components/SectionCard';
-import FormField, { inputClass } from '../components/FormField';
+import FoodFields from '../components/FoodFields';
 import FormError from '../components/FormError';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 import iconCheck from '../assets/icons/icon-check.svg';
 
-const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2';
 const LIST_PATH = '/catalogos/alimentos';
 
 // Solo alta: el alimento queda privado del nutricionista y después no se edita
@@ -102,57 +100,7 @@ function FoodForm() {
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
         <SectionCard title="Alimento" subtitle="Nombre, grupo y categorías nutricionales.">
-          <div className="flex flex-col gap-5">
-            <div className={FORM_GRID}>
-              <FormField label="Nombre" required error={fieldErrors.name}>
-                <input
-                  className={inputClass}
-                  placeholder="Ej. Caballa"
-                  value={form.name}
-                  onChange={(event) => updateField('name', event.target.value)}
-                  aria-invalid={Boolean(fieldErrors.name)}
-                  required
-                />
-              </FormField>
-
-              <FormField label="Grupo" required error={fieldErrors.foodGroupId}>
-                <select
-                  className={inputClass}
-                  value={form.foodGroupId}
-                  onChange={(event) => updateField('foodGroupId', event.target.value)}
-                  aria-invalid={Boolean(fieldErrors.foodGroupId)}
-                  required
-                >
-                  <option value="">Elegí un grupo</option>
-                  {groupOptions.map((group) => (
-                    <option key={group.id} value={group.id}>
-                      {indent(group.depth)}
-                      {group.name}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
-            </div>
-
-            <fieldset className="flex min-w-0 flex-col gap-2">
-              <legend className="mb-2 text-sm font-medium text-ink">
-                Categorías <span className="text-primary">*</span>
-              </legend>
-              <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2 xl:grid-cols-3">
-                {FOOD_CATEGORIES.map(({ value, label }) => (
-                  <label key={value} className="flex items-center gap-2 text-sm text-ink">
-                    <input
-                      type="checkbox"
-                      checked={form.categories.includes(value)}
-                      onChange={(event) => updateField('categories', toggleCategory(form.categories, value, event.target.checked))}
-                    />
-                    <span>{label}</span>
-                  </label>
-                ))}
-              </div>
-              {fieldErrors.categories && <span className="text-note text-danger">{fieldErrors.categories}</span>}
-            </fieldset>
-          </div>
+          <FoodFields form={form} groupOptions={groupOptions} fieldErrors={fieldErrors} onChange={updateField} />
         </SectionCard>
 
         <FormError message={formError} />

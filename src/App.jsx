@@ -19,6 +19,12 @@ import RecipeDetail from './pages/RecipeDetail';
 import Recommendations from './pages/Recommendations';
 import RecommendationForm from './pages/RecommendationForm';
 import AdminAccounts from './pages/AdminAccounts';
+import AdminCatalogLayout from './layouts/AdminCatalogLayout';
+import AdminFoods from './pages/AdminFoods';
+import AdminFoodForm from './pages/AdminFoodForm';
+import AdminFoodGroups from './pages/AdminFoodGroups';
+import AdminPathologies from './pages/AdminPathologies';
+import AdminCatalogActivity from './pages/AdminCatalogActivity';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -55,6 +61,15 @@ function App() {
             <Route element={<MainLayout />}>
               <Route index element={<Navigate to="cuentas" replace />} />
               <Route path="cuentas" element={<AdminAccounts />} />
+              <Route path="catalogo" element={<AdminCatalogLayout />}>
+                <Route index element={<Navigate to="alimentos" replace />} />
+                <Route path="alimentos" element={<AdminFoods />} />
+                <Route path="grupos" element={<AdminFoodGroups />} />
+                <Route path="patologias" element={<AdminPathologies />} />
+                <Route path="actividad" element={<AdminCatalogActivity />} />
+              </Route>
+              <Route path="catalogo/alimentos/nuevo" element={<AdminFoodForm />} />
+              <Route path="catalogo/alimentos/:id/editar" element={<AdminFoodForm />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

@@ -16,6 +16,17 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Added
 
+- Catálogo en el panel del administrador (T25; RF-04, RF-24, RF-25, RNF-05). Nuevo ítem **Catálogo** en el menú del administrador, con cuatro pestañas en `/admin/catalogo`. No había Figma: se usaron los tokens y componentes existentes.
+  - **Alimentos:**
+    - El listado trae los comunes y los privados de cada nutricionista, incluidos los dados de baja. Se filtra por origen (comunes o los privados de una nutricionista), por nombre y por grupo.
+    - Desde cada fila se puede **Editar**, **Dar de baja** o **Reactivar**, con confirmación, y **Pasar al común** un privado.
+    - Pasar al común abre un formulario en la fila, con un nombre opcional. Si el nombre choca con otro alimento, el `409` se muestra en el campo y se puede reintentar con otro.
+    - `+ Nuevo alimento común` y la edición (`/admin/catalogo/alimentos/nuevo` y `/:id/editar`) usan los mismos campos que el alta del nutricionista, ahora en `FoodFields`.
+  - **Grupos:** el árbol de grupos, con alta y edición del nombre, la descripción y el grupo padre. El selector de padre no ofrece el grupo ni sus subgrupos (`parentOptions` en `utils/foodGroupTree.js`). Igual, un `400` del backend se muestra en el campo.
+  - **Patologías:** tabla con alta y edición del nombre y la descripción.
+  - **Actividad:** qué alimento cargó cada nutricionista y cuándo, y si sigue privado, pasó al común o está dado de baja. Se filtra por nutricionista.
+  - Cliente HTTP en `src/api/adminCatalog.js`. Pruebas de `parentOptions`, de `foodToForm`, de las URLs del cliente y del formulario de pasar al común entre las dos variantes de `DataTable`.
+
 - Edición y revalidación del borrador del plan (T40; RF-28, RF-29, RF-40, RF-46, RNF-10). La propuesta (`/pacientes/:id/planes/:planId`) se sigue abriendo en lectura, como en T39, y se edita en la misma pantalla con **Editar propuesta**, sin ruta aparte. La leyenda avisa en los dos modos que es un borrador que requiere revisión. No había Figma.
   - **Cancelar** descarta lo editado y vuelve a la lectura; si hay cambios, pide confirmación. **Guardar cambios** también vuelve a la lectura, con los hallazgos recalculados.
   - **Textos** (RF-40): diagnóstico situacional, introducción, objetivos y recomendaciones generales, contextuales y temáticas, en campos editables. Las clínicas aparecen solo si el plan ya las tiene, porque elegirlas del catálogo no es parte de esta tarea. Por comida se editan la indicación y la descripción de cada opción.

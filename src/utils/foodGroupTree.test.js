@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flattenTree, groupPath } from './foodGroupTree';
+import { flattenTree, groupPath, parentOptions } from './foodGroupTree';
 
 const GROUPS = [
   { id: 'pescados', name: 'Pescados', parentId: 'carnes' },
@@ -37,5 +37,19 @@ describe('groupPath', () => {
 
   it('devuelve vacío para un grupo desconocido', () => {
     expect(groupPath(GROUPS, 'no-existe')).toBe('');
+  });
+});
+
+describe('parentOptions', () => {
+  const ids = (groups) => groups.map(({ id }) => id);
+
+  it('en el alta ofrece todos los grupos, en el orden indentado', () => {
+    expect(ids(parentOptions(GROUPS))).toEqual(ids(flattenTree(GROUPS)));
+  });
+
+  it('al editar excluye el grupo y sus subgrupos a cualquier profundidad', () => {
+    expect(ids(parentOptions(GROUPS, 'carnes'))).toEqual(['lacteos']);
+    expect(ids(parentOptions(GROUPS, 'aves'))).toEqual(['carnes', 'pescados', 'lacteos']);
+    expect(ids(parentOptions(GROUPS, 'corral'))).toEqual(['carnes', 'aves', 'pescados', 'lacteos']);
   });
 });

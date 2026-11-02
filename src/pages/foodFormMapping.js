@@ -22,3 +22,8 @@ export function formToPayload(form) {
     categories: FOOD_CATEGORIES.map(({ value }) => value).filter((value) => form.categories.includes(value)),
   };
 }
+
+// Un alimento de la API como formulario de edición (panel del administrador, T25).
+export function foodToForm(food) {
+  return { name: food.name, foodGroupId: food.foodGroupId, categories: [...food.categories] };
+}
