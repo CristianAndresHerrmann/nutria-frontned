@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { listFoods } from '../api/catalogs';
 import { inputClass } from './FormField';
 import searchIcon1 from '../assets/icons/search-1.svg';
@@ -11,14 +11,17 @@ const OPTION = 'flex w-full min-w-0 flex-col items-start justify-between gap-1 b
 // Buscador sobre el catálogo de alimentos (T15): los comunes y los privados del
 // nutricionista, solo vigentes. Elegir uno llama a `onSelect(food)` y limpia la
 // búsqueda. Los de `excludeIds` (ya elegidos) se muestran deshabilitados. Los
-// textos por defecto son los de los ingredientes de una receta.
+// textos por defecto son los de los ingredientes de una receta. Con `onCreate`,
+// una búsqueda sin resultados ofrece crear el alimento con lo buscado (T26).
 function FoodPicker({
   onSelect,
+  onCreate,
   excludeIds = [],
   invalid = false,
   placeholder = 'Buscar un alimento del catálogo para agregarlo...',
   ariaLabel = 'Buscar alimento para agregar como ingrediente',
 }) {
+  const inputRef = useRef(null);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [results, setResults] = useState(null);
@@ -52,11 +55,23 @@ function FoodPicker({
     };
   }, [debouncedSearch]);
 
-  function choose(food) {
-    onSelect(food);
+  function clear() {
     setSearch('');
     setDebouncedSearch('');
     setResults(null);
+  }
+
+  function choose(food) {
+    onSelect(food);
+    clear();
+  }
+
+  // El botón desaparece al limpiar la búsqueda: el foco pasa antes al buscador,
+  // que es adonde vuelve al cerrar el modal.
+  function create() {
+    inputRef.current.focus();
+    onCreate(search.trim());
+    clear();
   }
 
   const isOpen = Boolean(search.trim() && debouncedSearch);
@@ -69,6 +84,7 @@ function FoodPicker({
           <img src={searchIcon2} alt="" style={{ position: 'absolute', inset: '12.5% 20.83% 20.83% 12.5%' }} />
         </span>
         <input
+          ref={inputRef}
           type="search"
           className={`${inputClass} pl-10`}
           placeholder={placeholder}
@@ -92,10 +108,16 @@ function FoodPicker({
             </p>
           )}
           {!error && !results && <p className="px-3.5 py-2 text-sm text-muted">Buscando...</p>}
-          {!error && results && results.length === 0 && (
+          {!error && results && results.length === 0 && !onCreate && (
             <p className="px-3.5 py-2 text-sm text-muted">
               No hay alimentos con ese nombre. Si falta, cargalo desde Catálogos › Alimentos.
             </p>
+          )}
+          {!error && results && results.length === 0 && onCreate && (
+            <button type="button" className={`${OPTION} font-medium text-primary hover:bg-surface`} onClick={create}>
+              <span className="min-w-0 max-w-full">+ Crear «{search.trim()}»</span>
+              <span className="min-w-0 max-w-full text-note text-muted">No está en el catálogo</span>
+            </button>
           )}
           {!error && results && results.length > 0 && (
             <ul className="divide-y divide-line">
