@@ -84,7 +84,7 @@ function PatientConsultations({ patientId, onChange }) {
   }
 
   return (
-    <SectionCard title="Consultas" subtitle="Registro de cada encuentro con el paciente.">
+    <SectionCard title="Consultas">
       <div className="flex flex-col gap-5">
         {error && (
           <p className="text-body-sm text-danger" role="alert">

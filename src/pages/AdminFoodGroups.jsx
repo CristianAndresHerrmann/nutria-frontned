@@ -111,7 +111,7 @@ function AdminFoodGroups() {
         <div className="flex flex-col items-start justify-between gap-4 border-b border-line p-5 sm:flex-row sm:items-center">
           <p className="text-sm text-muted">Grupos de alimentos y sus subgrupos.</p>
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            {groups && <span className="text-body-sm whitespace-nowrap text-muted">{groups.length} grupos</span>}
+            {groups && <span className="text-body-sm whitespace-nowrap text-muted">{groups.length} {groups.length === 1 ? 'grupo' : 'grupos'}</span>}
             <Button onClick={() => open('new')} disabled={!groups || Boolean(editing)}>
               + Nuevo grupo
             </Button>

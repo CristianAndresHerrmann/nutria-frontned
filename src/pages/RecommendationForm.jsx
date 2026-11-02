@@ -101,7 +101,7 @@ function RecommendationForm() {
             {isEditMode ? 'Editar recomendación' : 'Nueva recomendación'}
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Recomendación estándar de una patología, reutilizable entre tus pacientes. La que cargás solo la ves vos.
+            Recomendación por patología para tu catálogo privado.
           </p>
         </div>
         <span className="text-note whitespace-nowrap text-muted">* Campo obligatorio</span>
@@ -161,7 +161,7 @@ function RecommendationForm() {
               <span>
                 Vigente
                 <span className="mt-1 block text-body-sm text-muted">
-                  Si la desmarcás, la recomendación deja de ofrecerse, pero no se borra: la podés volver a activar.
+                  Al desmarcarla, deja de ofrecerse sin borrarse. Podés reactivarla.
                 </span>
               </span>
             </label>

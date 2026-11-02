@@ -40,7 +40,7 @@ function NutritionistAccountForm({ onSubmit, onCancel }) {
       <div>
         <h3 className="text-sm font-semibold text-ink">Nueva cuenta de nutricionista</h3>
         <p className="mt-1 text-body-sm text-muted">
-          La cuenta nace activa. Comunicale la contraseña inicial a la nutricionista por un canal privado.
+          Cuenta activa desde su creación. Compartí la contraseña por un canal privado.
         </p>
       </div>
 
@@ -56,7 +56,7 @@ function NutritionistAccountForm({ onSubmit, onCancel }) {
           />
         </FormField>
 
-        <FormField label="Email" required error={fieldErrors.email}>
+        <FormField label="Correo electrónico" required error={fieldErrors.email}>
           <input
             type="email"
             className={inputClass}

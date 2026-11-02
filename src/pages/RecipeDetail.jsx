@@ -75,7 +75,7 @@ function RecipeDetail() {
           </p>
           {!recipe.own && (
             <p className="mt-2 text-body-sm text-muted">
-              Receta básica común: no se edita. Duplicala para adaptarla como una receta propia.
+              Receta común de solo lectura. Duplicala para adaptarla.
             </p>
           )}
         </div>
@@ -101,7 +101,7 @@ function RecipeDetail() {
           </dl>
         </SectionCard>
 
-        <SectionCard title="Ingredientes" subtitle="En el orden de la receta.">
+        <SectionCard title="Ingredientes">
           <ul className="flex flex-col divide-y divide-line">
             {recipe.ingredients.map(({ order, quantityDescription, food }) => (
               <li key={order} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm first:pt-0 last:pb-0">

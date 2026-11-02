@@ -164,7 +164,7 @@ describe('vista de la propuesta (T39)', () => {
     await render();
 
     expect(getPlan).toHaveBeenCalledWith('A', 'plan-1');
-    expect(container.querySelector('[role="note"]').textContent).toContain('borrador que requiere revisión');
+    expect(container.querySelector('[role="note"]').textContent).toContain('Borrador generado con IA. Revisalo y validalo');
     expect(container.textContent).toContain('Paciente Ficticio');
     for (const text of ['Diagnóstico situacional', '[Propuesta simulada] Diagnóstico', 'Introducción', 'Sin dato', '[Propuesta simulada] Objetivos', 'Generales', '[Propuesta simulada] Recomendación general']) {
       expect(container.textContent).toContain(text);
@@ -244,7 +244,7 @@ describe('edición del borrador (T40)', () => {
 
     expect(hasButton('Editar propuesta')).toBe(false);
     // La leyenda de borrador sigue a la vista mientras se edita (RNF-10).
-    expect(container.querySelector('[role="note"]').textContent).toContain('borrador que requiere revisión');
+    expect(container.querySelector('[role="note"]').textContent).toContain('Borrador generado con IA. Revisalo y validalo');
     expect(field('Diagnóstico situacional').value).toBe('[Propuesta simulada] Diagnóstico');
     expect(field('Introducción').value).toBe('');
     expect(field('Objetivos').value).toBe('[Propuesta simulada] Objetivos');
@@ -292,7 +292,7 @@ describe('edición del borrador (T40)', () => {
         }],
       }],
     });
-    expect(container.querySelector('[role="status"]').textContent).toBe('Cambios guardados. Los hallazgos se actualizaron.');
+    expect(container.querySelector('[role="status"]').textContent).toBe('Cambios guardados.');
     expect(container.textContent).not.toContain('Hay cambios sin guardar');
     expect(container.textContent).toContain('0 bloqueantes');
     expect(container.querySelectorAll('input, textarea, select')).toHaveLength(0);

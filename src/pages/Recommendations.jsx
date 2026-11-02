@@ -82,7 +82,7 @@ function Recommendations() {
 
         <div className="flex w-full flex-col items-start gap-4 sm:ml-auto sm:w-auto sm:flex-row sm:flex-wrap sm:items-center xl:flex-nowrap">
           {recommendations && (
-            <span className="text-body-sm text-muted xl:whitespace-nowrap">{recommendations.length} recomendaciones</span>
+            <span className="text-body-sm text-muted xl:whitespace-nowrap">{recommendations.length} {recommendations.length === 1 ? 'recomendación' : 'recomendaciones'}</span>
           )}
           <Button onClick={() => navigate('/catalogos/recomendaciones/nueva')}>+ Nueva recomendación</Button>
         </div>

@@ -18,7 +18,7 @@ function FoodPicker({
   onCreate,
   excludeIds = [],
   invalid = false,
-  placeholder = 'Buscar un alimento del catálogo para agregarlo...',
+  placeholder = 'Buscar alimento...',
   ariaLabel = 'Buscar alimento para agregar como ingrediente',
 }) {
   const inputRef = useRef(null);
@@ -110,13 +110,12 @@ function FoodPicker({
           {!error && !results && <p className="px-3.5 py-2 text-sm text-muted">Buscando...</p>}
           {!error && results && results.length === 0 && !onCreate && (
             <p className="px-3.5 py-2 text-sm text-muted">
-              No hay alimentos con ese nombre. Si falta, cargalo desde Catálogos › Alimentos.
+              Sin coincidencias. Podés agregarlo en Catálogos › Alimentos.
             </p>
           )}
           {!error && results && results.length === 0 && onCreate && (
             <button type="button" className={`${OPTION} font-medium text-primary hover:bg-surface`} onClick={create}>
               <span className="min-w-0 max-w-full">+ Crear «{search.trim()}»</span>
-              <span className="min-w-0 max-w-full text-note text-muted">No está en el catálogo</span>
             </button>
           )}
           {!error && results && results.length > 0 && (

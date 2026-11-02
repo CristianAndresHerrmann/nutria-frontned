@@ -45,7 +45,7 @@ function PatientPlans({ patientId, generation }) {
   ];
 
   return (
-    <SectionCard title="Planes" subtitle="Propuestas de plan alimentario generadas para el paciente.">
+    <SectionCard title="Planes">
       <div className="flex flex-col gap-5">
         <div>
           <Button onClick={generation.generate} disabled={isGenerating}>
@@ -55,7 +55,7 @@ function PatientPlans({ patientId, generation }) {
 
         {isGenerating && (
           <p className="text-body-sm text-muted" role="status">
-            Generando la propuesta con IA. Puede tardar hasta 30 segundos; podés seguir usando la ficha.
+            Generando propuesta. Podés seguir usando la ficha.
           </p>
         )}
 

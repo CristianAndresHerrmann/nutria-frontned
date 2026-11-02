@@ -202,7 +202,7 @@ function Recipes() {
         </label>
 
         <div className="flex w-full flex-col items-start gap-4 sm:ml-auto sm:w-auto sm:flex-row sm:flex-wrap sm:items-center xl:flex-nowrap">
-          {recipes && <span className="text-body-sm whitespace-nowrap text-muted">{filteredRecipes.length} recetas</span>}
+          {recipes && <span className="text-body-sm whitespace-nowrap text-muted">{filteredRecipes.length} {filteredRecipes.length === 1 ? 'receta' : 'recetas'}</span>}
           <Button onClick={() => navigate(`${RECIPES_PATH}/nueva`)}>+ Nueva receta</Button>
         </div>
       </div>

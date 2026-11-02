@@ -30,7 +30,7 @@ function PromoteFoodForm({ food, state, onStateChange, onSubmit, onCancel }) {
       <div>
         <h3 className="text-sm font-semibold break-words text-ink">Pasar «{food.name}» al catálogo común</h3>
         <p className="mt-1 text-body-sm text-muted">
-          Desde ahí lo ven todas las nutricionistas. La actividad del catálogo sigue mostrando quién lo cargó.
+          Disponible para todas las nutricionistas. Se conserva la autoría.
         </p>
       </div>
 

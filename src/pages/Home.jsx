@@ -53,7 +53,6 @@ function Home() {
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">Hola, {firstNameOf(nutritionist?.name) || 'Nutricionista'}</h1>
-          <p className="mt-2 text-sm text-muted">Gestioná tus pacientes desde un único lugar.</p>
         </div>
         <Button onClick={() => navigate('/pacientes/nuevo')}>+ Nuevo paciente</Button>
       </div>

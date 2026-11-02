@@ -115,7 +115,7 @@ describe('crear un ingrediente que no está en el catálogo (T26)', () => {
 
     await search('Kéfir ficticio');
 
-    expect(container.textContent).toContain('No hay alimentos con ese nombre');
+    expect(container.textContent).toContain('Sin coincidencias. Podés agregarlo en Catálogos › Alimentos.');
     expect(container.textContent).not.toContain('+ Crear');
   });
 });

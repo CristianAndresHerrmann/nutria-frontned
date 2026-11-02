@@ -33,7 +33,7 @@ function FoodGroups() {
     <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
       <div className="flex flex-col items-start justify-between gap-4 border-b border-line p-5 sm:flex-row sm:items-center">
         <p className="text-sm text-muted">Grupos de alimentos y sus subgrupos.</p>
-        {groups && <span className="text-body-sm whitespace-nowrap text-muted">{groups.length} grupos</span>}
+        {groups && <span className="text-body-sm whitespace-nowrap text-muted">{groups.length} {groups.length === 1 ? 'grupo' : 'grupos'}</span>}
       </div>
 
       {!groups && !error && <p className="p-5 text-sm text-muted">Cargando grupos...</p>}

@@ -81,9 +81,7 @@ function Login() {
       </div>
 
       <div className="w-full max-w-[420px] break-words rounded-2xl border border-line bg-white px-5 py-6 shadow-card sm:px-9 sm:py-9">
-        <p className="mb-1.5 text-sm font-medium text-primary">Espacio profesional</p>
         <h1 className="mb-3 text-2xl font-semibold tracking-[-0.6px] text-ink">Iniciar sesión</h1>
-        <p className="mb-7 text-sm leading-6 text-muted">Gestioná la información de tus pacientes de forma simple y segura.</p>
 
         {sessionExpired && (
           <p className="-mt-3 mb-5 rounded-xl bg-notice-bg px-3.5 py-2.5 text-body-sm text-notice" role="status">
@@ -119,7 +117,6 @@ function Login() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 className={`${inputClass} pr-11`}
-                placeholder="Ingresá tu contraseña"
                 autoComplete="current-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -151,7 +148,6 @@ function Login() {
         </form>
       </div>
 
-      <p className="text-xs text-muted">NutrIA acompaña tu práctica profesional.</p>
     </div>
   );
 }

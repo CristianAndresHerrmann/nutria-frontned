@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import FormField, { inputClass } from './FormField';
 import Button from './Button';
 
@@ -6,12 +5,9 @@ import Button from './Button';
 // el administrador: no hay recuperación por email.
 function PasswordResetForm({ accountName, onSubmit, onCancel, state, onStateChange }) {
   // DataTable monta ambas variantes CSS: el padre comparte este estado para
-  // conservar el borrador, los errores y el envío al cruzar md. El modo local
-  // mantiene la API previa para usar el formulario de manera independiente.
-  const [localState, setLocalState] = useState({ password: '', isSubmitting: false, formError: '', fieldErrors: {} });
-  const { password, isSubmitting, formError, fieldErrors } = state ?? localState;
-  const setState = onStateChange ?? setLocalState;
-  function update(changes) { setState((current) => ({ ...current, ...changes })); }
+  // conservar el borrador, los errores y el envío al cruzar md.
+  const { password, isSubmitting, formError, fieldErrors } = state;
+  function update(changes) { onStateChange((current) => ({ ...current, ...changes })); }
 
   async function handleSubmit(event) {
     event.preventDefault();

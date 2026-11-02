@@ -97,7 +97,6 @@ function Patients() {
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div className="min-w-0">
           <h1 className="text-[28px] font-bold text-ink">Pacientes</h1>
-          <p className="mt-2 text-sm text-muted">Gestioná la información de tus pacientes.</p>
         </div>
         <Button onClick={() => navigate('/pacientes/nuevo')}>+ Nuevo paciente</Button>
       </div>
@@ -118,7 +117,7 @@ function Patients() {
               aria-label="Buscar paciente por nombre"
             />
           </div>
-          <span className="text-body-sm whitespace-nowrap text-muted">{patients.length} pacientes</span>
+          <span className="text-body-sm whitespace-nowrap text-muted">{patients.length} {patients.length === 1 ? 'paciente' : 'pacientes'}</span>
         </div>
 
         {isLoading && <p className="p-5 text-sm text-muted">Cargando pacientes...</p>}

@@ -9,7 +9,7 @@ export const EMPTY_FOOD_FORM = {
 // Aviso del alta del nutricionista: la pantalla de alta y el modal del
 // formulario de receta (T26).
 export const PRIVATE_FOOD_NOTICE =
-  'El alimento queda disponible solo para vos. Una vez guardado no se puede modificar: si hace falta corregirlo, pedíselo al administrador del catálogo.';
+  'Solo para tu catálogo. Después de guardarlo, solo el administrador puede corregirlo.';
 
 // Marca o desmarca una categoría sin repetirla.
 export function toggleCategory(categories, value, checked) {

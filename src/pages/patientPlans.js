@@ -105,8 +105,8 @@ const NOT_CREATED = 'No se creó ningún plan. Podés reintentar.';
 export function generationErrorMessage(err) {
   if (err.code === 'IA_UNAVAILABLE') {
     const reason = err.details?.reason;
-    if (IA_TIMEOUT_REASONS.includes(reason)) return `El servicio de IA tardó demasiado en responder. ${NOT_CREATED}`;
-    if (reason === 'invalid_output') return `La propuesta recibida no tenía un formato válido. ${NOT_CREATED}`;
+    if (IA_TIMEOUT_REASONS.includes(reason)) return `La generación tardó demasiado. ${NOT_CREATED}`;
+    if (reason === 'invalid_output') return `La propuesta no tenía un formato válido. ${NOT_CREATED}`;
     return `${err.message}. ${NOT_CREATED}`;
   }
   if (err.code === 'TIMEOUT') {

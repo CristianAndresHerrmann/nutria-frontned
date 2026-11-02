@@ -141,13 +141,13 @@ describe('generationErrorMessage', () => {
 
   it.each(['timeout', 'provider_timeout'])('un %s de la IA avisa que tardó y que no se creó nada', (reason) => {
     expect(generationErrorMessage(unavailable(reason))).toBe(
-      'El servicio de IA tardó demasiado en responder. No se creó ningún plan. Podés reintentar.',
+      'La generación tardó demasiado. No se creó ningún plan. Podés reintentar.',
     );
   });
 
   it('una salida inválida avisa el formato', () => {
     expect(generationErrorMessage(unavailable('invalid_output'))).toBe(
-      'La propuesta recibida no tenía un formato válido. No se creó ningún plan. Podés reintentar.',
+      'La propuesta no tenía un formato válido. No se creó ningún plan. Podés reintentar.',
     );
   });
 

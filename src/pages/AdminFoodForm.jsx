@@ -105,17 +105,17 @@ function AdminFoodForm() {
             <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
               {food.common ? <Badge tone="mint">Común</Badge> : <Badge tone="neutral">Privado de {food.owner?.name}</Badge>}
               {!food.active && <Badge tone="warning">Dado de baja</Badge>}
-              <span>Los planes que ya lo usan conservan su copia del nombre y las categorías.</span>
+              <span>Los nombres y categorías guardados en planes anteriores no cambian.</span>
             </div>
           ) : (
-            <p className="mt-2 text-sm text-muted">El alimento queda disponible para todas las nutricionistas.</p>
+            <p className="mt-2 text-sm text-muted">Disponible para todas las nutricionistas.</p>
           )}
         </div>
         <span className="text-note whitespace-nowrap text-muted">* Campo obligatorio</span>
       </div>
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
-        <SectionCard title="Alimento" subtitle="Nombre, grupo y categorías nutricionales.">
+        <SectionCard title="Alimento">
           <FoodFields form={form} groupOptions={groupOptions} fieldErrors={fieldErrors} onChange={updateField} />
         </SectionCard>
 

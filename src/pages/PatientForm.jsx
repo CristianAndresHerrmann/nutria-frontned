@@ -115,9 +115,6 @@ function PatientForm() {
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">{isEditMode ? 'Editar paciente' : 'Nuevo paciente'}</h1>
-          <p className="mt-2 text-sm text-muted">
-            {isEditMode ? 'Actualizá los datos de la ficha.' : 'Completá los datos básicos para crear una nueva ficha.'}
-          </p>
         </div>
         <span className="text-note whitespace-nowrap text-muted">* Campo obligatorio</span>
       </div>
@@ -126,7 +123,6 @@ function PatientForm() {
         <SectionCard
           icon={<img src={iconPerson} alt="" />}
           title="Información personal"
-          subtitle="Datos básicos de identificación y contacto."
         >
           <div className={FORM_GRID}>
             <FormField label="Nombre" required error={fieldErrors.firstName}>

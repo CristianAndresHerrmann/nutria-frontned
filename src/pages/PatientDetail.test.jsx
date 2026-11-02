@@ -228,7 +228,7 @@ describe('pestaña Planes (T39)', () => {
     await click('Generar propuesta');
 
     expect(button('Generando propuesta...').disabled).toBe(true);
-    expect(container.querySelector('[role="status"]').textContent).toContain('podés seguir usando la ficha');
+    expect(container.querySelector('[role="status"]').textContent).toBe('Generando propuesta. Podés seguir usando la ficha.');
 
     await click('Consultas');
     expect(container.textContent).toContain('Sin consultas registradas');

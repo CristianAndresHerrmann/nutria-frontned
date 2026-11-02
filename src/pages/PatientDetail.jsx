@@ -149,12 +149,12 @@ function PatientDetailContent({ id }) {
             <div className={FIELD_GRID}>
               <Field label="Fecha de nacimiento" value={patient.birthDate ? formatDate(patient.birthDate) : null} />
               <Field label="Teléfono" value={patient.phone} />
-              <Field label="Correo" value={patient.email} />
+              <Field label="Correo electrónico" value={patient.email} />
               <Field label="Vive con" value={patient.livesWith} />
             </div>
           </SectionCard>
 
-          <SectionCard title="Objetivo" subtitle="El objetivo puede ajustarse durante el proceso.">
+          <SectionCard title="Objetivo">
             <div className={FIELD_GRID}>
               <Field label="Objetivo" value={patient.goal} />
               <Field label="Peso de referencia" value={patient.referenceWeight ? `${patient.referenceWeight} kg` : null} />

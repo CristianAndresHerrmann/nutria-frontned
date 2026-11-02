@@ -70,7 +70,7 @@ describe('alta de un alimento desde la receta (T26)', () => {
     expect(container.contains(dialog())).toBe(false);
     expect(dialog().querySelector('input').value).toBe('Kéfir ficticio');
     expect(dialog().querySelector('select').textContent).toContain('Lácteos');
-    expect(dialog().textContent).toContain('queda disponible solo para vos');
+    expect(dialog().textContent).toContain('Solo para tu catálogo. Después de guardarlo, solo el administrador puede corregirlo.');
     expect(document.body.style.overflow).toBe('hidden');
   });
 

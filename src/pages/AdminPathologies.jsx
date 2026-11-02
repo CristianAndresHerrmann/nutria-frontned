@@ -105,7 +105,7 @@ function AdminPathologies() {
         <div className="flex flex-col items-start justify-between gap-4 border-b border-line p-5 sm:flex-row sm:items-center">
           <p className="text-sm text-muted">Patologías que las nutricionistas registran en sus pacientes.</p>
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            {pathologies && <span className="text-body-sm whitespace-nowrap text-muted">{pathologies.length} patologías</span>}
+            {pathologies && <span className="text-body-sm whitespace-nowrap text-muted">{pathologies.length} {pathologies.length === 1 ? 'patología' : 'patologías'}</span>}
             <Button onClick={() => open('new')} disabled={!pathologies || Boolean(editing)}>
               + Nueva patología
             </Button>

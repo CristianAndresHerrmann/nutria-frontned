@@ -96,7 +96,7 @@ function FoodForm() {
       </div>
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
-        <SectionCard title="Alimento" subtitle="Nombre, grupo y categorías nutricionales.">
+        <SectionCard title="Alimento">
           <FoodFields form={form} groupOptions={groupOptions} fieldErrors={fieldErrors} onChange={updateField} />
         </SectionCard>
 

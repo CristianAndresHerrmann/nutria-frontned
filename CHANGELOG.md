@@ -4,6 +4,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
+### Changed
+
+- Textos más breves en generación y revisión de propuestas, formularios y catálogos. Se retira la promesa de duración de la generación y se conservan el origen de IA, la revisión profesional, los avisos clínicos y las instrucciones de recuperación. Sin cambios de flujos, validaciones ni contratos.
+- `PasswordResetForm` usa únicamente el estado compartido del padre, como todos sus consumidores actuales, para conservar borradores y errores entre móvil y escritorio.
+
 ### Removed
 
 - Aviso de entorno de prueba (`EnvironmentBanner`) y la variable `VITE_ENV_LABEL`. El aviso fijo tapaba contenido y su reserva de altura dejaba un salto al final de cada pantalla. La regla de usar solo datos ficticios en staging (RNF-08) se recuerda al dar cada cuenta (README de `nutria-backend`, sección "Staging"). `docs/responsive.md` deja de revisar el banner.

@@ -70,7 +70,7 @@ function AdminAccounts() {
     // La cuenta nueva queda primera: se vuelve a la página 1 para que se vea.
     pagination.setPage(1);
     setIsCreating(false);
-    setNotice(`Cuenta de ${created.name} creada. Ya puede iniciar sesión con ${created.email}.`);
+    setNotice(`Cuenta de ${created.name} creada.`);
   }
 
   async function handleToggleActive(account) {
@@ -103,7 +103,7 @@ function AdminAccounts() {
 
   const columns = [
     { key: 'name', header: 'Nombre', className: 'font-semibold text-ink', cell: (account) => account.name },
-    { key: 'email', header: 'Email', cell: (account) => account.email },
+    { key: 'email', header: 'Correo electrónico', cell: (account) => account.email },
     {
       key: 'status',
       header: 'Estado',
@@ -155,7 +155,6 @@ function AdminAccounts() {
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div className="min-w-0">
           <h1 className="text-[28px] font-bold text-ink">Cuentas</h1>
-          <p className="mt-2 text-sm text-muted">Cuentas de las nutricionistas que usan NutrIA.</p>
         </div>
         <Button onClick={startCreating} disabled={isBusy}>
           + Nueva cuenta
@@ -181,7 +180,7 @@ function AdminAccounts() {
 
       <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <div className="flex items-center justify-end border-b border-line p-5">
-          <span className="text-body-sm whitespace-nowrap text-muted">{accounts.length} cuentas</span>
+          <span className="text-body-sm whitespace-nowrap text-muted">{accounts.length} {accounts.length === 1 ? 'cuenta' : 'cuentas'}</span>
         </div>
 
         {isLoading && <p className="p-5 text-sm text-muted">Cargando cuentas...</p>}

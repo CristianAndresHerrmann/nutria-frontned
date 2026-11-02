@@ -83,10 +83,10 @@ const DEFAULT_TIMEOUT_MS = 15_000;
 // de la API (sin red, timeout, un 502 del proxy con HTML). Cuando sí respondió,
 // se muestra su `message` tal cual.
 const NETWORK_ERROR_MESSAGE = 'No se pudo conectar con el servidor. Revisá tu conexión e intentá de nuevo.';
-const TIMEOUT_MESSAGE = 'El servidor tardó demasiado en responder. Intentá de nuevo en unos minutos.';
+const TIMEOUT_MESSAGE = 'El servidor tardó demasiado en responder. Intentá de nuevo.';
 
 function fallbackMessage(status) {
-  if (status >= 500) return 'El servidor no está disponible en este momento. Intentá de nuevo en unos minutos.';
+  if (status >= 500) return 'El servidor no está disponible. Intentá de nuevo.';
   if (status === 401) return 'Tu sesión expiró. Volvé a iniciar sesión.';
   if (status === 404) return 'No se encontró lo que buscabas.';
   return 'No se pudo completar la operación.';

@@ -115,7 +115,7 @@ function PlanScreen({ initialPlan, patient, patientId, onBack }) {
   function handleSaved(updated) {
     setPlan(updated);
     setForm(null);
-    setNotice('Cambios guardados. Los hallazgos se actualizaron.');
+    setNotice('Cambios guardados.');
   }
 
   const findings = groupFindings(plan.findings);
@@ -144,8 +144,7 @@ function PlanScreen({ initialPlan, patient, patientId, onBack }) {
       </div>
 
       <p className="mb-6 rounded-xl bg-notice-bg px-3.5 py-2.5 text-body-sm text-notice" role="note">
-        Propuesta generada con IA: es un borrador que requiere revisión, no un plan definitivo. El profesional debe
-        revisarla y validarla antes de usarla con el paciente.
+        Borrador generado con IA. Revisalo y validalo antes de usarlo con el paciente.
       </p>
 
       {patient?.missingClinicalData && <MissingClinicalDataWarning />}
@@ -157,7 +156,7 @@ function PlanScreen({ initialPlan, patient, patientId, onBack }) {
       )}
 
       <div className="flex flex-col gap-5">
-        <SectionCard title="Hallazgos" subtitle="Resultado de las reglas clínicas sobre la última versión guardada.">
+        <SectionCard title="Hallazgos" subtitle="Sobre la última versión guardada.">
           <div className="flex flex-col gap-3">
             <p className="flex flex-wrap items-center gap-2 text-sm text-ink">
               <Badge tone={counts.blocking > 0 ? 'danger' : 'neutral'}>
@@ -169,8 +168,7 @@ function PlanScreen({ initialPlan, patient, patientId, onBack }) {
             </p>
             {plan.findings.length > 0 && (
               <p className="text-body-sm text-muted">
-                Cada hallazgo se muestra junto al ítem o la opción que lo origina. Un bloqueo se levanta editando la
-                propuesta y guardando la corrección de lo que lo produce.
+                Para resolver un bloqueo, corregí la propuesta y guardá los cambios.
               </p>
             )}
             {hasChanges && (

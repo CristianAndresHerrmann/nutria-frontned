@@ -130,11 +130,11 @@ function RecipeForm() {
         <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">{isEditMode ? 'Editar receta' : 'Nueva receta'}</h1>
           <p className="mt-2 text-sm text-muted">
-            Los ingredientes se eligen del catálogo de alimentos. La receta solo la ves vos.
+            La receta queda en tu catálogo privado.
           </p>
           {baseName && (
             <p className="mt-2 text-sm text-ink">
-              Copia de «{baseName}». Al guardar se crea una receta propia nueva; la original no cambia.
+              Copia de «{baseName}». La receta original no cambia.
             </p>
           )}
         </div>
@@ -142,7 +142,7 @@ function RecipeForm() {
       </div>
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
-        <SectionCard title="Receta" subtitle="Nombre, cocción y para qué comidas sirve.">
+        <SectionCard title="Receta">
           <div className="flex flex-col gap-5">
             <FormField label="Nombre" required error={fieldErrors.name}>
               <input
@@ -223,7 +223,7 @@ function RecipeForm() {
               Ingredientes <span className="text-primary">*</span>
             </>
           }
-          subtitle="Alimentos del catálogo, en el orden de la receta. Cada alimento va una sola vez: si se incorpora en tandas, indicalo en la preparación."
+          subtitle="Agregá cada alimento una sola vez. Si se usa en varias etapas, indicalo en la preparación."
         >
           <RecipeIngredientsFields
             rows={form.ingredients}
@@ -242,7 +242,6 @@ function RecipeForm() {
             <FormField label="Preparación" error={fieldErrors.preparation}>
               <textarea
                 className={textareaClass}
-                placeholder="Paso a paso de la receta"
                 value={form.preparation}
                 onChange={(event) => updateField('preparation', event.target.value)}
                 aria-invalid={Boolean(fieldErrors.preparation)}
@@ -273,7 +272,7 @@ function RecipeForm() {
               <span>
                 Disponible en el catálogo
                 <span className="mt-1 block text-body-sm text-muted">
-                  Si la desmarcás, la receta deja de ofrecerse, pero no se borra: la podés volver a activar.
+                  Al desmarcarla, deja de ofrecerse sin borrarse. Podés reactivarla.
                 </span>
               </span>
             </label>

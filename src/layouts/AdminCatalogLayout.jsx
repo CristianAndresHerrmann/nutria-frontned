@@ -16,8 +16,7 @@ function AdminCatalogLayout() {
       <div className="mb-6">
         <h1 className="text-[28px] font-bold text-ink">Catálogo</h1>
         <p className="mt-2 text-sm text-muted">
-          Alimentos comunes y los que cargó cada nutricionista, grupos y patologías. Los planes que ya usan un alimento
-          conservan su copia cuando lo corregís.
+          Las correcciones de alimentos no modifican las copias guardadas en los planes.
         </p>
       </div>
 

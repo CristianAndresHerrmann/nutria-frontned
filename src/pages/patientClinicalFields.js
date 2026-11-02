@@ -14,7 +14,6 @@ export const HABITS_TAB = 'Hábitos y alimentación';
 export const CLINICAL_SECTIONS = [
   {
     title: 'Antecedentes',
-    subtitle: 'Antecedentes, medicación y tratamientos en curso.',
     tab: CLINICAL_TAB,
     fields: [
       {
@@ -34,7 +33,6 @@ export const CLINICAL_SECTIONS = [
   },
   {
     title: 'Hábitos y alimentación',
-    subtitle: 'Hábitos diarios y patrones de ingesta.',
     tab: HABITS_TAB,
     fields: [
       { name: 'physicalActivity', label: 'Actividad física', kind: 'text', placeholder: 'Ej. Camina 30 minutos, 3 veces por semana' },
@@ -52,7 +50,6 @@ export const CLINICAL_SECTIONS = [
   },
   {
     title: 'Contexto de cocina',
-    subtitle: 'Quién cocina, con qué tiempo y con qué recursos.',
     tab: HABITS_TAB,
     fields: [
       { name: 'cooks', label: '¿Cocina?', kind: 'yesNo' },
@@ -64,7 +61,6 @@ export const CLINICAL_SECTIONS = [
   },
   {
     title: 'Comidas fuera del hogar',
-    subtitle: 'Comidas que hace fuera de casa y con qué cuenta ahí.',
     tab: HABITS_TAB,
     fields: [
       { name: 'mealsOutsideHome', label: 'Comidas fuera del hogar', kind: 'text', placeholder: 'Ej. Almuerzo de lunes a viernes' },
@@ -78,7 +74,7 @@ export const CLINICAL_SECTIONS = [
   },
   {
     title: 'Ocupación y trabajo',
-    subtitle: 'Ocupación, regularidad de horarios y disponibilidad para alimentarse.',
+    subtitle: 'Regularidad de horarios y disponibilidad para comer.',
     tab: HABITS_TAB,
     fields: [
       { name: 'occupation', label: 'Ocupación', kind: 'text', placeholder: 'Ej. Docente' },

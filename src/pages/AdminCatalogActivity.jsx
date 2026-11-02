@@ -84,7 +84,7 @@ function AdminCatalogActivity() {
             </option>
           ))}
         </select>
-        {entries && <span className="text-body-sm whitespace-nowrap text-muted sm:ml-auto">{entries.length} alimentos cargados</span>}
+        {entries && <span className="text-body-sm whitespace-nowrap text-muted sm:ml-auto">{entries.length} {entries.length === 1 ? 'alimento cargado' : 'alimentos cargados'}</span>}
       </div>
 
       {!entries && !error && <p className="p-5 text-sm text-muted">Cargando actividad...</p>}

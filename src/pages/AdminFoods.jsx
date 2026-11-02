@@ -265,7 +265,7 @@ function AdminFoods() {
           </select>
 
           <div className="flex w-full flex-col items-start gap-4 sm:ml-auto sm:w-auto sm:flex-row sm:flex-wrap sm:items-center xl:flex-nowrap">
-            {foods && <span className="text-body-sm whitespace-nowrap text-muted">{foods.length} alimentos</span>}
+            {foods && <span className="text-body-sm whitespace-nowrap text-muted">{foods.length} {foods.length === 1 ? 'alimento' : 'alimentos'}</span>}
             <Button onClick={() => navigate('/admin/catalogo/alimentos/nuevo')} disabled={isBusy}>
               + Nuevo alimento común
             </Button>
