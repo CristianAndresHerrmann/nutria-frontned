@@ -50,15 +50,15 @@ function Home() {
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
+        <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">Hola, {firstNameOf(nutritionist?.name) || 'Nutricionista'}</h1>
           <p className="mt-2 text-sm text-muted">Gestioná tus pacientes desde un único lugar.</p>
         </div>
         <Button onClick={() => navigate('/pacientes/nuevo')}>+ Nuevo paciente</Button>
       </div>
 
-      <div className="mb-5 flex max-w-80 flex-col gap-2 rounded-2xl border border-line bg-white px-6 py-5 shadow-card">
+      <div className="mb-5 flex w-full flex-col gap-2 rounded-2xl border border-line bg-white px-6 py-5 shadow-card sm:max-w-80">
         <span className="text-body-sm text-muted">Total de pacientes</span>
         <div className="flex items-baseline justify-between">
           <span className="text-[32px] font-bold text-primary">{patients.length}</span>
@@ -74,17 +74,17 @@ function Home() {
         ) : (
           <ul className="flex flex-col gap-1">
             {recentPatients.map((patient) => (
-              <li key={patient.id} className="flex items-center justify-between py-2">
-                <button type="button" className="group inline-flex items-center gap-3" onClick={() => navigate(`/pacientes/${patient.id}`)}>
+              <li key={patient.id} className="flex min-w-0 flex-col items-start justify-between gap-2 py-2 sm:flex-row sm:items-center xl:gap-0">
+                <button type="button" className="group inline-flex min-w-0 items-center gap-3 text-left" onClick={() => navigate(`/pacientes/${patient.id}`)}>
                   <Avatar>{initialsOf(patient)}</Avatar>
-                  <span className="flex flex-col items-start">
+                  <span className="flex min-w-0 flex-col items-start">
                     <span className="text-sm font-semibold text-ink group-hover:text-primary">
                       {patient.firstName} {patient.lastName}
                     </span>
                     <span className="text-note text-muted">{patient.goal || 'Sin dato'}</span>
                   </span>
                 </button>
-                <span className="text-body-sm whitespace-nowrap text-muted">Actualizado {formatDateTime(patient.updatedAt)}</span>
+                <span className="text-body-sm text-muted sm:shrink-0 sm:whitespace-nowrap">Actualizado {formatDateTime(patient.updatedAt)}</span>
               </li>
             ))}
           </ul>

@@ -4,6 +4,109 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
+## [0.0.3] - 2026-11-01
+
+Incremento 3 (ver `docs/cierre-incremento-3.md` en el repo raíz).
+
+### Added
+
+- Crear un alimento desde el formulario de receta (T26; RF-24, RF-25, RF-27, RNF-04), en el alta, la edición y la copia de una receta. Si la búsqueda de ingredientes no encuentra nada, ofrece **+ Crear «texto buscado»**. La opción abre un modal con el alta de alimento: nombre precargado, grupo, categorías y el mismo aviso de que queda privado y no se edita después.
+  - Al guardar, el alimento se agrega como último ingrediente y el modal se cierra. Lo cargado en la receta no cambia, y el submit del modal no envía la receta.
+  - Los errores se muestran por campo dentro del modal, con `useFormErrors` y `FormError` (T29). Con un nombre repetido (`409`), el error aparece en Nombre y el modal sigue abierto. Cancelar o Escape lo cierra sin crear nada.
+  - El modal es `CreateFoodDialog`: un `dialog` nativo en un portal (el de la receta ya es un `form`) que reutiliza `FoodFields` y `POST /foods`, sin cambios en la API. `FoodPicker` muestra la opción solo si recibe `onCreate`, así que el buscador de alimentos de los planes no cambia. El aviso de alimento privado pasa a `PRIVATE_FOOD_NOTICE`, compartido con la pantalla de alta.
+  - Pruebas del modal (nombre precargado, payload, `409` en el campo, no envía la receta) y del flujo completo desde el buscador de ingredientes.
+
+- Catálogo en el panel del administrador (T25; RF-04, RF-24, RF-25, RNF-05). Nuevo ítem **Catálogo** en el menú del administrador, con cuatro pestañas en `/admin/catalogo`. No había Figma: se usaron los tokens y componentes existentes.
+  - **Alimentos:**
+    - El listado trae los comunes y los privados de cada nutricionista, incluidos los dados de baja. Se filtra por origen (comunes o los privados de una nutricionista), por nombre y por grupo.
+    - Desde cada fila se puede **Editar**, **Dar de baja** o **Reactivar**, con confirmación, y **Pasar al común** un privado.
+    - Pasar al común abre un formulario en la fila, con un nombre opcional. Si el nombre choca con otro alimento, el `409` se muestra en el campo y se puede reintentar con otro.
+    - `+ Nuevo alimento común` y la edición (`/admin/catalogo/alimentos/nuevo` y `/:id/editar`) usan los mismos campos que el alta del nutricionista, ahora en `FoodFields`.
+  - **Grupos:** el árbol de grupos, con alta y edición del nombre, la descripción y el grupo padre. El selector de padre no ofrece el grupo ni sus subgrupos (`parentOptions` en `utils/foodGroupTree.js`). Igual, un `400` del backend se muestra en el campo.
+  - **Patologías:** tabla con alta y edición del nombre y la descripción.
+  - **Actividad:** qué alimento cargó cada nutricionista y cuándo, y si sigue privado, pasó al común o está dado de baja. Se filtra por nutricionista.
+  - Cliente HTTP en `src/api/adminCatalog.js`. Pruebas de `parentOptions`, de `foodToForm`, de las URLs del cliente y del formulario de pasar al común entre las dos variantes de `DataTable`.
+
+- Edición y revalidación del borrador del plan (T40; RF-28, RF-29, RF-40, RF-46, RNF-10). La propuesta (`/pacientes/:id/planes/:planId`) se sigue abriendo en lectura, como en T39, y se edita en la misma pantalla con **Editar propuesta**, sin ruta aparte. La leyenda avisa en los dos modos que es un borrador que requiere revisión. No había Figma.
+  - **Cancelar** descarta lo editado y vuelve a la lectura; si hay cambios, pide confirmación. **Guardar cambios** también vuelve a la lectura, con los hallazgos recalculados.
+  - **Textos** (RF-40): diagnóstico situacional, introducción, objetivos y recomendaciones generales, contextuales y temáticas, en campos editables. Las clínicas aparecen solo si el plan ya las tiene, porque elegirlas del catálogo no es parte de esta tarea. Por comida se editan la indicación y la descripción de cada opción.
+  - **Ítems y opciones**: cada ítem se puede **reemplazar** o **quitar**. Cada opción puede **agregar ítems** (hasta 15) y quitarse; si tiene ítems, pide confirmación. Cada comida puede **agregar opciones** (hasta 10).
+  - **Elegir un ítem** del catálogo, nunca texto libre:
+    - Alimento: con el buscador de alimentos, que ahora acepta su texto e `aria-label` por props.
+    - Grupo: con el selector jerárquico.
+    - Receta (RF-29): solo las del tipo de comida y sin ingredientes restringidos por las alergias, intolerancias o rechazos del paciente (`GET /recipes?patientId=`, RF-28), con búsqueda por nombre o ingrediente.
+    - Así se resuelve un ítem no reconocido.
+  - **Guardar cambios** manda el borrador completo (`PUT /patients/:id/plans/:planId`). El backend lo revalida y la pantalla muestra los hallazgos nuevos junto a cada ítem u opción (RF-46).
+    - Mientras haya cambios sin guardar, un aviso indica que los hallazgos son de la última versión guardada. Un bloqueo solo desaparece al guardar la corrección de lo que lo produce.
+    - Volver a la ficha o cerrar la pestaña con cambios pide confirmación.
+    - Reabrir el borrador muestra los hallazgos con las condiciones actuales del paciente.
+  - **Errores** con el criterio de T29 (`useFormErrors`, `FormError`): el de un texto va junto a su campo. El de un ítem llega en `meals` con la opción y el ítem en el mensaje, y se muestra arriba de las comidas.
+  - Nuevos `updatePlan` y el filtro `patientId` en `recipesPath`. Mapeo puro en `src/pages/planForm.js` y componentes `PlanMealFields`, `PlanItemPicker` y `FindingList`. Ya no se usa `optionDescription`: la descripción de la opción se edita tal cual.
+  - Pruebas del mapeo, del cliente y de la pantalla: guardar, reemplazar un no reconocido, asignar una receta con bloqueo, quitar y agregar, errores por campo y confirmación al salir.
+  - El registro detallado de modificaciones para la trazabilidad (RF-41) queda para el Incremento 4.
+
+- Generación y vista de la propuesta de plan alimentario (T39; RF-34, RF-45, RNF-02, RNF-10). No había Figma para estas pantallas, así que se armaron con los componentes y tokens existentes.
+  - **Pestaña Planes** de la ficha (reemplaza el "Pronto"):
+    - Listado de planes del paciente (creado, última modificación, estado "Borrador") con acceso a cada uno.
+    - **Generar propuesta** pide a la IA las cuatro comidas. Mientras genera, el botón queda deshabilitado con un aviso de proceso en curso, y la ficha se puede seguir usando: al cambiar de pestaña, "Planes" muestra "Generando" y al volver el estado sigue ahí.
+    - Si la IA falla (503 `IA_UNAVAILABLE`), se muestra el motivo, se aclara que no se creó ningún plan y se ofrece **Reintentar**. Si el cliente deja de esperar, se avisa que la propuesta pudo haberse generado y se recarga el listado.
+    - Al terminar se ofrece **Ver propuesta**; no se navega solo, para no interrumpir lo que se esté haciendo.
+  - **Vista de la propuesta** (`/pacientes/:id/planes/:planId`), de solo lectura:
+    - Leyenda fija: es un borrador editable generado con IA que el profesional debe revisar y validar.
+    - Aviso de datos clínicos faltantes (RF-45), el mismo de la ficha.
+    - Resumen de hallazgos bloqueantes y advertencias; diagnóstico situacional, introducción, objetivos y recomendaciones cargadas; y cada comida con sus opciones e ítems (alimento, grupo o receta).
+    - Cada hallazgo se muestra junto a su ítem, o al pie de la opción si es de composición, con badge **Bloqueante** o **Advertencia**. Los ítems no reconocidos quedan destacados en rojo.
+    - "Volver a la ficha" abre la pestaña Planes.
+  - La edición del plan no está en esta tarea.
+  - Nuevo tono `danger` de `Badge` y token `danger-bg`.
+- Recetas básicas comunes (T30; DA-34). El listado de Recetas muestra las comunes junto con las propias, marcadas como **Común** o **Propia**. Una común no se edita ni se da de baja: no tiene la acción Editar, y si se llega a su edición por URL se muestra "Las recetas comunes son de solo lectura." sin formulario.
+- Detalle de una receta (`/catalogos/recetas/:id`, T30), de solo lectura: datos, ingredientes con sus cantidades, preparación y nota final. Se llega tocando el nombre en el listado, y desde ahí se edita (solo las propias) o se duplica. Guardar una edición o una copia lleva al detalle de la receta guardada, y Volver o Cancelar, a la receta de la que se partió.
+- El encabezado muestra el título de las pantallas de recetas (Recetas, Nueva receta, Editar receta, Receta), que antes decía "Página no encontrada".
+- Buscador en la tabla de Recetas: filtra en el cliente por nombre de receta o de ingrediente ("pollo" encuentra el arroz con pollo), sin distinguir mayúsculas ni tildes, y se combina con el tipo de comida y "Mostrar no disponibles". Cambiar la búsqueda vuelve a la primera página.
+- Acciones de la tabla de Recetas como íconos, con tooltip: ver (ojo), editar (lápiz sobre hoja, solo las propias), duplicar (copiar) y dar de baja (tacho) o reactivar (flecha circular), solo las propias. La baja es lógica y pide confirmación; con "Mostrar no disponibles", la receta dada de baja aparece con el ícono para reactivarla. Nueva variante `ghost` del botón para los íconos de una fila.
+- **Duplicar** una receta, común o propia (T30, fuera del alcance original de la card): abre el alta de receta (`/catalogos/recetas/nueva?base=<id>`) con todos sus datos copiados y el nombre marcado como "(copia)". El nutricionista la adapta (ingredientes, pasos, tipos de comida) y al guardar queda como receta propia nueva; la original no cambia.
+- Paginación de las tablas (T28; DA-33): Alimentos, Pacientes, Recetas y Cuentas muestran 10 o 25 filas por página, a elección (10 por defecto), con el rango ("11–20 de 232") y botones de página anterior y siguiente. Cambiar la búsqueda o un filtro vuelve a la primera página. El pie no aparece si las filas entran en una página. La paginación es en el cliente: la API no cambia.
+- Categoría **Complementario** en el alta de alimentos y en los listados (T28; DA-32), para los alimentos sin aporte a la composición (azúcar, sal, condimentos, manteca, agua).
+- Rol administrador y pantalla de **Cuentas** (T31). No había Figma, así que se armó con `Badge`, `Button`, `FormField` y los tokens existentes.
+  - **Mismo login para los dos roles:**
+    - El administrador entra a `/admin` y el nutricionista, a su inicio.
+    - Después de un login, se vuelve a la pantalla que se quería abrir solo si es del rol que entró.
+  - **Rutas protegidas por rol:** una cuenta que abre una ruta del otro rol vuelve a su propio inicio. "Página no encontrada" lleva al inicio del rol.
+  - **Cuentas** (`/admin/cuentas`):
+    - Listado de las cuentas de nutricionista con nombre, email, estado ("Activa" o "Desactivada") y fecha de alta.
+    - **Nueva cuenta:** nombre, email y contraseña inicial, en un formulario en la misma pantalla.
+    - **Desactivar** y **Reactivar**, con confirmación.
+    - **Restablecer contraseña**, en un formulario en la fila de la cuenta.
+    - Los errores del backend se muestran junto a su campo, con el borde en rojo; por ejemplo, un email repetido.
+  - **Menú y encabezado según el rol:** el administrador ve solo "Cuentas" y se identifica como "Administrador", sin el "Lic.".
+  - **Sesión:**
+    - Una cuenta que se desactiva con la sesión abierta pasa a "Tu sesión expiró" en la siguiente request.
+    - Un token guardado de antes de este cambio, que no trae rol, se descarta y hay que volver a iniciar sesión.
+  - **Archivos y tests:**
+    - `src/api/adminNutritionists.js`, `src/pages/AdminAccounts.jsx`, `src/components/NutritionistAccountForm.jsx` y `src/components/PasswordResetForm.jsx`.
+    - `src/utils/roleRoutes.js`, con tests: inicio por rol, rutas permitidas y destino después del login.
+    - `getTokenRole` en `src/api/client.js`, con tests de lectura del rol y la expiración del token.
+
+### Changed
+
+- Los formularios de paciente, receta, alimento, condición, consulta y recomendación muestran los errores de la misma forma (T29; RNF-04). El error de cada campo sigue junto al campo, y arriba del botón de guardar aparece "Revisá los campos marcados antes de guardar." (también en la validación local de fechas y mediciones), en lugar de repetir el primer error de campo. Un error sin campos (conflicto, servidor caído, sin conexión) se sigue mostrando arriba del botón con su mensaje. Lo resuelven el hook `useFormErrors` y el componente `FormError`, con pruebas unitarias.
+- Las cuatro tablas usan los componentes nuevos `DataTable` y `TablePagination`, y el hook `usePagination` (T28), en lugar de repetir el marcado y las constantes `TH`/`TD` en cada pantalla. En Cuentas, la fila para restablecer la contraseña pasa a `renderExpanded` de `DataTable`. `Button` suma la variante `icon`.
+- `ProtectedRoute` recibe el rol de las rutas que protege (T31). `useAuth()` suma `role` e `isAdmin`, y `MainLayout` arma el menú, los títulos y la etiqueta del encabezado según el rol.
+
+### Fixed
+
+- La barra lateral de escritorio (desde `lg`) queda fija al alto de la ventana y ya no se desplaza con el contenido en pantallas largas, como la vista de un plan.
+
+- AUD-010: todas las etapas derivadas de `deps` instalan con `npm ci`, para construir las imágenes de desarrollo y producción con las versiones del lockfile.
+
+- AUD-017: las cargas de condiciones, consultas, mediciones y ficha usan `usePatientData`, limitado a ese flujo. Solo la última request vigente puede publicar datos o errores; cambiar de paciente oculta los datos anteriores y reinicia formularios y pestaña. Los guardados o eliminaciones pendientes no recargan ni notifican una ficha abandonada. Se conserva la recarga posterior al guardado y la ficha existente si falla su actualización. Pruebas de ciclo de vida con React montado y `jsdom` como dependencia de desarrollo, incluidas respuestas demoradas y `StrictMode`. Los buscadores y sus debounces no cambian.
+
+- AUD-008: dar de baja o reactivar una receta desde el listado usa `PATCH /recipes/:id` con solo `availableInCatalog`. Conserva las ediciones hechas desde otra pestaña y usa la receta actual devuelta por el servidor. Se elimina la reconstrucción del PUT desde la fila; el formulario sigue usando la edición completa.
+
+## [0.0.2] - 2026-10-25
+
+Incremento 2 (ver `docs/cierre-incremento-2.md` en el repo raíz).
+
 ### Added
 
 - Sección **Catálogos** en el menú principal (T15). El Figma no tiene estas pantallas, así que se armaron con los componentes y tokens existentes. Tiene dos pestañas, Alimentos y Grupos:
@@ -136,32 +239,12 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
   - Aviso de entorno de prueba (`src/components/EnvironmentBanner.jsx`), fijo abajo en todas las pantallas, incluido el login. El texto sale de `VITE_ENV_LABEL` en el build; en local no está y no se muestra.
   - `.github/workflows/cd-staging.yml`: en cada push a `staging` (o a mano) corre el CI y, si pasa, despliega el servicio en la VM y verifica que la página responde por HTTPS.
   - El CI también corre en los PR hacia `staging`, se puede reutilizar desde otro workflow (`workflow_call`) y construye además la imagen `prod`.
-- Rol administrador y pantalla de **Cuentas** (T31). No había Figma, así que se armó con `Badge`, `Button`, `FormField` y los tokens existentes.
-  - **Mismo login para los dos roles:**
-    - El administrador entra a `/admin` y el nutricionista, a su inicio.
-    - Después de un login, se vuelve a la pantalla que se quería abrir solo si es del rol que entró.
-  - **Rutas protegidas por rol:** una cuenta que abre una ruta del otro rol vuelve a su propio inicio. "Página no encontrada" lleva al inicio del rol.
-  - **Cuentas** (`/admin/cuentas`):
-    - Listado de las cuentas de nutricionista con nombre, email, estado ("Activa" o "Desactivada") y fecha de alta.
-    - **Nueva cuenta:** nombre, email y contraseña inicial, en un formulario en la misma pantalla.
-    - **Desactivar** y **Reactivar**, con confirmación.
-    - **Restablecer contraseña**, en un formulario en la fila de la cuenta.
-    - Los errores del backend se muestran junto a su campo, con el borde en rojo; por ejemplo, un email repetido.
-  - **Menú y encabezado según el rol:** el administrador ve solo "Cuentas" y se identifica como "Administrador", sin el "Lic.".
-  - **Sesión:**
-    - Una cuenta que se desactiva con la sesión abierta pasa a "Tu sesión expiró" en la siguiente request.
-    - Un token guardado de antes de este cambio, que no trae rol, se descarta y hay que volver a iniciar sesión.
-  - **Archivos y tests:**
-    - `src/api/adminNutritionists.js`, `src/pages/AdminAccounts.jsx`, `src/components/NutritionistAccountForm.jsx` y `src/components/PasswordResetForm.jsx`.
-    - `src/utils/roleRoutes.js`, con tests: inicio por rol, rutas permitidas y destino después del login.
-    - `getTokenRole` en `src/api/client.js`, con tests de lectura del rol y la expiración del token.
 
 ### Changed
 
 - Dependencias actualizadas con `npm audit fix` para que `npm audit --audit-level=high` de la CI pase (T12): `vite` 8.3.5, `vitest` 5.0.5 y `source-map-js` 1.2.2, dentro de los rangos de `package.json`.
 - `indent` (sangría de las opciones de grupo) pasa de `Foods.jsx` y `FoodForm.jsx` a `src/utils/foodGroupTree.js`, para reusarla en el formulario de condiciones (T18).
 - La fecha de nacimiento del formulario de paciente usa `DateInput` en lugar del `<input type="date">` del navegador (T17).
-- `ProtectedRoute` recibe el rol de las rutas que protege (T31). `useAuth()` suma `role` e `isAdmin`, y `MainLayout` arma el menú, los títulos y la etiqueta del encabezado según el rol.
 
 ### Fixed
 

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import { listMeasurements } from '../api/patientMeasurements';
 import { formatBmi, formatMeasurementValue, measurementLabel, splitMeasurements } from '../pages/patientMeasurements';
 import { formatDate } from '../utils/date';
+import { usePatientData } from '../hooks/usePatientData';
 import SectionCard from './SectionCard';
 
 const TH = 'px-4 py-3 text-left text-xs font-bold tracking-[0.3px] text-muted uppercase';
@@ -13,30 +13,33 @@ function MeasurementTable({ measurements, withBmi = false, emptyMessage }) {
   if (measurements.length === 0) return <p className="text-sm text-muted">{emptyMessage}</p>;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="bg-neutral-soft/45">
-            <th className={TH}>Fecha</th>
-            <th className={TH}>Tipo</th>
-            <th className={TH}>Valor</th>
-            <th className={TH}>Unidad</th>
-            {withBmi && <th className={TH}>IMC</th>}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-line">
-          {measurements.map((measurement) => (
-            <tr key={measurement.id}>
-              <td className={TD}>{formatDate(measurement.date)}</td>
-              <td className={TD}>{measurementLabel(measurement)}</td>
-              <td className={TD}>{formatMeasurementValue(measurement.value)}</td>
-              <td className={TD}>{measurement.unit || '—'}</td>
-              {withBmi && <td className={TD}>{formatBmi(measurement.bmi)}</td>}
+    <>
+      <span aria-hidden="true" className="mb-1 block text-right text-sm text-muted xl:hidden">↔</span>
+      <div tabIndex={0} role="region" aria-label={withBmi ? 'Antropometría' : 'Laboratorio'} className="max-w-full overflow-x-auto overscroll-x-contain rounded-lg border-x border-line focus-visible:outline-2 focus-visible:outline-primary xl:border-0">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-neutral-soft/45">
+              <th className={TH}>Fecha</th>
+              <th className={TH}>Tipo</th>
+              <th className={TH}>Valor</th>
+              <th className={TH}>Unidad</th>
+              {withBmi && <th className={TH}>IMC</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="divide-y divide-line">
+            {measurements.map((measurement) => (
+              <tr key={measurement.id}>
+                <td className={TD}>{formatDate(measurement.date)}</td>
+                <td className={TD}>{measurementLabel(measurement)}</td>
+                <td className={TD}>{formatMeasurementValue(measurement.value)}</td>
+                <td className={TD}>{measurement.unit || '—'}</td>
+                {withBmi && <td className={TD}>{formatBmi(measurement.bmi)}</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
@@ -46,17 +49,7 @@ function MeasurementTable({ measurements, withBmi = false, emptyMessage }) {
 // cargan desde el formulario de consulta. Gráficos y variación entre consultas
 // son del Incremento 5.
 function PatientMeasurements({ patientId }) {
-  const [measurements, setMeasurements] = useState(null);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    listMeasurements(patientId)
-      .then((data) => {
-        setMeasurements(data);
-        setError('');
-      })
-      .catch((err) => setError(err.message));
-  }, [patientId]);
+  const { data: measurements, error } = usePatientData(patientId, listMeasurements);
 
   if (error) {
     return (

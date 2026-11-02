@@ -5,6 +5,7 @@ import {
   formToPayload,
   moveIngredient,
   newIngredientRow,
+  recipeToDraft,
   recipeToForm,
   toggleMealType,
 } from './recipeFormMapping';
@@ -74,6 +75,27 @@ describe('recipeToForm / formToPayload', () => {
   });
 });
 
+describe('recipeToDraft', () => {
+  it('copia la receta entera como alta nueva, con el nombre marcado como copia', () => {
+    const draft = recipeToDraft({ ...recipe, own: false, availableInCatalog: false });
+
+    expect(draft).toMatchObject({ name: 'Ensalada de arroz y atún (copia)', availableInCatalog: true, timeMinutes: '25' });
+    expect(formToPayload(draft)).toEqual({
+      name: 'Ensalada de arroz y atún (copia)',
+      cookingMethod: 'stovetop',
+      timeMinutes: 25,
+      purchasePlace: '',
+      mealTypes: ['lunch', 'dinner'],
+      ingredients: [
+        { foodId: 'arroz', quantityDescription: '1 taza cocida' },
+        { foodId: 'atun', quantityDescription: '' },
+      ],
+      preparation: '1. Hervir el arroz.',
+      finalNote: '',
+    });
+  });
+});
+
 describe('ingredientes', () => {
   it('agrega un alimento al final y no lo repite', () => {
     const rows = addIngredient(addIngredient([], arroz), atun);
@@ -113,5 +135,6 @@ describe('recipesPath', () => {
 
   it('agrega solo los filtros con valor', () => {
     expect(recipesPath({ mealType: 'lunch', includeUnavailable: true })).toBe('/recipes?mealType=lunch&includeUnavailable=true');
+    expect(recipesPath({ mealType: 'lunch', patientId: 'pac-1' })).toBe('/recipes?mealType=lunch&patientId=pac-1');
   });
 });

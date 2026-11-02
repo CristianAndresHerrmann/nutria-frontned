@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { createRecipe, getRecipe, updateRecipe } from '../api/recipes';
 import { COOKING_METHODS, MEAL_TYPES } from '../utils/recipeLabels';
 import {
@@ -7,42 +7,63 @@ import {
   addIngredient,
   formToPayload,
   moveIngredient,
+  recipeToDraft,
   recipeToForm,
   toggleMealType,
 } from './recipeFormMapping';
+import { useFormErrors } from '../hooks/useFormErrors';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass, textareaClass } from '../components/FormField';
+import FormError from '../components/FormError';
 import RecipeIngredientsFields from '../components/RecipeIngredientsFields';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 import iconCheck from '../assets/icons/icon-check.svg';
 
-const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-3';
+const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-3';
 const LIST_PATH = '/catalogos/recetas';
+const COMMON_READ_ONLY_MESSAGE = 'Las recetas comunes son de solo lectura.';
 
 // Alta y edición de una receta del nutricionista (T21; RF-27). La edición
 // reemplaza la receta entera, y es también donde se da de baja (lógica) o se
-// reactiva.
+// reactiva. Con ?base=<id>, el alta arranca como copia de otra receta, común o
+// propia (T30): se guarda como una receta propia nueva. Una común no se edita:
+// si se llega a su edición por URL, no hay formulario.
 function RecipeForm() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const isEditMode = Boolean(id);
+  const baseId = isEditMode ? null : searchParams.get('base');
   const navigate = useNavigate();
 
+  // Volver o cancelar lleva a la receta de la que se partió (la que se edita o
+  // la que se duplica); un alta en blanco vuelve al listado.
+  const sourceId = isEditMode ? id : baseId;
+  const backPath = sourceId ? `${LIST_PATH}/${sourceId}` : LIST_PATH;
+
   const [form, setForm] = useState(EMPTY_RECIPE_FORM);
-  const [isLoading, setIsLoading] = useState(isEditMode);
+  const [baseName, setBaseName] = useState('');
+  const [isLoading, setIsLoading] = useState(isEditMode || Boolean(baseId));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadError, setLoadError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  const { fieldErrors, formError, reset, clearField, showError } = useFormErrors();
 
   useEffect(() => {
-    if (!isEditMode) return undefined;
+    if (!sourceId) return undefined;
 
     let cancelled = false;
 
-    getRecipe(id)
+    getRecipe(sourceId)
       .then((recipe) => {
-        if (!cancelled) setForm(recipeToForm(recipe));
+        if (cancelled) return;
+        if (isEditMode && !recipe.own) {
+          setLoadError(COMMON_READ_ONLY_MESSAGE);
+        } else if (isEditMode) {
+          setForm(recipeToForm(recipe));
+        } else {
+          setForm(recipeToDraft(recipe));
+          setBaseName(recipe.name);
+        }
       })
       .catch((err) => {
         if (!cancelled) setLoadError(err.message);
@@ -54,31 +75,29 @@ function RecipeForm() {
     return () => {
       cancelled = true;
     };
-  }, [id, isEditMode]);
+  }, [sourceId, isEditMode]);
 
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
-    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+    clearField(field);
   }
 
   function updateIngredients(change) {
     setForm((current) => ({ ...current, ingredients: change(current.ingredients) }));
-    setFieldErrors((current) => ({ ...current, ingredients: undefined }));
+    clearField('ingredients');
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
-    setFieldErrors({});
+    reset();
     setIsSubmitting(true);
 
     try {
       const payload = formToPayload(form, { isEditMode });
-      await (isEditMode ? updateRecipe(id, payload) : createRecipe(payload));
-      navigate(LIST_PATH, { replace: true });
+      const saved = await (isEditMode ? updateRecipe(id, payload) : createRecipe(payload));
+      navigate(`${LIST_PATH}/${saved.id}`, { replace: true });
     } catch (err) {
-      setFormError(err.message);
-      setFieldErrors(err.fields || {});
+      showError(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -105,14 +124,19 @@ function RecipeForm() {
 
   return (
     <div className="max-w-4xl">
-      <BackButton onClick={() => navigate(LIST_PATH)}>Volver</BackButton>
+      <BackButton onClick={() => navigate(backPath)}>Volver</BackButton>
 
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">{isEditMode ? 'Editar receta' : 'Nueva receta'}</h1>
           <p className="mt-2 text-sm text-muted">
             Los ingredientes se eligen del catálogo de alimentos. La receta solo la ves vos.
           </p>
+          {baseName && (
+            <p className="mt-2 text-sm text-ink">
+              Copia de «{baseName}». Al guardar se crea una receta propia nueva; la original no cambia.
+            </p>
+          )}
         </div>
         <span className="text-note whitespace-nowrap text-muted">* Campo obligatorio</span>
       </div>
@@ -172,11 +196,11 @@ function RecipeForm() {
               </FormField>
             </div>
 
-            <fieldset className="flex flex-col gap-2">
+            <fieldset className="flex min-w-0 flex-col gap-2">
               <legend className="mb-2 text-sm font-medium text-ink">
                 Tipos de comida <span className="text-primary">*</span>
               </legend>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2 xl:grid-cols-4">
                 {MEAL_TYPES.map(({ value, label }) => (
                   <label key={value} className="flex items-center gap-2 text-sm text-ink">
                     <input
@@ -256,14 +280,10 @@ function RecipeForm() {
           </SectionCard>
         )}
 
-        {formError && (
-          <p className="text-body-sm text-danger" role="alert">
-            {formError}
-          </p>
-        )}
+        <FormError message={formError} />
 
-        <div className="flex justify-end gap-3 border-t border-line pt-3">
-          <Button variant="secondary" onClick={() => navigate(LIST_PATH)}>
+        <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
+          <Button variant="secondary" onClick={() => navigate(backPath)}>
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting}>

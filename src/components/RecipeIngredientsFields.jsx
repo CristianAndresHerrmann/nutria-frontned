@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import Badge from './Badge';
+import CreateFoodDialog from './CreateFoodDialog';
 import FoodPicker from './FoodPicker';
 import { inputClass } from './FormField';
 
@@ -7,7 +9,12 @@ const LINK_BUTTON = 'text-body-sm font-medium text-primary hover:underline disab
 // Lista dinámica de ingredientes de una receta (T21). Cada ingrediente es un
 // alimento del catálogo, nunca texto libre, con una cantidad descriptiva. El
 // orden de la lista es el de la receta. `error` es el de details.fields.ingredients.
+// Un alimento que no está en el catálogo se crea en un modal y queda agregado,
+// sin salir de la receta (T26).
 function RecipeIngredientsFields({ rows, error, onAdd, onQuantityChange, onMove, onRemove }) {
+  // Nombre buscado con el que se abrió el modal; null = cerrado.
+  const [creatingName, setCreatingName] = useState(null);
+
   return (
     <div className="flex flex-col gap-3">
       {rows.length === 0 && <p className="text-body-sm text-muted">Todavía no agregaste ingredientes.</p>}
@@ -17,20 +24,20 @@ function RecipeIngredientsFields({ rows, error, onAdd, onQuantityChange, onMove,
           {rows.map((row, index) => (
             <li key={row.key} className="flex flex-wrap items-center gap-3 rounded-xl border border-line px-3.5 py-2">
               <span className="w-5 text-body-sm font-semibold text-muted">{index + 1}.</span>
-              <span className="flex min-w-40 flex-1 items-center gap-2 text-sm font-medium text-ink">
-                {row.food.name}
+              <span className="flex min-w-0 basis-full flex-wrap items-center gap-2 text-sm font-medium text-ink sm:min-w-40 sm:flex-1 xl:flex-nowrap">
+                <span className="min-w-0 max-w-full break-words">{row.food.name}</span>
                 {/* Un alimento dado de baja después de cargar la receta se puede conservar, no volver a agregar. */}
                 {!row.food.active && <Badge tone="warning">Dado de baja</Badge>}
               </span>
               <input
                 type="text"
-                className={`${inputClass} max-w-56`}
+                className={`${inputClass} sm:max-w-56`}
                 placeholder="Cantidad, ej. 1 taza"
                 value={row.quantityDescription}
                 onChange={(event) => onQuantityChange(row.key, event.target.value)}
                 aria-label={`Cantidad de ${row.food.name}`}
               />
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   className={LINK_BUTTON}
@@ -58,8 +65,24 @@ function RecipeIngredientsFields({ rows, error, onAdd, onQuantityChange, onMove,
         </ol>
       )}
 
-      <FoodPicker onSelect={onAdd} excludeIds={rows.map((row) => row.food.id)} invalid={Boolean(error)} />
+      <FoodPicker
+        onSelect={onAdd}
+        onCreate={setCreatingName}
+        excludeIds={rows.map((row) => row.food.id)}
+        invalid={Boolean(error)}
+      />
       {error && <span className="text-note text-danger">{error}</span>}
+
+      {creatingName !== null && (
+        <CreateFoodDialog
+          initialName={creatingName}
+          onCreated={(food) => {
+            onAdd(food);
+            setCreatingName(null);
+          }}
+          onClose={() => setCreatingName(null)}
+        />
+      )}
     </div>
   );
 }

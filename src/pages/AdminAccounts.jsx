@@ -6,13 +6,14 @@ import {
   setNutritionistActive,
 } from '../api/adminNutritionists';
 import { formatDateTime } from '../utils/date';
+import { usePagination } from '../hooks/usePagination';
 import Badge from '../components/Badge';
 import Button from '../components/Button';
+import DataTable from '../components/DataTable';
+import TablePagination from '../components/TablePagination';
 import NutritionistAccountForm from '../components/NutritionistAccountForm';
 import PasswordResetForm from '../components/PasswordResetForm';
 
-const TH = 'px-5 py-3 text-left text-xs font-bold tracking-[0.3px] text-muted uppercase';
-const TD = 'px-5 py-3 text-body-sm';
 const LINK_BUTTON = 'text-body-sm font-medium text-primary hover:underline disabled:opacity-50';
 
 // Panel del administrador (T31): alta, baja lógica, reactivación y
@@ -24,9 +25,13 @@ function AdminAccounts() {
   const [loadError, setLoadError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [resettingId, setResettingId] = useState(null);
+  const [resetForm, setResetForm] = useState({ password: '', isSubmitting: false, formError: '', fieldErrors: {} });
   const [togglingId, setTogglingId] = useState(null);
   const [actionError, setActionError] = useState('');
   const [notice, setNotice] = useState('');
+  // Sin resetKey: activar, desactivar o restablecer una cuenta la reemplaza en el
+  // lugar y la página se mantiene.
+  const pagination = usePagination(accounts);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,6 +67,8 @@ function AdminAccounts() {
   async function handleCreate(payload) {
     const created = await createNutritionist(payload);
     setAccounts((current) => [created, ...current]);
+    // La cuenta nueva queda primera: se vuelve a la página 1 para que se vea.
+    pagination.setPage(1);
     setIsCreating(false);
     setNotice(`Cuenta de ${created.name} creada. Ya puede iniciar sesión con ${created.email}.`);
   }
@@ -94,10 +101,59 @@ function AdminAccounts() {
 
   const isBusy = isCreating || Boolean(resettingId) || Boolean(togglingId);
 
+  const columns = [
+    { key: 'name', header: 'Nombre', className: 'font-semibold text-ink', cell: (account) => account.name },
+    { key: 'email', header: 'Email', cell: (account) => account.email },
+    {
+      key: 'status',
+      header: 'Estado',
+      cell: (account) => (account.active ? <Badge tone="mint">Activa</Badge> : <Badge tone="warning">Desactivada</Badge>),
+    },
+    { key: 'createdAt', header: 'Alta', cell: (account) => formatDateTime(account.createdAt) },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      hideHeader: true,
+      cell: (account) => (
+        <div className="flex flex-wrap items-center justify-end gap-4 xl:flex-nowrap">
+          <button
+            type="button"
+            className={LINK_BUTTON}
+            disabled={isBusy}
+            onClick={() => {
+              setNotice('');
+              setActionError('');
+              setResetForm({ password: '', isSubmitting: false, formError: '', fieldErrors: {} });
+              setResettingId(account.id);
+            }}
+          >
+            Restablecer contraseña
+          </button>
+          <button type="button" className={LINK_BUTTON} onClick={() => handleToggleActive(account)} disabled={isBusy}>
+            {togglingId === account.id ? 'Guardando...' : account.active ? 'Desactivar' : 'Reactivar'}
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  function renderPasswordReset(account) {
+    if (resettingId !== account.id) return null;
+    return (
+      <PasswordResetForm
+        accountName={account.name}
+        state={resetForm}
+        onStateChange={setResetForm}
+        onSubmit={(password) => handleResetPassword(account, password)}
+        onCancel={() => setResettingId(null)}
+      />
+    );
+  }
+
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row">
+        <div className="min-w-0">
           <h1 className="text-[28px] font-bold text-ink">Cuentas</h1>
           <p className="mt-2 text-sm text-muted">Cuentas de las nutricionistas que usan NutrIA.</p>
         </div>
@@ -140,71 +196,18 @@ function AdminAccounts() {
         )}
 
         {!isLoading && !loadError && accounts.length > 0 && (
-          <table className="w-full">
-            <thead>
-              <tr className="bg-neutral-soft/45">
-                <th className={TH}>Nombre</th>
-                <th className={TH}>Email</th>
-                <th className={TH}>Estado</th>
-                <th className={TH}>Alta</th>
-                <th className={TH} />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {accounts.map((account) => (
-                <AccountRow
-                  key={account.id}
-                  account={account}
-                  isResetting={resettingId === account.id}
-                  isToggling={togglingId === account.id}
-                  disabled={isBusy}
-                  onStartReset={() => {
-                    setNotice('');
-                    setActionError('');
-                    setResettingId(account.id);
-                  }}
-                  onCancelReset={() => setResettingId(null)}
-                  onResetPassword={(password) => handleResetPassword(account, password)}
-                  onToggleActive={() => handleToggleActive(account)}
-                />
-              ))}
-            </tbody>
-          </table>
+          <>
+            <DataTable
+              columns={columns}
+              rows={pagination.pageItems}
+              rowKey={(account) => account.id}
+              renderExpanded={renderPasswordReset}
+            />
+            <TablePagination {...pagination} />
+          </>
         )}
       </div>
     </div>
-  );
-}
-
-function AccountRow({ account, isResetting, isToggling, disabled, onStartReset, onCancelReset, onResetPassword, onToggleActive }) {
-  return (
-    <>
-      <tr>
-        <td className={`${TD} font-semibold text-ink`}>{account.name}</td>
-        <td className={TD}>{account.email}</td>
-        <td className={TD}>
-          {account.active ? <Badge tone="mint">Activa</Badge> : <Badge tone="warning">Desactivada</Badge>}
-        </td>
-        <td className={TD}>{formatDateTime(account.createdAt)}</td>
-        <td className={TD}>
-          <div className="flex items-center justify-end gap-4">
-            <button type="button" className={LINK_BUTTON} onClick={onStartReset} disabled={disabled}>
-              Restablecer contraseña
-            </button>
-            <button type="button" className={LINK_BUTTON} onClick={onToggleActive} disabled={disabled}>
-              {isToggling ? 'Guardando...' : account.active ? 'Desactivar' : 'Reactivar'}
-            </button>
-          </div>
-        </td>
-      </tr>
-      {isResetting && (
-        <tr>
-          <td colSpan={5} className="bg-surface px-5 py-4">
-            <PasswordResetForm accountName={account.name} onSubmit={onResetPassword} onCancel={onCancelReset} />
-          </td>
-        </tr>
-      )}
-    </>
   );
 }
 

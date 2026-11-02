@@ -2,7 +2,7 @@ import { useState } from 'react';
 import FormField, { inputClass } from './FormField';
 import Button from './Button';
 
-const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-3';
+const FORM_GRID = 'grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-3';
 const EMPTY_FORM = { name: '', email: '', password: '' };
 
 // Alta de una cuenta de nutricionista, inline en el panel. `onSubmit(payload)`
@@ -36,7 +36,7 @@ function NutritionistAccountForm({ onSubmit, onCancel }) {
   }
 
   return (
-    <form className="flex flex-col gap-5 rounded-xl border border-line bg-surface p-5" onSubmit={handleSubmit} noValidate>
+    <form className="flex min-w-0 flex-col gap-5 rounded-xl border border-line bg-surface p-5" onSubmit={handleSubmit} noValidate>
       <div>
         <h3 className="text-sm font-semibold text-ink">Nueva cuenta de nutricionista</h3>
         <p className="mt-1 text-body-sm text-muted">
@@ -88,7 +88,7 @@ function NutritionistAccountForm({ onSubmit, onCancel }) {
         </p>
       )}
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end xl:flex-nowrap">
         <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </Button>

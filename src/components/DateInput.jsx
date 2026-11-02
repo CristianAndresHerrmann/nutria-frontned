@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { DayPicker } from 'react-day-picker';
 import { es } from 'react-day-picker/locale';
 import { inputClass } from './FormField';
@@ -60,6 +61,44 @@ function DateInput({ value, onChange, min, max, invalid = false, disabled = fals
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
   const buttonRef = useRef(null);
+  const popoverRef = useRef(null);
+  const [position, setPosition] = useState({ left: 16, top: 16 });
+
+  useLayoutEffect(() => {
+    if (!isOpen) return undefined;
+
+    function placeCalendar() {
+      const field = containerRef.current.getBoundingClientRect();
+      const calendar = popoverRef.current.getBoundingClientRect();
+      const viewport = window.visualViewport;
+      const leftEdge = (viewport?.offsetLeft ?? 0) + 16;
+      const topEdge = (viewport?.offsetTop ?? 0) + 16;
+      const rightEdge = leftEdge + (viewport?.width ?? window.innerWidth) - 32;
+      const bottomEdge = topEdge + (viewport?.height ?? window.innerHeight) - 32;
+      const height = Math.min(calendar.height, bottomEdge - topEdge);
+      const below = field.bottom + 8;
+      const top = below + height <= bottomEdge ? below : Math.max(topEdge, field.top - height - 8);
+      setPosition({
+        left: Math.max(leftEdge, Math.min(field.left, rightEdge - calendar.width)),
+        top: Math.max(topEdge, Math.min(top, bottomEdge - height)),
+        maxHeight: Math.max(0, bottomEdge - topEdge),
+      });
+    }
+    placeCalendar();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(placeCalendar);
+    observer?.observe(popoverRef.current);
+    window.addEventListener('resize', placeCalendar);
+    window.addEventListener('scroll', placeCalendar, true);
+    window.visualViewport?.addEventListener('resize', placeCalendar);
+    window.visualViewport?.addEventListener('scroll', placeCalendar);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', placeCalendar);
+      window.removeEventListener('scroll', placeCalendar, true);
+      window.visualViewport?.removeEventListener('resize', placeCalendar);
+      window.visualViewport?.removeEventListener('scroll', placeCalendar);
+    };
+  }, [isOpen]);
 
   // Si el valor cambia desde afuera (el modo edición carga al paciente), se
   // muestra; si es el eco de lo que se acaba de tipear, se respeta lo tipeado.
@@ -72,7 +111,7 @@ function DateInput({ value, onChange, min, max, invalid = false, disabled = fals
     if (!isOpen) return undefined;
 
     function handleMouseDown(event) {
-      if (!containerRef.current?.contains(event.target)) setIsOpen(false);
+      if (!containerRef.current?.contains(event.target) && !popoverRef.current?.contains(event.target)) setIsOpen(false);
     }
     function handleKeyDown(event) {
       if (event.key !== 'Escape') return;
@@ -80,10 +119,10 @@ function DateInput({ value, onChange, min, max, invalid = false, disabled = fals
       buttonRef.current?.focus();
     }
 
-    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('pointerdown', handleMouseDown);
     document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('pointerdown', handleMouseDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen]);
@@ -117,7 +156,7 @@ function DateInput({ value, onChange, min, max, invalid = false, disabled = fals
   const disabledDays = [minDate && { before: minDate }, maxDate && { after: maxDate }].filter(Boolean);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative min-w-0">
       <input
         type="text"
         inputMode="numeric"
@@ -143,11 +182,13 @@ function DateInput({ value, onChange, min, max, invalid = false, disabled = fals
         <img src={iconCalendar} alt="" className="size-4.5" />
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
+          ref={popoverRef}
           role="dialog"
           aria-label="Elegir fecha"
-          className="absolute top-full left-0 z-20 mt-2 rounded-2xl border border-line bg-white p-3 font-normal shadow-card"
+          style={position}
+          className="fixed z-20 w-max max-w-[calc(100vw-2rem)] overflow-auto overscroll-contain rounded-2xl border border-line bg-white p-3 font-normal shadow-card"
         >
           <DayPicker
             mode="single"
@@ -163,7 +204,7 @@ function DateInput({ value, onChange, min, max, invalid = false, disabled = fals
             disabled={disabledDays}
             autoFocus
           />
-        </div>
+        </div>, document.body
       )}
     </div>
   );

@@ -3,8 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createRecommendation, getRecommendation, updateRecommendation } from '../api/recommendations';
 import { listPathologies } from '../api/catalogs';
 import { EMPTY_RECOMMENDATION_FORM, formToPayload, recommendationToForm } from './recommendationFormMapping';
+import { useFormErrors } from '../hooks/useFormErrors';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass, textareaClass } from '../components/FormField';
+import FormError from '../components/FormError';
 import BackButton from '../components/BackButton';
 import Button from '../components/Button';
 import iconCheck from '../assets/icons/icon-check.svg';
@@ -25,8 +27,7 @@ function RecommendationForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadError, setLoadError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  const { fieldErrors, formError, reset, clearField, showError } = useFormErrors();
 
   useEffect(() => {
     let cancelled = false;
@@ -52,13 +53,12 @@ function RecommendationForm() {
 
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
-    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+    clearField(field);
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
-    setFieldErrors({});
+    reset();
     setIsSubmitting(true);
 
     try {
@@ -66,8 +66,7 @@ function RecommendationForm() {
       await (isEditMode ? updateRecommendation(id, payload) : createRecommendation(payload));
       navigate(LIST_PATH, { replace: true });
     } catch (err) {
-      setFormError(err.message);
-      setFieldErrors(err.fields || {});
+      showError(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -92,14 +91,12 @@ function RecommendationForm() {
     );
   }
 
-  const hasFieldErrors = Object.values(fieldErrors).some(Boolean);
-
   return (
     <div className="max-w-4xl">
       <BackButton onClick={() => navigate(LIST_PATH)}>Volver</BackButton>
 
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">
             {isEditMode ? 'Editar recomendación' : 'Nueva recomendación'}
           </h1>
@@ -171,13 +168,9 @@ function RecommendationForm() {
           </SectionCard>
         )}
 
-        {formError && !hasFieldErrors && (
-          <p className="text-body-sm text-danger" role="alert">
-            {formError}
-          </p>
-        )}
+        <FormError message={formError} />
 
-        <div className="flex justify-end gap-3 border-t border-line pt-3">
+        <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={() => navigate(LIST_PATH)}>
             Cancelar
           </Button>

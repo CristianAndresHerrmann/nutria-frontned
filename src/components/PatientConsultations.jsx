@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { createConsultation, listConsultations } from '../api/patientConsultations';
 import { CONSULTATION_TEXT_FIELDS, complianceBadge, consultationTypeLabel } from '../pages/patientConsultations';
 import { formatDate } from '../utils/date';
+import { usePatientData } from '../hooks/usePatientData';
 import ConsultationForm from './ConsultationForm';
 import SectionCard from './SectionCard';
 import Badge from './Badge';
 import Button from './Button';
 
-const FIELD_GRID = 'grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4';
+const FIELD_GRID = 'grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]';
 const LABEL = 'text-xs text-muted';
 const VALUE = 'text-sm whitespace-pre-line text-ink';
 
@@ -28,7 +29,7 @@ function ConsultationCard({ consultation }) {
       {filledFields.length > 0 && (
         <div className={FIELD_GRID}>
           {filledFields.map((field) => (
-            <div key={field.name} className="flex flex-col gap-1">
+            <div key={field.name} className="flex min-w-0 flex-col gap-1">
               <span className={LABEL}>{field.label}</span>
               <span className={VALUE}>{consultation[field.name]}</span>
             </div>
@@ -52,8 +53,8 @@ function ConsultationCard({ consultation }) {
             {consultation.habits.map((habit) => {
               const badge = complianceBadge(habit.compliance);
               return (
-                <li key={habit.id} className="flex items-start justify-between gap-3 text-sm text-ink">
-                  <span>{habit.description}</span>
+                <li key={habit.id} className="flex min-w-0 flex-col items-start justify-between gap-3 text-sm text-ink sm:flex-row">
+                  <span className="min-w-0 break-words">{habit.description}</span>
                   <Badge tone={badge.tone}>{badge.label}</Badge>
                 </li>
               );
@@ -70,29 +71,16 @@ function ConsultationCard({ consultation }) {
 // ficha que se guardó una consulta, para que muestre la nueva última
 // actualización.
 function PatientConsultations({ patientId, onChange }) {
-  const [consultations, setConsultations] = useState(null);
-  const [error, setError] = useState('');
+  const { data: consultations, error, reload, isCurrent } = usePatientData(patientId, listConsultations);
   const [isCreating, setIsCreating] = useState(false);
-
-  const load = useCallback(
-    () =>
-      listConsultations(patientId).then((data) => {
-        setConsultations(data);
-        setError('');
-      }),
-    [patientId],
-  );
-
-  useEffect(() => {
-    load().catch((err) => setError(err.message));
-  }, [load]);
 
   // Los errores de guardado los muestra el formulario en su campo.
   async function handleSubmit(payload) {
     await createConsultation(patientId, payload);
+    if (!isCurrent()) return;
     setIsCreating(false);
-    await load().catch((err) => setError(err.message));
-    onChange?.();
+    await reload();
+    if (isCurrent()) onChange?.();
   }
 
   return (

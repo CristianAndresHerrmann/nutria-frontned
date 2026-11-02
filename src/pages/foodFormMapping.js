@@ -6,6 +6,11 @@ export const EMPTY_FOOD_FORM = {
   categories: [],
 };
 
+// Aviso del alta del nutricionista: la pantalla de alta y el modal del
+// formulario de receta (T26).
+export const PRIVATE_FOOD_NOTICE =
+  'El alimento queda disponible solo para vos. Una vez guardado no se puede modificar: si hace falta corregirlo, pedíselo al administrador del catálogo.';
+
 // Marca o desmarca una categoría sin repetirla.
 export function toggleCategory(categories, value, checked) {
   const without = categories.filter((category) => category !== value);
@@ -21,4 +26,9 @@ export function formToPayload(form) {
     foodGroupId: form.foodGroupId,
     categories: FOOD_CATEGORIES.map(({ value }) => value).filter((value) => form.categories.includes(value)),
   };
+}
+
+// Un alimento de la API como formulario de edición (panel del administrador, T25).
+export function foodToForm(food) {
+  return { name: food.name, foodGroupId: food.foodGroupId, categories: [...food.categories] };
 }

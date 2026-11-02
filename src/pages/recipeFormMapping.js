@@ -59,6 +59,13 @@ export function recipeToForm(recipe) {
   };
 }
 
+// Copia de una receta, común o propia, como borrador de una receta nueva: el
+// alta la guarda como propia y la original no cambia. El nombre se marca como
+// copia para no confundirla con la original en el listado.
+export function recipeToDraft(recipe) {
+  return { ...recipeToForm(recipe), name: `${recipe.name} (copia)`, availableInCatalog: true };
+}
+
 // Un número si se escribió uno; vacío es null. Lo que no sea un número se manda
 // igual y lo rechaza el backend con el error en su campo.
 function minutesToPayload(value) {

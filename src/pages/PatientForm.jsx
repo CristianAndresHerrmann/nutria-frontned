@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createPatient, getPatient, updatePatient } from '../api/patients';
 import { completeDateValueError, dateValueError, isMinorFromDateInput, todayInputValue } from '../utils/date';
+import { useFormErrors } from '../hooks/useFormErrors';
 import { EMPTY_FORM, formToPayload, patientToForm } from './patientFormMapping';
 import { CLINICAL_SECTIONS } from './patientClinicalFields';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass } from '../components/FormField';
+import FormError from '../components/FormError';
 import ClinicalFieldInput from '../components/ClinicalFieldInput';
 import DateInput from '../components/DateInput';
 import BackButton from '../components/BackButton';
@@ -25,8 +27,7 @@ function PatientForm() {
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadError, setLoadError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  const { fieldErrors, formError, reset, clearField, showFieldErrors, showError } = useFormErrors();
 
   useEffect(() => {
     if (!isEditMode) return undefined;
@@ -60,20 +61,18 @@ function PatientForm() {
   function updateBirthDate(value) {
     updateField('birthDate', value);
     // El error del último intento de guardado ya no aplica a la fecha nueva.
-    setFieldErrors((current) => ({ ...current, birthDate: undefined }));
+    clearField('birthDate');
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFormError('');
-    setFieldErrors({});
+    reset();
 
     // Una fecha inexistente (30/02), incompleta o futura se advierte en su campo
     // y no se manda: el backend la rechazaría igual, pero no hace falta el viaje.
     const localBirthDateError = dateValueError(form.birthDate, birthDateRange);
     if (localBirthDateError) {
-      setFieldErrors({ birthDate: localBirthDateError });
-      setFormError('Revisá los campos marcados antes de guardar.');
+      showFieldErrors({ birthDate: localBirthDateError });
       return;
     }
 
@@ -84,8 +83,7 @@ function PatientForm() {
       const patient = isEditMode ? await updatePatient(id, payload) : await createPatient(payload);
       navigate(`/pacientes/${patient.id}`, { replace: true });
     } catch (err) {
-      setFormError(err.message);
-      setFieldErrors(err.fields || {});
+      showError(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -114,8 +112,8 @@ function PatientForm() {
     <div className="max-w-4xl">
       <BackButton onClick={() => navigate('/pacientes')}>Volver</BackButton>
 
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
           <h1 className="text-title font-bold text-ink">{isEditMode ? 'Editar paciente' : 'Nuevo paciente'}</h1>
           <p className="mt-2 text-sm text-muted">
             {isEditMode ? 'Actualizá los datos de la ficha.' : 'Completá los datos básicos para crear una nueva ficha.'}
@@ -288,13 +286,9 @@ function PatientForm() {
           <span>Marcar ficha como incompleta</span>
         </label>
 
-        {formError && (
-          <p className="text-body-sm text-danger" role="alert">
-            {formError}
-          </p>
-        )}
+        <FormError message={formError} />
 
-        <div className="flex justify-end gap-3 border-t border-line pt-3">
+        <div className="flex flex-col gap-3 border-t border-line pt-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={() => navigate('/pacientes')}>
             Cancelar
           </Button>

@@ -54,14 +54,34 @@ cp .env.example .env
 | `npm run lint` | `oxlint` | Linter del repo. |
 | `npm test` | `vitest run` | Corre los tests una vez. La verificación que cuenta es dentro del contenedor: `npm run test:frontend` desde la carpeta raíz `nutria/`. |
 
+Las pruebas de componentes con efectos usan `// @vitest-environment jsdom` y
+montan React con `createRoot` y `act`. La ficha del paciente cubre respuestas fuera
+de orden, cambios de paciente y recargas tras guardar, con API simulada y datos
+ficticios. Los demás tests mantienen el entorno Node por defecto; no son pruebas
+E2E contra el backend.
+
 ## Cómo ejecutar
 
+Desde la carpeta raíz `nutria/`:
+
 ```bash
-npm install
-npm run dev
+npm run up
 ```
 
-La aplicación queda disponible en `http://localhost:5173`.
+La aplicación queda disponible en `http://local.nutria.com`. Vite y las dependencias
+corren dentro de Docker. Una vez creados los contenedores, podés iniciar/detener
+el stack desde Docker Desktop: el frontend sigue detectando cambios y actualizando
+el navegador sin una terminal abierta ni builds manuales para los archivos fuente.
+
+El compose monta `src/`, `public/`, `index.html` y `vite.config.js` en solo lectura;
+Vite usa polling cada 500 ms para detectar las ediciones desde Windows/OneDrive.
+`node_modules` permanece en la imagen. Cambiar dependencias requiere reconstruir
+la imagen; `npm run dev` desde la raíz agrega Compose Watch para hacerlo
+automáticamente mientras esa terminal permanezca abierta.
+
+Si el contenedor se creó antes de incorporar estos mounts, hay que recrearlo una
+vez; el comando y el detalle están en el README raíz, "Ver cambios sin rebuildear".
+Staging elimina los mounts y usa el build estático servido por nginx.
 
 Para levantar el stack completo con Docker (frontend + backend + ia + postgres + proxy) con un solo comando, ver la sección "Cómo ejecutar todo el stack con Docker Compose" en el README de `nutria-backend`. En ese modo la aplicación se accede como `http://local.nutria.com` (virtual host servido por Traefik), no por puerto ni por `localhost`.
 
