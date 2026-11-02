@@ -32,9 +32,6 @@ los tokens existentes y los breakpoints estándar de Tailwind.
   El selector de alimentos queda en el flujo debajo de `xl`, con scroll vertical.
 - Las acciones de recetas tienen texto visible debajo de `xl`, además de sus
   etiquetas accesibles. En escritorio conservan su presentación con íconos.
-- El banner conserva su posición fija y tiene una reserva de igual texto y ancho
-  al final del documento. Esa copia no se anuncia y permite reservar la altura
-  necesaria incluso cuando el aviso ocupa varias líneas.
 
 ## Verificación automatizada
 
@@ -73,20 +70,18 @@ faltantes. Incluir nombres, emails, objetivos y notas largos, también palabras
 sin espacios. Usar más de 25 filas en Pacientes, Alimentos, Recetas y Cuentas.
 Incluir recetas comunes, propias, dadas de baja e ingredientes dados de baja.
 
-Hacer el recorrido con rol nutricionista y luego con admin. Repetir con banner
-de staging presente y ausente; `VITE_ENV_LABEL` debe estar definido al construir
-el frontend para comprobar el banner. Probar también un aviso de varias líneas.
+Hacer el recorrido con rol nutricionista y luego con admin.
 
 ## Qué revisar en cada ancho
 
-| Ancho | Navegación | Tablas y paginación | Formularios | Pestañas y popovers | Banner |
-| --- | --- | --- | --- | --- | --- |
-| 360 px | Abrir menú; leer nombre/email/rol; recorrer Tab y Shift+Tab; cerrar por overlay, Escape y enlace; comprobar foco y logout. Título del header completo. | Tarjetas: todos los campos, badges, acciones y expansión. Paginación apilada, 10/25 filas, anterior/siguiente y última página. | Una columna; guardar/cancelar alcanzables; categorías, radios, errores, adulto responsable, ingredientes y hábitos completos. | Deslizar ambas barras hasta el final; activa visible al entrar. Abrir calendario junto al borde y con teclado virtual; leer resultados completos del FoodPicker y alcanzar el último. | Texto completo con wrap; al llegar al final, ni botones ni paginación quedan tapados. |
-| 390 px | Repetir cierres/foco; comprobar panel con nombre/email largos y altura reducida. | Tarjetas sin depender del ancho extra; probar acciones largas de cuentas y recetas. | Probar errores extensos y botones de recomendación; campos sin recorte. | Seleccionar mes/año/día, cerrar tocando fuera; agregar alimento y ver “Ya agregado”. | Comprobar aviso de varias líneas y scroll hasta la última acción. |
-| 768 px | Sigue el menú móvil; nombre/rol del header y título no se pisan. | Aparecen tablas: ninguna columna, badge o acción se pierde. Probar reset de contraseña expandido y paginación. | Comprobar grillas intermedias y formulario anidado de consulta con mediciones. | Pestañas completas o scroll local; calendario en campos derechos sin salir del viewport. | Sin superposición al final de listados y formularios. |
-| 1024 px | Aparece sidebar; navegación y logout completos. Abrir menú a 768 y ampliar: no debe quedar el body bloqueado. | Espacio reducido por sidebar: revisar especialmente Recetas y Cuentas, acciones y expansión. | Campos dentro de tarjetas ajustados; ninguna grilla presupone el ancho completo del viewport. | Scroll solo en la barra o mediciones; calendario junto al borde derecho y selector de alimentos legibles. | Reserva correcta con sidebar y contenido largo. |
-| 1280 px | Comparar con escritorio previo: sidebar, header, avatar, nombre/rol, separaciones y paddings. Desplegar nombre/email del sidebar para leerlos completos. | Tabla automática original; mismas columnas y acciones. Probar paginación y expansión. | Recuperar distribución original, tamaños y alineación de botones; validar guardado/errores. | Comparar barras y calendario; FoodPicker recupera desplegable superpuesto y permite elegir. | Apariencia habitual si cabe en una línea; contenido final alcanzable. |
-| 1440 px | Repetir comparación visual y navegación completa de ambos roles. | Verificar columnas, alineaciones, badges, acciones, totales y última página. | Comparar anchos máximos, grillas, espaciados y estados de envío. | Probar las seis pestañas y los cuatro catálogos; selección de fecha/alimentos con mouse y teclado. | Comparar aviso y verificar final de página con y sin banner. |
+| Ancho | Navegación | Tablas y paginación | Formularios | Pestañas y popovers |
+| --- | --- | --- | --- | --- |
+| 360 px | Abrir menú; leer nombre/email/rol; recorrer Tab y Shift+Tab; cerrar por overlay, Escape y enlace; comprobar foco y logout. Título del header completo. | Tarjetas: todos los campos, badges, acciones y expansión. Paginación apilada, 10/25 filas, anterior/siguiente y última página. | Una columna; guardar/cancelar alcanzables; categorías, radios, errores, adulto responsable, ingredientes y hábitos completos. | Deslizar ambas barras hasta el final; activa visible al entrar. Abrir calendario junto al borde y con teclado virtual; leer resultados completos del FoodPicker y alcanzar el último. |
+| 390 px | Repetir cierres/foco; comprobar panel con nombre/email largos y altura reducida. | Tarjetas sin depender del ancho extra; probar acciones largas de cuentas y recetas. | Probar errores extensos y botones de recomendación; campos sin recorte. | Seleccionar mes/año/día, cerrar tocando fuera; agregar alimento y ver “Ya agregado”. |
+| 768 px | Sigue el menú móvil; nombre/rol del header y título no se pisan. | Aparecen tablas: ninguna columna, badge o acción se pierde. Probar reset de contraseña expandido y paginación. | Comprobar grillas intermedias y formulario anidado de consulta con mediciones. | Pestañas completas o scroll local; calendario en campos derechos sin salir del viewport. |
+| 1024 px | Aparece sidebar; navegación y logout completos. Abrir menú a 768 y ampliar: no debe quedar el body bloqueado. | Espacio reducido por sidebar: revisar especialmente Recetas y Cuentas, acciones y expansión. | Campos dentro de tarjetas ajustados; ninguna grilla presupone el ancho completo del viewport. | Scroll solo en la barra o mediciones; calendario junto al borde derecho y selector de alimentos legibles. |
+| 1280 px | Comparar con escritorio previo: sidebar, header, avatar, nombre/rol, separaciones y paddings. Desplegar nombre/email del sidebar para leerlos completos. | Tabla automática original; mismas columnas y acciones. Probar paginación y expansión. | Recuperar distribución original, tamaños y alineación de botones; validar guardado/errores. | Comparar barras y calendario; FoodPicker recupera desplegable superpuesto y permite elegir. |
+| 1440 px | Repetir comparación visual y navegación completa de ambos roles. | Verificar columnas, alineaciones, badges, acciones, totales y última página. | Comparar anchos máximos, grillas, espaciados y estados de envío. | Probar las seis pestañas y los cuatro catálogos; selección de fecha/alimentos con mouse y teclado. |
 
 En todos los anchos revisar carga, vacío, error de carga, error por campo y error
 de acción donde aplique. Ningún texto clínico, nombre o email debe depender de
@@ -156,7 +151,7 @@ también el borde izquierdo y que no haya textos recortados dentro de un
 - Layouts: `src/layouts/MainLayout.jsx`, `CatalogLayout.jsx` y `MainLayout.test.jsx`.
 - Componentes compartidos: `src/components/DataTable.jsx`, `DataTable.test.jsx`,
   `TablePagination.jsx`, `Button.jsx`, `Badge.jsx`, `FormField.jsx`, `SectionCard.jsx`,
-  `ClinicalFieldInput.jsx`, `EnvironmentBanner.jsx`, `ScrollTabs.jsx`,
+  `ClinicalFieldInput.jsx`, `ScrollTabs.jsx`,
   `DateInput.jsx`, `DateInput.test.jsx` y `FoodPicker.jsx`.
 - Componentes de ficha y administración: `PatientConditions.jsx`, `ConditionForm.jsx`,
   `PatientConsultations.jsx`, `ConsultationForm.jsx`, `ConsultationMeasurementsFields.jsx`,
@@ -185,7 +180,7 @@ navegación modal debajo de `lg`, tarjetas generadas por `DataTable` debajo de `
 y paginación DA-33 en ambos formatos. Todo dato, aviso y acción debe seguir
 visible o alcanzable; los textos largos hacen wrap. Solo se permite scroll
 horizontal local, evidente y accesible en componentes que lo requieran.
-Popovers y banner deben respetar el viewport y permitir alcanzar el contenido.
+Los popovers deben respetar el viewport y permitir alcanzar el contenido.
 
 **Consecuencias:** reutilización de las columnas entre tabla y tarjetas, sin
 dependencias nuevas ni detección de viewport para elegir la variante. Se debe
