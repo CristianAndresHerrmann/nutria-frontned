@@ -35,7 +35,16 @@ const NUTRITIONIST_HEADER_TITLES = [
   { pattern: '/catalogos/recomendaciones/:id/editar', title: 'Editar recomendación' },
 ];
 
-const ADMIN_HEADER_TITLES = [{ pattern: '/admin/cuentas', title: 'Cuentas' }];
+const ADMIN_HEADER_TITLES = [
+  { pattern: '/admin/cuentas', title: 'Cuentas' },
+  { pattern: '/admin/catalogo', title: 'Catálogo' },
+  { pattern: '/admin/catalogo/alimentos', title: 'Alimentos' },
+  { pattern: '/admin/catalogo/alimentos/nuevo', title: 'Nuevo alimento común' },
+  { pattern: '/admin/catalogo/alimentos/:id/editar', title: 'Editar alimento' },
+  { pattern: '/admin/catalogo/grupos', title: 'Grupos de alimentos' },
+  { pattern: '/admin/catalogo/patologias', title: 'Patologías' },
+  { pattern: '/admin/catalogo/actividad', title: 'Actividad del catálogo' },
+];
 
 function headerTitleFor(titles, pathname) {
   const match = titles.find(({ pattern }) => matchPath({ path: pattern, end: true }, pathname));
@@ -124,8 +133,8 @@ function NutritionistNav() {
   );
 }
 
-// El administrador no ve pacientes ni catálogos: solo las cuentas (T31). La
-// curación del catálogo se suma en su propia tarea.
+// El administrador no ve pacientes: las cuentas (T31) y la curación del catálogo
+// (T25).
 function AdminNav() {
   return (
     <>
@@ -134,6 +143,10 @@ function AdminNav() {
         <NavLink to="/admin/cuentas" className={navLinkClass}>
           <img src={navPacientes} alt="" />
           Cuentas
+        </NavLink>
+        <NavLink to="/admin/catalogo" className={navLinkClass}>
+          <img src={navCatalogos} alt="" />
+          Catálogo
         </NavLink>
       </nav>
     </>

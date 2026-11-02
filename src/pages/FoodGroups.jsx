@@ -6,7 +6,7 @@ import { flattenTree } from '../utils/foodGroupTree';
 // como estilo y no como clase de Tailwind.
 const INDENT_PX = 28;
 
-// Solo lectura: el alta y la edición de grupos son del administrador (tarea aparte).
+// Solo lectura: el alta y la edición de grupos son del administrador (T25).
 function FoodGroups() {
   const [groups, setGroups] = useState(null);
   const [error, setError] = useState('');

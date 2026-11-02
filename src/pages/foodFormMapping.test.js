@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formToPayload, toggleCategory } from './foodFormMapping';
+import { foodToForm, formToPayload, toggleCategory } from './foodFormMapping';
 import { foodsPath } from '../api/catalogs';
 
 describe('formToPayload', () => {
@@ -30,5 +30,14 @@ describe('foodsPath', () => {
 
   it('agrega solo los filtros con valor', () => {
     expect(foodsPath({ search: ' caba ', groupId: 'g-1' })).toBe('/foods?search=caba&groupId=g-1');
+  });
+});
+
+describe('foodToForm', () => {
+  it('toma nombre, grupo y categorías, y el ida y vuelta conserva el orden del formulario', () => {
+    const food = { id: 'kefir', name: 'Kéfir', foodGroupId: 'lacteos', categories: ['healthy_fat', 'protein'], common: false };
+
+    expect(foodToForm(food)).toEqual({ name: 'Kéfir', foodGroupId: 'lacteos', categories: ['healthy_fat', 'protein'] });
+    expect(formToPayload(foodToForm(food))).toEqual({ name: 'Kéfir', foodGroupId: 'lacteos', categories: ['protein', 'healthy_fat'] });
   });
 });
