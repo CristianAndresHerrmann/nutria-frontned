@@ -4,6 +4,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
+### Removed
+
+- Aviso de entorno de prueba (`EnvironmentBanner`) y la variable `VITE_ENV_LABEL`. El aviso fijo tapaba contenido y su reserva de altura dejaba un salto al final de cada pantalla. La regla de usar solo datos ficticios en staging (RNF-08) se recuerda al dar cada cuenta (README de `nutria-backend`, sección "Staging"). `docs/responsive.md` deja de revisar el banner.
+
 ## [0.0.3] - 2026-11-01
 
 Incremento 3 (ver `docs/cierre-incremento-3.md` en el repo raíz).

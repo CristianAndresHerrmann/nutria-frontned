@@ -10,7 +10,6 @@ RUN npm ci
 FROM deps AS build
 
 ARG VITE_API_URL
-ARG VITE_ENV_LABEL
 
 COPY . .
 RUN npm run build

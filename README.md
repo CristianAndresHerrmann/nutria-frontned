@@ -42,7 +42,7 @@ Copiar `.env.example` a `.env` (no se versiona) antes de ejecutar:
 cp .env.example .env
 ```
 
-`VITE_API_URL` apunta al backend; el valor por defecto sirve para el stack de Docker Compose. `VITE_ENV_LABEL` es el texto del aviso de entorno de prueba: vacío en local (no se muestra) y, en staging, lo fija `docker-compose.staging.yml` de `nutria-backend`.
+`VITE_API_URL` apunta al backend; el valor por defecto sirve para el stack de Docker Compose. En staging lo fija `docker-compose.staging.yml` de `nutria-backend`.
 
 ## Scripts disponibles
 
@@ -111,7 +111,7 @@ contenedor; `C` abrevia `docker compose -f nutria-backend/docker-compose.yml`):
 
 Un push a `staging` dispara `.github/workflows/cd-staging.yml`: corre el CI y, si
 pasa, despliega el servicio `frontend` en la VM de staging (imagen `prod`, con
-`VITE_API_URL` y `VITE_ENV_LABEL` fijadas en el build) y verifica que la página
+`VITE_API_URL` fijada en el build) y verifica que la página
 responde por HTTPS. Cómo funciona, la configuración del Environment `staging` y la
 operación de la VM: README de `nutria-backend`, sección "Staging".
 
