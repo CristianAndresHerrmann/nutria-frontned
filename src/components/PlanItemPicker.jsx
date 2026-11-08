@@ -69,7 +69,8 @@ function GroupSelect({ onSelect }) {
 }
 
 // Recetas del catálogo para la comida, ya filtradas por el backend con las
-// condiciones del paciente (RF-28, RF-29). La búsqueda es en el cliente, como en
+// condiciones del paciente y las reglas prohibitivas de sus patologías (RF-28,
+// RF-29, DA-39). La búsqueda es en el cliente, como en
 // el listado de recetas.
 function RecipeSearch({ patientId, mealType, onSelect }) {
   const [recipes, setRecipes] = useState(null);
@@ -107,7 +108,7 @@ function RecipeSearch({ patientId, mealType, onSelect }) {
       />
       <p className="text-note text-muted">
         Recetas de {mealTypeLabel(mealType).toLowerCase()} sin ingredientes restringidos por las alergias, intolerancias
-        o rechazos del paciente.
+        o rechazos del paciente, ni prohibidos por sus patologías.
       </p>
       {error && (
         <p className="text-body-sm text-danger" role="alert">
