@@ -6,6 +6,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ### Changed
 
+- Los textos del plan admiten hasta 10000 caracteres en el editor (antes 4000), igual que `PUT /plans/:id` (DA-43). Las recomendaciones generales y las clínicas de un plan generado ahora llevan textos que arma el backend.
 - El aviso del buscador de recetas del editor del plan aclara que también se excluyen las recetas prohibidas por las patologías del paciente, como ya hace `GET /recipes?patientId=` (DA-39). Solo cambia el texto.
 - Textos más breves en generación y revisión de propuestas, formularios y catálogos. Se retira la promesa de duración de la generación y se conservan el origen de IA, la revisión profesional, los avisos clínicos y las instrucciones de recuperación. Sin cambios de flujos, validaciones ni contratos.
 - `PasswordResetForm` usa únicamente el estado compartido del padre, como todos sus consumidores actuales, para conservar borradores y errores entre móvil y escritorio.
