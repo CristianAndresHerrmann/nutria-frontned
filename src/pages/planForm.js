@@ -4,7 +4,7 @@
 
 // Mismos topes que updatePlanSchema del backend: con maxLength en los inputs,
 // un texto largo no llega como error de Zod sin ubicación.
-export const PLAN_TEXT_MAX_LENGTH = 4000;
+export const PLAN_TEXT_MAX_LENGTH = 10000;
 export const SHORT_TEXT_MAX_LENGTH = 500;
 export const MAX_OPTIONS = 10;
 export const MAX_ITEMS = 15;
