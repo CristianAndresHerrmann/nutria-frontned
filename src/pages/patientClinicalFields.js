@@ -7,6 +7,7 @@
 // - text: input de una línea.
 // - textarea: texto largo; ocupa el ancho completo en el form y en la ficha.
 // - yesNo: booleano opcional (Sin dato / Sí / No).
+// - minutes: número entero de minutos, opcional.
 
 export const CLINICAL_TAB = 'Información clínica';
 export const HABITS_TAB = 'Hábitos y alimentación';
@@ -55,7 +56,13 @@ export const CLINICAL_SECTIONS = [
       { name: 'cooks', label: '¿Cocina?', kind: 'yesNo' },
       { name: 'likesCooking', label: '¿Le gusta cocinar?', kind: 'yesNo' },
       { name: 'cookingTime', label: 'Tiempo disponible para cocinar', kind: 'text', placeholder: 'Ej. 30 minutos por día' },
+      // T62: el tiempo y el equipamiento como datos, además del texto. Un "No" en
+      // un equipo saca de la generación y del selector las recetas que lo usan.
+      { name: 'cookingMinutesPerDay', label: 'Minutos por día para cocinar', kind: 'minutes', placeholder: 'Ej. 30' },
       { name: 'homeEquipment', label: 'Equipamiento del hogar', kind: 'text', placeholder: 'Ej. Horno, anafe y microondas' },
+      { name: 'hasOven', label: '¿Tiene horno?', kind: 'yesNo' },
+      { name: 'hasStovetop', label: '¿Tiene anafe o cocina?', kind: 'yesNo' },
+      { name: 'hasMicrowave', label: '¿Tiene microondas?', kind: 'yesNo' },
       { name: 'usualShoppingPlace', label: 'Lugar de compra habitual', kind: 'text', placeholder: 'Ej. Supermercado y verdulería' },
     ],
   },
@@ -104,5 +111,7 @@ export function formatYesNo(value) {
 // Valor de un campo clínico tal como se muestra en la ficha.
 export function displayClinicalValue(field, patient) {
   const value = patient[field.name];
-  return field.kind === 'yesNo' ? formatYesNo(value) : value;
+  if (field.kind === 'yesNo') return formatYesNo(value);
+  if (field.kind === 'minutes') return value === null || value === undefined ? null : `${value} minutos`;
+  return value;
 }

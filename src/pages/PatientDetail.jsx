@@ -6,6 +6,7 @@ import { usePlanGeneration } from '../hooks/usePlanGeneration';
 import { formatDate, formatDateTime } from '../utils/date';
 import { initialsOf } from '../utils/initials';
 import { CLINICAL_TAB, HABITS_TAB, displayClinicalValue, sectionsForTab } from './patientClinicalFields';
+import { GOAL_CATEGORY_LABELS } from './patientFormMapping';
 import SectionCard from '../components/SectionCard';
 import PatientConditions from '../components/PatientConditions';
 import PatientConsultations from '../components/PatientConsultations';
@@ -157,6 +158,7 @@ function PatientDetailContent({ id }) {
           <SectionCard title="Objetivo">
             <div className={FIELD_GRID}>
               <Field label="Objetivo" value={patient.goal} />
+              <Field label="Categoría del objetivo" value={GOAL_CATEGORY_LABELS[patient.goalCategory] ?? null} />
               <Field label="Peso de referencia" value={patient.referenceWeight ? `${patient.referenceWeight} kg` : null} />
             </div>
           </SectionCard>

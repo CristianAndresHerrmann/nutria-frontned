@@ -114,6 +114,19 @@ describe('datos clínicos (T16)', () => {
     expect(formToPayload(baseForm({ cooks: 'yes' })).cooks).toBe(true);
     expect(formToPayload(baseForm({ cooks: 'no' })).cooks).toBe(false);
     expect(formToPayload(baseForm({ cooks: '' })).cooks).toBeNull();
+    expect(formToPayload(baseForm({ hasOven: 'no' })).hasOven).toBe(false);
+  });
+
+  it('lleva la categoría del objetivo al formulario y al payload, vacía si no hay dato (T61)', () => {
+    expect(patientToForm({ firstName: 'Ana', lastName: 'Diaz', goalCategory: 'lose_weight' }).goalCategory).toBe('lose_weight');
+    expect(patientToForm({ firstName: 'Ana', lastName: 'Diaz', goalCategory: null }).goalCategory).toBe('');
+    expect(formToPayload(baseForm({ goalCategory: 'other' })).goalCategory).toBe('other');
+  });
+
+  it('lleva los minutos por día como texto al formulario y de vuelta al payload (T62)', () => {
+    expect(patientToForm({ firstName: 'Ana', lastName: 'Diaz', cookingMinutesPerDay: 20 }).cookingMinutesPerDay).toBe('20');
+    expect(patientToForm({ firstName: 'Ana', lastName: 'Diaz', cookingMinutesPerDay: null }).cookingMinutesPerDay).toBe('');
+    expect(formToPayload(baseForm({ cookingMinutesPerDay: '20' })).cookingMinutesPerDay).toBe('20');
   });
 
   // El PUT reemplaza el objeto completo: si el formulario omitiera un campo

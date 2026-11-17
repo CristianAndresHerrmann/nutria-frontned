@@ -1,6 +1,10 @@
 import { isMinorFromDateInput, toDateInputValue } from '../utils/date';
 import { CLINICAL_FIELDS } from './patientClinicalFields';
 
+// Categoría del objetivo (T61): solo los objetivos con pautas documentadas
+// (docs/pautas-de-adecuacion.md) y "Otro". El texto libre sigue al lado.
+export const GOAL_CATEGORY_LABELS = { lose_weight: 'Bajar de peso', other: 'Otro' };
+
 // Un booleano opcional se edita con un select de tres opciones: '' (sin dato),
 // 'yes' y 'no'. Así "no cocina" y "no se sabe" no se confunden.
 function yesNoToForm(value) {
@@ -15,13 +19,18 @@ function yesNoToPayload(value) {
   return null;
 }
 
-function clinicalToForm(patient) {
-  return Object.fromEntries(
-    CLINICAL_FIELDS.map(({ name, kind }) => [name, kind === 'yesNo' ? yesNoToForm(patient[name]) : patient[name] || '']),
-  );
+function clinicalFieldToForm(kind, value) {
+  if (kind === 'yesNo') return yesNoToForm(value);
+  if (kind === 'minutes') return value === null || value === undefined ? '' : String(value);
+  return value || '';
 }
 
-// Los textos van tal cual: el backend normaliza los vacíos a null. Se mandan
+function clinicalToForm(patient) {
+  return Object.fromEntries(CLINICAL_FIELDS.map(({ name, kind }) => [name, clinicalFieldToForm(kind, patient[name])]));
+}
+
+// Los textos y los minutos van tal cual: el backend normaliza los vacíos a null
+// y convierte los minutos a número (con error por campo si no lo son). Se mandan
 // todos los campos porque el PUT reemplaza el objeto completo.
 function clinicalToPayload(form) {
   return Object.fromEntries(
@@ -37,6 +46,7 @@ export const EMPTY_FORM = {
   email: '',
   livesWith: '',
   goal: '',
+  goalCategory: '',
   referenceWeight: '',
   guardianName: '',
   guardianRelationship: '',
@@ -55,6 +65,7 @@ export function patientToForm(patient) {
     email: patient.email || '',
     livesWith: patient.livesWith || '',
     goal: patient.goal || '',
+    goalCategory: patient.goalCategory || '',
     referenceWeight: patient.referenceWeight === null ? '' : String(patient.referenceWeight),
     guardianName: patient.guardianName || '',
     guardianRelationship: patient.guardianRelationship || '',
@@ -79,6 +90,7 @@ export function formToPayload(form) {
     email: form.email,
     livesWith: form.livesWith,
     goal: form.goal,
+    goalCategory: form.goalCategory,
     referenceWeight: form.referenceWeight,
     guardianName: isMinor ? form.guardianName : '',
     guardianRelationship: isMinor ? form.guardianRelationship : '',
