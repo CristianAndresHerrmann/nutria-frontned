@@ -4,6 +4,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y 
 
 ## Unreleased
 
+### Added
+
+- **Categoría del objetivo en la ficha del paciente** (T61, DA-49): "Bajar de peso", "Otro" o "Sin dato", junto al objetivo en texto libre. Se ve también en el detalle del paciente.
+- **Equipamiento y minutos por día en la ficha del paciente** (T62, DA-48): "¿Tiene horno?", "¿Tiene anafe o cocina?" y "¿Tiene microondas?" (Sin dato, Sí o No) y "Minutos por día para cocinar", en Contexto de cocina, además del texto. Un "No" saca de la generación y del buscador de recetas las que usan ese equipo. Errores por campo.
+
 ### Changed
 
 - Los textos del plan admiten hasta 10000 caracteres en el editor (antes 4000), igual que `PUT /plans/:id` (DA-43). Las recomendaciones generales y las clínicas de un plan generado ahora llevan textos que arma el backend.
