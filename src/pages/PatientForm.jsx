@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createPatient, getPatient, updatePatient } from '../api/patients';
 import { completeDateValueError, dateValueError, isMinorFromDateInput, todayInputValue } from '../utils/date';
 import { useFormErrors } from '../hooks/useFormErrors';
-import { EMPTY_FORM, formToPayload, patientToForm } from './patientFormMapping';
+import { EMPTY_FORM, GOAL_CATEGORY_LABELS, formToPayload, patientToForm } from './patientFormMapping';
 import { CLINICAL_SECTIONS } from './patientClinicalFields';
 import SectionCard from '../components/SectionCard';
 import FormField, { inputClass } from '../components/FormField';
@@ -197,6 +197,22 @@ function PatientForm() {
                 value={form.goal}
                 onChange={(event) => updateField('goal', event.target.value)}
               />
+            </FormField>
+
+            <FormField label="Categoría del objetivo" error={fieldErrors.goalCategory}>
+              <select
+                className={inputClass}
+                value={form.goalCategory}
+                aria-invalid={Boolean(fieldErrors.goalCategory)}
+                onChange={(event) => updateField('goalCategory', event.target.value)}
+              >
+                <option value="">Sin dato</option>
+                {Object.entries(GOAL_CATEGORY_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </FormField>
 
             <FormField label="Peso en el que se sentía cómoda/o" error={fieldErrors.referenceWeight}>

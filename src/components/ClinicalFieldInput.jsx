@@ -12,6 +12,8 @@ function ClinicalFieldInput({ field, value, error, onChange }) {
   let control;
   if (field.kind === 'textarea') {
     control = <textarea className={textareaClass} placeholder={field.placeholder} {...common} />;
+  } else if (field.kind === 'minutes') {
+    control = <input className={inputClass} type="number" min="1" step="1" inputMode="numeric" placeholder={field.placeholder} {...common} />;
   } else if (field.kind === 'yesNo') {
     control = (
       <select className={inputClass} {...common}>

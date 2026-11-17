@@ -9,7 +9,7 @@ import {
   sectionsForTab,
 } from './patientClinicalFields';
 
-// Los 18 campos que acepta POST/PUT /patients desde T16.
+// Los campos clínicos que acepta POST/PUT /patients: los 18 de T16 y los 4 de T62.
 const BACKEND_CLINICAL_FIELDS = [
   'medicalHistory',
   'medication',
@@ -29,6 +29,10 @@ const BACKEND_CLINICAL_FIELDS = [
   'workContext',
   'cooks',
   'likesCooking',
+  'hasOven',
+  'hasStovetop',
+  'hasMicrowave',
+  'cookingMinutesPerDay',
 ];
 
 describe('patientClinicalFields', () => {
@@ -39,10 +43,18 @@ describe('patientClinicalFields', () => {
     expect([...names].sort()).toEqual([...BACKEND_CLINICAL_FIELDS].sort());
   });
 
-  it('solo cooks y likesCooking son sí/no', () => {
+  it('son sí/no si cocina, si le gusta y cada equipo; los minutos por día son un número', () => {
     const yesNo = CLINICAL_FIELDS.filter((field) => field.kind === 'yesNo').map((field) => field.name);
 
-    expect(yesNo).toEqual(['cooks', 'likesCooking']);
+    expect(yesNo).toEqual(['cooks', 'likesCooking', 'hasOven', 'hasStovetop', 'hasMicrowave']);
+    expect(CLINICAL_FIELDS.filter((field) => field.kind === 'minutes').map((field) => field.name)).toEqual(['cookingMinutesPerDay']);
+  });
+
+  it('muestra los minutos por día con la unidad, y nada si no hay dato', () => {
+    const field = CLINICAL_FIELDS.find(({ name }) => name === 'cookingMinutesPerDay');
+
+    expect(displayClinicalValue(field, { cookingMinutesPerDay: 20 })).toBe('20 minutos');
+    expect(displayClinicalValue(field, { cookingMinutesPerDay: null })).toBeNull();
   });
 
   it('reparte las secciones entre las pestañas Información clínica y Hábitos y alimentación', () => {
